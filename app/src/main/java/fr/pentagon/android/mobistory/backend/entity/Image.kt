@@ -17,7 +17,7 @@ import java.util.UUID
 data class Image(
     val link: Uri,
     @PrimaryKey
-    val id: UUID = UUID.randomUUID()
+    val imageId: UUID = UUID.randomUUID()
 )
 
 @Dao

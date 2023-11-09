@@ -11,6 +11,7 @@ import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
 import fr.pentagon.android.mobistory.backend.entity.Image
 import fr.pentagon.android.mobistory.backend.entity.Keyword
+import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import java.util.Date
 import java.util.UUID
 
@@ -34,7 +35,7 @@ data class Event(
         parentColumn = "id",
         entity = Keyword::class,
         entityColumn = "id",
-        associateBy = Junction(EventImageJoin::class)
+        associateBy = Junction(KeywordEventJoin::class)
     )
     val keywords: List<Keyword>
 )

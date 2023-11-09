@@ -1,7 +1,9 @@
 package fr.pentagon.android.mobistory.backend.entity
 
+import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Insert
 import androidx.room.PrimaryKey
 import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
@@ -10,7 +12,7 @@ import java.util.UUID
 data class Keyword(
     val label: String,
     @PrimaryKey
-    val id: UUID = UUID.randomUUID()
+    val keywordId: UUID = UUID.randomUUID()
 )
 
 @Entity(tableName = "keyword_event_join",
@@ -30,3 +32,8 @@ data class KeywordEventJoin(
     val eventId: UUID,
     val keywordId: UUID
 )
+@Dao
+interface KeywordEventJoinDao {
+    @Insert
+    suspend fun insert(crossRef: KeywordEventJoin)
+}
