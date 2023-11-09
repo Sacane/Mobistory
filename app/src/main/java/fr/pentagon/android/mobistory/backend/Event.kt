@@ -12,6 +12,7 @@ import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
 import fr.pentagon.android.mobistory.backend.entity.Image
 import fr.pentagon.android.mobistory.backend.entity.Keyword
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
+import java.io.Serializable
 import java.util.Date
 import java.util.UUID
 
@@ -24,28 +25,28 @@ data class Event(
     val wikipedia: String,
     @PrimaryKey
     val id: UUID = UUID.randomUUID(),
-    @Relation(
-        parentColumn = "id",
-        entity = Image::class,
-        entityColumn = "id",
-        associateBy = Junction(EventImageJoin::class)
-    )
-    val images: List<Image>,
-    @Relation(
-        parentColumn = "id",
-        entity = Keyword::class,
-        entityColumn = "id",
-        associateBy = Junction(KeywordEventJoin::class)
-    )
-    val keywords: List<Keyword>
-)
+//    @Relation(
+//        parentColumn = "id",
+//        entity = Image::class,
+//        entityColumn = "id",
+//        associateBy = Junction(EventImageJoin::class)
+//    )
+//    val images: List<Image>,
+//    @Relation(
+//        parentColumn = "id",
+//        entity = Keyword::class,
+//        entityColumn = "id",
+//        associateBy = Junction(KeywordEventJoin::class)
+//    )
+//    val keywords: List<Keyword>
+): Serializable
 
 @Dao
 interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE id = :eventId")
-    suspend fun getAll(eventId: UUID): List<Event>
+    suspend fun findById(eventId: UUID): Event
 
     @Insert
-    suspend fun save()
+    suspend fun save(event: Event)
 }

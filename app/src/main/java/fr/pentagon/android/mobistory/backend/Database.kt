@@ -17,9 +17,9 @@ import java.util.Date
 @androidx.room.Database(
     entities = [
         Event::class,
-        KeywordEventJoin::class,
-        Image::class,
-        EventImageJoin::class
+//        KeywordEventJoin::class,
+//        Image::class,
+//        EventImageJoin::class
     ],
     version = 1,
     exportSchema = false
@@ -47,18 +47,18 @@ abstract class Database : RoomDatabase() {
             require(::INSTANCE.isInitialized){ UNINITIALIZED_MESSAGE }
             INSTANCE.close()
         }
-        fun imageDao(): ImageDao {
-            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
-            return INSTANCE.imageDao()
-        }
-        fun eventImageJoinDao(): EventImageJoinDao{
-            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
-            return INSTANCE.eventImageJoinDao()
-        }
+//        fun imageDao(): ImageDao {
+//            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+//            return INSTANCE.imageDao()
+//        }
+//        fun eventImageJoinDao(): EventImageJoinDao{
+//            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+//            return INSTANCE.eventImageJoinDao()
+//        }
     }
-    abstract fun imageDao(): ImageDao
-    abstract fun eventImageJoinDao(): EventImageJoinDao
-    abstract fun keywordDao(): KeywordEventJoinDao
+//    abstract fun imageDao(): ImageDao
+//    abstract fun eventImageJoinDao(): EventImageJoinDao
+//    abstract fun keywordDao(): KeywordEventJoinDao
     abstract fun eventDao(): EventDao
 }
 
