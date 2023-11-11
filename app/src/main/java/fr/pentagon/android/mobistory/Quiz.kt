@@ -39,7 +39,7 @@ fun Quiz(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.weight(1f))
         Text(text = "Quiz", fontSize = 30.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.weight(1.4f))
-        Text(text = "Le quiz est composé de trois questions avec 4 possibilités pour chaque question mais une seule valide, vous avez 10 secondes pour répondre à chaque question.")
+        Text(text = "Le quiz est composé de 3 questions avec 4 possibilités pour chaque question mais une seule réponse possible, vous avez 10 secondes pour répondre à chaque question.")
         Spacer(modifier = Modifier.weight(1f))
         Button(onClick = {}) {
             Text(text = "Démarrer")
@@ -136,11 +136,35 @@ fun CountdownPreview() {
 @Composable
 fun QuizQuestion(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize()) {
-        Box(modifier = Modifier.weight(1f).fillMaxSize().background(color = Color.Yellow), contentAlignment = Alignment.Center) {
-            Text("question")
+        Box(modifier = Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("questionquestionquestionquestionquestionquestionquestionquestionquestionquestion")
         }
-        Box(modifier = Modifier.weight(3f).fillMaxSize().background(color = Color.Red)) {}
-        // Text("test")
+        Column(modifier = Modifier.weight(3f).fillMaxSize()) {
+            Row(modifier = Modifier.weight(1f).fillMaxSize()) {
+                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
+                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
+                        Text("answer1")
+                    }
+                }
+                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
+                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
+                        Text("answer2")
+                    }
+                }
+            }
+            Row(modifier = Modifier.weight(1f).fillMaxSize()) {
+                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
+                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
+                        Text("answer3")
+                    }
+                }
+                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
+                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
+                        Text("answer4")
+                    }
+                }
+            }
+        }
     }
 }
 
