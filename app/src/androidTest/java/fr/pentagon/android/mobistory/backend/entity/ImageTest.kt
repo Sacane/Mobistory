@@ -17,6 +17,11 @@ import java.util.UUID
 class ImageTest {
     private lateinit var db: Database
     private lateinit var imageDao: ImageDao
+    private lateinit var eventImageJoin: EventImageJoinDao
+
+    companion object{
+        val URI_TEMPLATE: Uri = Uri.parse("https://localhost:8088/image.png")
+    }
 
     @Before
     fun init() {
@@ -26,14 +31,21 @@ class ImageTest {
             Database::class.java
         ).build()
         imageDao = db.imageDao()
+        eventImageJoin = db.eventImageJoinDao()
     }
 
     @Test
     fun simpleInsertImageTest()  = runTest {
         val id = UUID.randomUUID()
-        val image = Image(imageId = id, link = Uri.parse("https://localhost:8088/image.png"))
+        val image = Image(imageId = id, link = URI_TEMPLATE)
         imageDao.insertImage(image)
         val imageInDb = imageDao.findById(id)
         assertEquals(image, imageInDb)
+    }
+
+    fun insertImageWithEventTest()  = runTest {
+        val idImage = UUID.randomUUID()
+        val image = Image(imageId = idImage, link = URI_TEMPLATE)
+        imageDao.insertImage(image)
     }
 }

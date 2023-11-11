@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
+import fr.pentagon.android.mobistory.backend.entity.EventImageJoinDao
 import fr.pentagon.android.mobistory.backend.entity.Image
 import fr.pentagon.android.mobistory.backend.entity.ImageDao
 import java.util.Date
@@ -58,6 +59,7 @@ abstract class Database : RoomDatabase() {
 //    abstract fun eventImageJoinDao(): EventImageJoinDao
 //    abstract fun keywordDao(): KeywordEventJoinDao
     abstract fun eventDao(): EventDao
+    abstract fun eventImageJoinDao(): EventImageJoinDao
 }
 
 class DateConverter {
