@@ -2,11 +2,16 @@ package fr.pentagon.android.mobistory.backend.entity
 
 import android.net.Uri
 import androidx.room.Dao
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Insert
+import androidx.room.Junction
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
+import androidx.room.Query
+import androidx.room.Relation
+import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
@@ -22,29 +27,49 @@ data class Image(
 
 @Dao
 interface ImageDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertImage(image: Image)
+
+    @Transaction
+    @Query("SELECT * FROM image WHERE imageId = :uuid")
+    suspend fun findById(uuid: UUID): Image
 }
 
-@Entity(tableName = "event_image_join",
+@Entity(
+    tableName = "event_image_join",
     primaryKeys = ["eventId", "imageId"],
     foreignKeys = [
-        ForeignKey(entity = Event::class,
-            parentColumns = ["id"],
+        ForeignKey(
+            entity = Event::class,
+            parentColumns = ["eventId"],
             childColumns = ["eventId"],
-            onDelete = ForeignKey.CASCADE),
-        ForeignKey(entity = Image::class,
-            parentColumns = ["id"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Image::class,
+            parentColumns = ["imageId"],
             childColumns = ["imageId"],
-            onDelete = ForeignKey.CASCADE)
+            onDelete = ForeignKey.CASCADE
+        )
     ]
 )
 data class EventImageJoin(
     val eventId: UUID,
     val imageId: UUID
 )
+
 @Dao
-interface EventImageJoinDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(crossRef: EventImageJoin)
+interface EventImageJoinDao{
+    @Insert
+    fun save(eventImageJoin: EventImageJoin)
 }
+
+data class EventWithImages(
+    @Embedded val event: Event,
+    @Relation(
+        parentColumn = "eventId",
+        entityColumn = "imageId",
+        associateBy = Junction(EventImageJoin::class)
+    )
+    val images: List<Image>
+)

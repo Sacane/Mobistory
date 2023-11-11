@@ -1,9 +1,12 @@
-package fr.pentagon.android.mobistory.backend
+package fr.pentagon.android.mobistory.backend.entity
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import fr.pentagon.android.mobistory.backend.Database
+import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.backend.EventDao
 import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
@@ -31,7 +34,7 @@ class EventTest{
     @Test
     fun simpleEventInsertTest() = runTest {
         val id = UUID.randomUUID()
-        val toInsert = Event(id = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
+        val toInsert = Event(eventId = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
         eventDao.save(toInsert)
         val event = eventDao.findById(id)
