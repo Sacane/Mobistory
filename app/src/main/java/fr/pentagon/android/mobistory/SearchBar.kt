@@ -1,6 +1,7 @@
 package fr.pentagon.android.mobistory
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -23,18 +24,10 @@ import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 @Composable
-fun SearchBarComponent(modifier: Modifier = Modifier) {
+fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50) {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
 
-    val iconSize = 40.dp
-
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-
-        Image(
-            painter = painterResource(id = R.drawable.magnifying_glass),
-            contentDescription = "Search icon",
-            modifier = Modifier.size(width = iconSize, height = iconSize)
-        )
 
         TextField(
             modifier = Modifier.weight(1f),
@@ -43,20 +36,25 @@ fun SearchBarComponent(modifier: Modifier = Modifier) {
             label = { Text("Search...") },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
-                //action
+                //TODO
             })
         )
 
         Image(
             painter = painterResource(id = R.drawable.filter),
             contentDescription = "Filter",
-            modifier = Modifier.size(width = iconSize, height = iconSize)
+            modifier = Modifier.size(width = componentHeight.dp, height = componentHeight.dp).clickable {
+                //TODO
+            }
+
         )
 
         Image(
             painter = painterResource(id = R.drawable.eye),
             contentDescription = "Change view",
-            modifier = Modifier.size(width = iconSize, height = iconSize)
+            modifier = Modifier.size(width = componentHeight.dp, height = componentHeight.dp).clickable {
+                //TODO
+            }
         )
     }
 }
