@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,10 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MobistoryTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     Mobistory()
                 }
             }
@@ -32,29 +33,28 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Mobistory(modifier: Modifier = Modifier) {
+    val navController = rememberNavController()
+
     Column(modifier = modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-        ) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             TopBar()
         }
-        Box(
-            modifier = Modifier
-                .weight(8f)
-                .background(color = Color.Yellow)
-                .fillMaxSize()
-        ) {
-            // TODO ROUTING
+        NavHost(modifier = Modifier.weight(8f).fillMaxSize(), navController = navController, startDestination = "home") {
+            composable("home") {
+                Text(text = "home")
+            }
+            composable("search") {
+                Text(text = "search")
+            }
+            composable("favorites") {
+                Text(text = "favorites")
+            }
+            composable("quiz") {
+                Text(text = "quiz")
+            }
         }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .background(color = Color.Green)
-                .fillMaxSize()
-        ) {
-            BottomBar()
+        Box(modifier = Modifier.weight(1f).background(color = Color.Green).fillMaxSize()) {
+            BottomBar(navController = navController)
         }
     }
 }
