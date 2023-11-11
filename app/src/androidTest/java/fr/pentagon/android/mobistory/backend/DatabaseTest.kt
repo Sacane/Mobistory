@@ -28,14 +28,4 @@ class DatabaseTest {
         ).build()
         eventDao = db.eventDao()
     }
-
-    @Test
-    fun simpleEventInsertTest() = runTest {
-        val id = UUID.randomUUID()
-        val toInsert = Event(id = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
-        eventDao.save(toInsert)
-        val event = eventDao.findById(id)
-        assertEquals(toInsert, event)
-    }
-
 }

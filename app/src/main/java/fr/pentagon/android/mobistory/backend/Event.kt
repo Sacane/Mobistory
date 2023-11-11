@@ -49,4 +49,8 @@ interface EventDao{
 
     @Insert
     suspend fun save(event: Event)
+
+    @Transaction
+    @Query("SELECT * FROM event")
+    suspend fun getAll(): List<Event>
 }
