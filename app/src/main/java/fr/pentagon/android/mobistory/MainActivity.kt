@@ -50,7 +50,7 @@ fun Mobistory(modifier: Modifier = Modifier) {
                 Text(text = "favorites")
             }
             composable("quiz") {
-                Text(text = "quiz")
+                Quiz()
             }
         }
         Box(modifier = Modifier.weight(1f).background(color = Color.Green).fillMaxSize()) {
