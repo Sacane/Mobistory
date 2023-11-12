@@ -1,6 +1,7 @@
 package fr.pentagon.android.mobistory
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,8 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 
@@ -54,8 +58,8 @@ fun Preview() {
                 .fillMaxWidth()){
                 PrintText("SearchField")
             }
-
-            DisplayEventList(evList = listOf(Event("test", "test"), Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test")), modifier = Modifier)
+            val list = listOf(Event("Seconde Guerre mondiale", "La Seconde Guerre mondiale, ou Deuxième Guerre mondiale, est un conflit armé à l'échelle planétaire qui dure du 1er septembre 1939 au 2 septembre 1945. Ce conflit oppose schématiquement les Alliés (La Grande-Bretagne, l'URSS et les États-Unis) et l'Axe (l'Allemagne nazie, l'Empire japonais et l'Empire italien)."), Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test"),Event("test", "test"))
+            DisplayEventList(evList = list, modifier = Modifier)
 
             Box(modifier = Modifier
                 .weight(0.1f)
@@ -73,7 +77,7 @@ fun DisplayEventList(evList: List<Event>, modifier: Modifier){
     val scrollState = rememberLazyListState()
     LazyColumn(modifier = modifier
         .fillMaxWidth()
-        .fillMaxHeight(0.7f),
+        .fillMaxHeight(0.7f), //A modifier pour adapter la hauteur avec les autres éléments
         state = scrollState
         )
     {
@@ -84,11 +88,18 @@ fun DisplayEventList(evList: List<Event>, modifier: Modifier){
                     .width(320.dp)
                     .height(120.dp)
                     .padding(8.dp)
-                    .align(Alignment.Center),
+                    .align(Alignment.Center)
+                    .clickable {
+                        //TODO Add actions when click
+                    },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text(text = "Event $index")
-                    Text(text = "Hello, world!")
+                    val currentEv = evList.get(index)
+                    Text(text = currentEv.name,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
+                        fontSize = 20.sp
+                        )
+                    Text(text = currentEv.description, fontSize = 15.sp)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
