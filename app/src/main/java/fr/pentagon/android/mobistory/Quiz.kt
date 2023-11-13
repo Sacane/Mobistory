@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,19 +33,54 @@ import kotlin.math.absoluteValue
 @Composable
 fun Quiz(modifier: Modifier = Modifier) {
     var running by remember { mutableStateOf(false) }
+    var nbRemainingQuestions by remember { mutableIntStateOf(0) }
+    var question by remember { mutableStateOf("") }
 
-    Column(modifier = modifier
-        .padding(20.dp)
-        .fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = "Quiz", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.weight(1.4f))
-        Text(text = "Le quiz est composé de 3 questions avec 4 possibilités pour chaque question mais une seule réponse possible, vous avez 10 secondes pour répondre à chaque question.")
-        Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = {}) {
-            Text(text = "Démarrer")
+    if (!running) {
+        Column(modifier = modifier.padding(20.dp).fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "Quiz", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.weight(1.4f))
+            Text(text = "Le quiz est composé de 3 questions avec 4 possibilités pour chaque question mais une seule réponse possible, vous avez 10 secondes pour répondre à chaque question.")
+            Spacer(modifier = Modifier.weight(1f))
+            Button(onClick = {
+                running = true
+                nbRemainingQuestions = 2
+                question = "Question " + nbRemainingQuestions
+            }) {
+                Text(text = "Démarrer")
+            }
+            Spacer(modifier = Modifier.weight(2f))
         }
-        Spacer(modifier = Modifier.weight(2f))
+    }
+    else if (running && nbRemainingQuestions > 0) {
+        Column(modifier = modifier.padding(20.dp).fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Spacer(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+                Countdown(duration = 10000, running = true, onEnd = {
+                    nbRemainingQuestions--
+                    if (nbRemainingQuestions == 0) {
+                        running = false
+                    }
+                    else {
+                        question = "Question " + nbRemainingQuestions
+                    }
+                })
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.weight(10f).fillMaxSize()) {
+                QuizQuestion(question = question)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun QuizPreview() {
+    MobistoryTheme {
+        Quiz()
     }
 }
 
@@ -91,7 +127,7 @@ fun CountdownBar(modifier: Modifier = Modifier, initialCountdown: Long, elapsedT
         val formatted = remainsSeconds.toString().padStart(2, '0')
 
         HorinzontalFillBar(fillRatio = if(elapsedTime > initialCountdown) {0.0f} else {((elapsedTime.toFloat() - initialCountdown.toFloat()) / initialCountdown.toFloat()).absoluteValue})
-        Text(modifier = Modifier.align(Alignment.Center), text = formatted, fontSize = 40.sp)
+        Text(modifier = Modifier.align(Alignment.Center), text = formatted, fontSize = 30.sp)
     }
 }
 
@@ -110,13 +146,14 @@ fun Countdown(modifier: Modifier = Modifier, duration: Long, running: Boolean, o
     CountdownBar(modifier = modifier.fillMaxSize(), initialCountdown = duration, elapsedTime = elapsedTime)
     LaunchedEffect(running) {
         if (running) {
-            val startTime = SystemClock.elapsedRealtime()
+            var startTime = SystemClock.elapsedRealtime()
 
             while (true) {
                 elapsedTime = SystemClock.elapsedRealtime() - startTime
                 if (elapsedTime >= duration) {
                     onEnd()
-                    break
+                    startTime = SystemClock.elapsedRealtime()
+                    // break
                 }
 
                 delay(25L)
@@ -134,36 +171,33 @@ fun CountdownPreview() {
 }
 
 @Composable
-fun QuizQuestion(modifier: Modifier = Modifier) {
+fun QuizQuestion(modifier: Modifier = Modifier, question: String) {
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("questionquestionquestionquestionquestionquestionquestionquestionquestionquestion")
+            Text(question)
         }
         Column(modifier = Modifier.weight(3f).fillMaxSize()) {
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
-                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
-                        Text("answer1")
-                    }
-                }
-                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
-                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
-                        Text("answer2")
-                    }
-                }
+                Answer(modifier = Modifier.weight(1f), answer = "answer1")
+                Answer(modifier = Modifier.weight(1f), answer = "answer2")
             }
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
-                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
-                        Text("answer3")
-                    }
-                }
-                Box(modifier = Modifier.weight(1f).fillMaxSize().padding(20.dp)) {
-                    Box(modifier = Modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
-                        Text("answer4")
-                    }
-                }
+                Answer(modifier = Modifier.weight(1f), answer = "answer3")
+                Answer(modifier = Modifier.weight(1f), answer = "answer4")
             }
+        }
+    }
+}
+
+@Composable
+fun Answer(modifier: Modifier = Modifier, answer: String) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .padding(20.dp)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
+            Text(answer)
         }
     }
 }
@@ -172,6 +206,6 @@ fun QuizQuestion(modifier: Modifier = Modifier) {
 @Composable
 fun QuizQuestionPreview() {
     MobistoryTheme {
-        QuizQuestion()
+        QuizQuestion(question = "questionquestionquestionquestionquestionquestion")
     }
 }
