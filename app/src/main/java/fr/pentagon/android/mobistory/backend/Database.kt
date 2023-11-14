@@ -10,15 +10,19 @@ import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoinDao
 import fr.pentagon.android.mobistory.backend.entity.Image
 import fr.pentagon.android.mobistory.backend.entity.ImageDao
+import fr.pentagon.android.mobistory.backend.entity.Keyword
+import fr.pentagon.android.mobistory.backend.entity.KeywordDao
+import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
+import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoinDao
 import java.util.Date
 
 @androidx.room.Database(
     entities = [
         Event::class,
         Image::class,
-//        KeywordEventJoin::class,
-//        Image::class,
-        EventImageJoin::class
+        KeywordEventJoin::class,
+        EventImageJoin::class,
+        Keyword::class
     ],
     version = 1,
     exportSchema = false
@@ -60,6 +64,8 @@ abstract class Database : RoomDatabase() {
 //    abstract fun keywordDao(): KeywordEventJoinDao
     abstract fun eventDao(): EventDao
     abstract fun eventImageJoinDao(): EventImageJoinDao
+    abstract fun keywordDao(): KeywordDao
+    abstract fun keywordEventJoinDao(): KeywordEventJoinDao
 }
 
 class DateConverter {

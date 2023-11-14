@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.entity.EventWithImages
+import fr.pentagon.android.mobistory.backend.entity.EventWithKeywords
 import java.io.Serializable
 import java.util.Date
 import java.util.UUID
@@ -38,4 +39,8 @@ interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :uuid")
     suspend fun findEventWithImageById(uuid: UUID): EventWithImages?
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE eventId = :uuid")
+    suspend fun findEventWithKeywordById(uuid: UUID): EventWithKeywords?
 }
