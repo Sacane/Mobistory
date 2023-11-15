@@ -10,7 +10,6 @@ import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.backend.EventDao
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
-import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
