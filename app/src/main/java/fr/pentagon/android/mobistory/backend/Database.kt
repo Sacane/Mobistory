@@ -6,14 +6,23 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import fr.pentagon.android.mobistory.backend.entity.Country
+import fr.pentagon.android.mobistory.backend.entity.CountryDao
+import fr.pentagon.android.mobistory.backend.entity.CountryEventJoin
+import fr.pentagon.android.mobistory.backend.entity.CountryEventJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoinDao
+import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoin
+import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoinDao
 import fr.pentagon.android.mobistory.backend.entity.Image
 import fr.pentagon.android.mobistory.backend.entity.ImageDao
+import fr.pentagon.android.mobistory.backend.entity.KeyDate
+import fr.pentagon.android.mobistory.backend.entity.KeyDateDao
 import fr.pentagon.android.mobistory.backend.entity.Keyword
 import fr.pentagon.android.mobistory.backend.entity.KeywordDao
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoinDao
+import java.time.LocalDate
 import java.util.Date
 
 @androidx.room.Database(
@@ -22,7 +31,11 @@ import java.util.Date
         Image::class,
         KeywordEventJoin::class,
         EventImageJoin::class,
-        Keyword::class
+        Keyword::class,
+        Country::class,
+        CountryEventJoin::class,
+        KeyDate::class,
+        EventKeyDateJoin::class
     ],
     version = 1,
     exportSchema = false
@@ -66,6 +79,10 @@ abstract class Database : RoomDatabase() {
     abstract fun eventImageJoinDao(): EventImageJoinDao
     abstract fun keywordDao(): KeywordDao
     abstract fun keywordEventJoinDao(): KeywordEventJoinDao
+    abstract fun countryDao(): CountryDao
+    abstract fun eventCountryJoinDao(): CountryEventJoinDao
+    abstract fun keyDateDao(): KeyDateDao
+    abstract fun eventKeyDateJoinDao(): EventKeyDateJoinDao
 }
 
 class DateConverter {

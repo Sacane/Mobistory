@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
+import fr.pentagon.android.mobistory.backend.entity.EventWithCountry
 import fr.pentagon.android.mobistory.backend.entity.EventWithImages
 import fr.pentagon.android.mobistory.backend.entity.EventWithKeywords
 import java.io.Serializable
@@ -43,4 +44,8 @@ interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :uuid")
     suspend fun findEventWithKeywordById(uuid: UUID): EventWithKeywords?
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE eventId = :uuid")
+    suspend fun findEventWithCountryById(uuid: UUID): EventWithCountry?
 }

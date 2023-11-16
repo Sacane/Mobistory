@@ -37,6 +37,9 @@ interface CountryDao{
 
     @Query("SELECT * FROM country")
     suspend fun getAll(): List<Country>
+
+    @Query("SELECT * FROM country WHERE label = :label")
+    suspend fun findByLabel(label: String): Country?
 }
 
 @Entity(tableName = "event_country_join",
