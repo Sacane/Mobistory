@@ -56,7 +56,16 @@ fun Quiz(modifier: Modifier = Modifier) {
     else if (running && nbRemainingQuestions > 0) {
         Column(modifier = modifier.padding(20.dp).fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+            QuestionManager(modifier = Modifier.weight(12f), question = question, onCountdownEnd = {
+                nbRemainingQuestions--
+                if (nbRemainingQuestions == 0) {
+                    running = false
+                }
+                else {
+                    question = "Question " + nbRemainingQuestions
+                }
+            })
+            /*Box(modifier = Modifier.weight(1f).fillMaxSize()) {
                 Countdown(duration = 10000, running = true, onEnd = {
                     nbRemainingQuestions--
                     if (nbRemainingQuestions == 0) {
@@ -70,8 +79,25 @@ fun Quiz(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(10f).fillMaxSize()) {
                 QuizQuestion(question = question)
-            }
+            }*/
             Spacer(modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+fun QuestionManager(modifier: Modifier = Modifier, question: String, onCountdownEnd: () -> Unit) {
+    Column(modifier = modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+            Countdown(duration = 10000, running = true, onEnd = {
+                onCountdownEnd()
+
+                // TODO vérifier réponse
+            })
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Box(modifier = Modifier.weight(10f).fillMaxSize()) {
+            QuizQuestion(question = question)
         }
     }
 }
