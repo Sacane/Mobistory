@@ -2,6 +2,7 @@ package fr.pentagon.android.mobistory
 
 import android.os.SystemClock
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,21 +66,6 @@ fun Quiz(modifier: Modifier = Modifier) {
                     question = "Question " + nbRemainingQuestions
                 }
             })
-            /*Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Countdown(duration = 10000, running = true, onEnd = {
-                    nbRemainingQuestions--
-                    if (nbRemainingQuestions == 0) {
-                        running = false
-                    }
-                    else {
-                        question = "Question " + nbRemainingQuestions
-                    }
-                })
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.weight(10f).fillMaxSize()) {
-                QuizQuestion(question = question)
-            }*/
             Spacer(modifier = Modifier.weight(1f))
         }
     }
@@ -87,17 +73,24 @@ fun Quiz(modifier: Modifier = Modifier) {
 
 @Composable
 fun QuestionManager(modifier: Modifier = Modifier, question: String, onCountdownEnd: () -> Unit) {
+    var selectedAnswer by remember { mutableStateOf<Answer?>(null) }
+
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             Countdown(duration = 10000, running = true, onEnd = {
                 onCountdownEnd()
 
-                // TODO vérifier réponse
+                if (selectedAnswer != null && selectedAnswer!!.goodAnswer) {
+                    // TODO increment score
+                }
+                selectedAnswer = null
             })
         }
         Spacer(modifier = Modifier.weight(1f))
         Box(modifier = Modifier.weight(10f).fillMaxSize()) {
-            QuizQuestion(question = question)
+            QuizQuestion(question = question, selectedAnswer = selectedAnswer, selectAnswer = { answer ->
+                selectedAnswer = answer
+            })
         }
     }
 }
@@ -179,7 +172,6 @@ fun Countdown(modifier: Modifier = Modifier, duration: Long, running: Boolean, o
                 if (elapsedTime >= duration) {
                     onEnd()
                     startTime = SystemClock.elapsedRealtime()
-                    // break
                 }
 
                 delay(25L)
@@ -197,41 +189,31 @@ fun CountdownPreview() {
 }
 
 @Composable
-fun QuizQuestion(modifier: Modifier = Modifier, question: String) {
+fun QuizQuestion(modifier: Modifier = Modifier, question: String, selectedAnswer: Answer?, selectAnswer: (Answer) -> Unit) {
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(question)
         }
         Column(modifier = Modifier.weight(3f).fillMaxSize()) {
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Answer(modifier = Modifier.weight(1f), answer = "answer1")
-                Answer(modifier = Modifier.weight(1f), answer = "answer2")
+                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer1", goodAnswer = false), selected = selectedAnswer?.label == "answer1", selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer2", goodAnswer = false), selected = selectedAnswer?.label == "answer2", selectAnswer = { answer -> selectAnswer(answer)})
             }
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Answer(modifier = Modifier.weight(1f), answer = "answer3")
-                Answer(modifier = Modifier.weight(1f), answer = "answer4")
+                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer3", goodAnswer = false), selected = selectedAnswer?.label == "answer3", selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer4", goodAnswer = false), selected = selectedAnswer?.label == "answer4", selectAnswer = { answer -> selectAnswer(answer)})
             }
         }
     }
 }
 
-@Composable
-fun Answer(modifier: Modifier = Modifier, answer: String) {
-    Box(modifier = modifier
-        .fillMaxSize()
-        .padding(20.dp)) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255)), contentAlignment = Alignment.Center) {
-            Text(answer)
-        }
-    }
-}
+data class Answer(val label: String, val goodAnswer: Boolean)
 
-@Preview(showBackground = true)
 @Composable
-fun QuizQuestionPreview() {
-    MobistoryTheme {
-        QuizQuestion(question = "questionquestionquestionquestionquestionquestion")
+fun Answer(modifier: Modifier = Modifier, answer: Answer, selected: Boolean, selectAnswer: (Answer) -> Unit) {
+    Box(modifier = modifier.fillMaxSize().padding(20.dp)) {
+        Box(modifier = Modifier.fillMaxSize().background(color =  if (selected) Color.Red else Color(red = 255, green = 213, blue = 141, alpha = 255)).clickable { selectAnswer(answer) }, contentAlignment = Alignment.Center) {
+            Text(answer.label)
+        }
     }
 }
