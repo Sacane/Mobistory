@@ -55,7 +55,7 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50)
         Box(
             modifier = Modifier
                 .size(width = componentHeight.dp, height = componentHeight.dp)
-                .background(Color.LightGray)
+                .background(Color.Transparent)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.filter),
@@ -72,7 +72,7 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50)
         Box(
             modifier = Modifier
                 .size(width = componentHeight.dp, height = componentHeight.dp)
-                .background(Color.LightGray)
+                .background(Color.Transparent)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.eye),
@@ -89,8 +89,8 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50)
 }
 
 
-@Preview(showBackground = true)
 @Composable
+@Preview(showBackground = true)
 fun SearchBarPreview() {
     MobistoryTheme {
         SearchBarComponent()
