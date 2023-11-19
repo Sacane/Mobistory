@@ -34,10 +34,12 @@ import kotlin.math.absoluteValue
 @Composable
 fun Quiz(modifier: Modifier = Modifier) {
     var running by remember { mutableStateOf(false) }
+    var over by remember { mutableStateOf(false) }
     var nbRemainingQuestions by remember { mutableIntStateOf(0) }
     var question by remember { mutableStateOf("") }
+    var score by remember { mutableStateOf(0) }
 
-    if (!running) {
+    if (!running && !over) {
         Column(modifier = modifier.padding(20.dp).fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(modifier = Modifier.weight(1f))
             Text(text = "Quiz", fontSize = 30.sp, fontWeight = FontWeight.Bold)
@@ -57,10 +59,11 @@ fun Quiz(modifier: Modifier = Modifier) {
     else if (running && nbRemainingQuestions > 0) {
         Column(modifier = modifier.padding(20.dp).fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(modifier = Modifier.weight(1f))
-            QuestionManager(modifier = Modifier.weight(12f), question = question, onCountdownEnd = {
+            QuestionManager(modifier = Modifier.weight(12f), question = question, onGoodAnswer = { score++ }, onCountdownEnd = {
                 nbRemainingQuestions--
                 if (nbRemainingQuestions == 0) {
                     running = false
+                    over = true
                 }
                 else {
                     question = "Question " + nbRemainingQuestions
@@ -69,10 +72,22 @@ fun Quiz(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.weight(1f))
         }
     }
+    else if (!running && over) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Nombre de réponses correctes : ${score}")
+                Row {
+                    Button(onClick = { over = false; score = 0 }) {
+                        Text(text = "Retour")
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
-fun QuestionManager(modifier: Modifier = Modifier, question: String, onCountdownEnd: () -> Unit) {
+fun QuestionManager(modifier: Modifier = Modifier, question: String, onGoodAnswer: () -> Unit, onCountdownEnd: () -> Unit) {
     var selectedAnswer by remember { mutableStateOf<Answer?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -81,7 +96,7 @@ fun QuestionManager(modifier: Modifier = Modifier, question: String, onCountdown
                 onCountdownEnd()
 
                 if (selectedAnswer != null && selectedAnswer!!.goodAnswer) {
-                    // TODO increment score
+                    onGoodAnswer()
                 }
                 selectedAnswer = null
             })
@@ -196,7 +211,7 @@ fun QuizQuestion(modifier: Modifier = Modifier, question: String, selectedAnswer
         }
         Column(modifier = Modifier.weight(3f).fillMaxSize()) {
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer1", goodAnswer = false), selected = selectedAnswer?.label == "answer1", selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer1", goodAnswer = true), selected = selectedAnswer?.label == "answer1", selectAnswer = { answer -> selectAnswer(answer)})
                 Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer2", goodAnswer = false), selected = selectedAnswer?.label == "answer2", selectAnswer = { answer -> selectAnswer(answer)})
             }
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
