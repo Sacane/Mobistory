@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.junit.ktx)
     val room_version = "2.6.0"
