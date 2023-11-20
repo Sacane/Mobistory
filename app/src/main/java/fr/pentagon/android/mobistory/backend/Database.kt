@@ -14,6 +14,8 @@ import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoin
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoinDao
+import fr.pentagon.android.mobistory.backend.entity.FavoriteDao
+import fr.pentagon.android.mobistory.backend.entity.FavoriteEvent
 import fr.pentagon.android.mobistory.backend.entity.Image
 import fr.pentagon.android.mobistory.backend.entity.ImageDao
 import fr.pentagon.android.mobistory.backend.entity.KeyDate
@@ -22,7 +24,6 @@ import fr.pentagon.android.mobistory.backend.entity.Keyword
 import fr.pentagon.android.mobistory.backend.entity.KeywordDao
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoinDao
-import java.time.LocalDate
 import java.util.Date
 
 @androidx.room.Database(
@@ -35,7 +36,8 @@ import java.util.Date
         Country::class,
         CountryEventJoin::class,
         KeyDate::class,
-        EventKeyDateJoin::class
+        EventKeyDateJoin::class,
+        FavoriteEvent::class,
     ],
     version = 1,
     exportSchema = false
@@ -83,6 +85,7 @@ abstract class Database : RoomDatabase() {
     abstract fun eventCountryJoinDao(): CountryEventJoinDao
     abstract fun keyDateDao(): KeyDateDao
     abstract fun eventKeyDateJoinDao(): EventKeyDateJoinDao
+    abstract fun favoriteDao(): FavoriteDao
 }
 
 class DateConverter {
