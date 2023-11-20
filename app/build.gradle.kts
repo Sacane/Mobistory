@@ -2,7 +2,9 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    kotlin("kapt")
 }
+apply(plugin = "org.jetbrains.kotlin.kapt")
 
 android {
     namespace = "fr.pentagon.android.mobistory"
@@ -52,6 +54,8 @@ android {
 
 dependencies {
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.junit.ktx)
     val room_version = "2.6.0"
 
     // Room dependencies
@@ -59,6 +63,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$room_version")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
+//    kapt("androidx.room:room-compiler:$room_version")
     //
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -73,6 +78,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
+    androidTestImplementation("androidx.room:room-testing:$room_version")
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+    kapt("androidx.room:room-compiler:$room_version")
 }
