@@ -14,6 +14,8 @@ import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoin
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoinDao
+import fr.pentagon.android.mobistory.backend.entity.EventParticipantJoin
+import fr.pentagon.android.mobistory.backend.entity.EventParticipantJoinDao
 import fr.pentagon.android.mobistory.backend.entity.FavoriteDao
 import fr.pentagon.android.mobistory.backend.entity.FavoriteEvent
 import fr.pentagon.android.mobistory.backend.entity.Image
@@ -24,6 +26,8 @@ import fr.pentagon.android.mobistory.backend.entity.Keyword
 import fr.pentagon.android.mobistory.backend.entity.KeywordDao
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoinDao
+import fr.pentagon.android.mobistory.backend.entity.Participant
+import fr.pentagon.android.mobistory.backend.entity.ParticipantDao
 import java.util.Date
 
 @androidx.room.Database(
@@ -38,6 +42,8 @@ import java.util.Date
         KeyDate::class,
         EventKeyDateJoin::class,
         FavoriteEvent::class,
+        Participant::class,
+        EventParticipantJoin::class
     ],
     version = 1,
     exportSchema = false
@@ -86,6 +92,8 @@ abstract class Database : RoomDatabase() {
     abstract fun keyDateDao(): KeyDateDao
     abstract fun eventKeyDateJoinDao(): EventKeyDateJoinDao
     abstract fun favoriteDao(): FavoriteDao
+    abstract fun participantDao(): ParticipantDao
+    abstract fun eventParticipantJoinDao(): EventParticipantJoinDao
 }
 
 class DateConverter {
