@@ -7,7 +7,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.backend.EventDao
-import junit.framework.TestCase
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest

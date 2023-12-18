@@ -18,7 +18,7 @@ import java.util.UUID
 data class Event(
     val label: String,
     val startDate: Date,
-    val endDate: Date,
+    val endDate: Date? = null, // It means the event can have only 1 reference date
     val description: String? = null,
     val wikipedia: String,
     @PrimaryKey
