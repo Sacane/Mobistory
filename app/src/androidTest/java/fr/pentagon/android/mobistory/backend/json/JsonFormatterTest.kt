@@ -2,11 +2,21 @@ package fr.pentagon.android.mobistory.backend.json
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import fr.pentagon.android.mobistory.test.R
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.junit.Test
 import org.junit.runner.RunWith
+
+@Serializable
+private data class PersonTestDTO(
+    val firstname: String,
+    val lastname: String
+)
 
 @RunWith(AndroidJUnit4::class)
 class JsonFormatterTest {
@@ -21,17 +31,19 @@ class JsonFormatterTest {
     @Test
     fun shouldBeAbleToLoadAFileFromAndroidContext() {
         val ctx = InstrumentationRegistry.getInstrumentation().context
-        val content = ctx.loadJSONFile(fr.pentagon.android.mobistory.test.R.raw.jsontest) ?: "Fail"
-        assertEquals("""
-            [
-              {"id": 630, "label": {"fr": "Consulte de Lyon", "en": "Council of Lyon"}, "start_date": "1802-1-11", "end_date": "1802-1-26"},
-              {"id": 4411, "label": {"fr": "bataille de Valmy", "en": "Battle of Valmy"}, "start_date": "1792-9-20"}
-            ]
-        """.trimIndent(), content
-        )
+        val content = ctx.loadJSONFile(R.raw.jsontest)
+        assertNotNull(content)
+    }
 
-        val events = Json.decodeFromString<List<EventDTO>>(content)
-        assertEquals(2, events.size)
+    @Test
+    fun shouldBeAbleToLoadEventDTOFromAGoodFileFormatted() {
+        val ctx = InstrumentationRegistry.getInstrumentation().context
+        val content = ctx.loadJSONFile(R.raw.jsontest)
+        val persons = Json.decodeFromString<List<PersonTestDTO>>(content ?: "fail")
+        assertEquals(3, persons.size)
+        assertTrue(
+            persons.any { it.firstname == "johan" && it.lastname == "ramaroson rakotomihamina"}
+        )
     }
 }
 

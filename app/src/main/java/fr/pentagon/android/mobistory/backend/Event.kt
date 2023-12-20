@@ -1,5 +1,6 @@
 package fr.pentagon.android.mobistory.backend
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
@@ -21,9 +22,27 @@ data class Event(
     val endDate: Date? = null, // It means the event can have only 1 reference date
     val description: String? = null,
     val wikipedia: String,
+    val keyDates: KeyDatesContainer? = null,
     @PrimaryKey
     val eventId: UUID = UUID.randomUUID()
-): Serializable
+): Serializable {
+    override fun equals(other: Any?): Boolean {
+        return if (other is Event) {
+            eventId == other.eventId
+        } else {
+            false
+        }
+    }
+
+    override fun hashCode(): Int {
+        return eventId.hashCode()
+    }
+}
+
+data class KeyDatesContainer(
+    @ColumnInfo(name = "keyDates")
+    val keyDates: List<Date>
+)
 
 @Dao
 interface EventDao{
@@ -55,4 +74,9 @@ interface EventDao{
             "ON participant.participantId = event_participant_join.participantId " +
             "WHERE event_participant_join.eventId = :eventId")
     suspend fun findParticipantsByEventId(eventId: UUID): List<Participant>
+
+
+    @Transaction
+    @Query("SELECT e.keyDates FROM event e WHERE e.eventId = :eventId")
+    suspend fun findAllKeyDate(eventId: UUID): KeyDatesContainer
 }
