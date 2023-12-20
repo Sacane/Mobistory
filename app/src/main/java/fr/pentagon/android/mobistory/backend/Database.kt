@@ -2,6 +2,7 @@ package fr.pentagon.android.mobistory.backend
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
@@ -28,7 +29,9 @@ import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoinDao
 import fr.pentagon.android.mobistory.backend.entity.Participant
 import fr.pentagon.android.mobistory.backend.entity.ParticipantDao
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @androidx.room.Database(
     entities = [
@@ -97,13 +100,42 @@ abstract class Database : RoomDatabase() {
 }
 
 class DateConverter {
+    @TypeConverter
+    fun stringToDate(value: String?): Date? {
+        return value?.let { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(it) }
+    }
 
     @TypeConverter
-    fun fromDate(date: Date): Long = date.time
+    fun dateToString(date: Date?): String? {
+        return date?.let { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it) }
+    }
+    @TypeConverter
+    fun stringListToString(list: List<String>?): String? {
+        return list?.joinToString(",")
+    }
 
     @TypeConverter
-    fun toDate(date: Long): Date = Date(date)
+    fun stringToStringList(value: String?): List<String>? {
+        return value?.split(",")?.map { it.trim() }
+    }
+    @TypeConverter
+    fun stringToDates(value: String?): KeyDatesContainer? {
+        if (value.isNullOrBlank()) {
+            return null
+        }
+        return KeyDatesContainer(value.split(",").mapNotNull {
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(it.trim())
+        })
+    }
 
+    @TypeConverter
+    fun datesToString(dates: KeyDatesContainer?): String? {
+        if(dates == null) return null
+        return dates.keyDates.joinToString(",") {
+            Log.i("dateTest", "???")
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
+        }
+    }
 }
 
 class UriConverter {
