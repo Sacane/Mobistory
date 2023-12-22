@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LanguageReferenceDTO<T>(
-    val fr: T,
+    val fr: T?,
     val en: T
 )
 

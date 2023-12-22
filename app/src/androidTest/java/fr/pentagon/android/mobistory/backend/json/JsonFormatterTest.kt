@@ -18,6 +18,12 @@ private data class PersonTestDTO(
     val lastname: String
 )
 
+@Serializable
+private data class PersonOptionalDTO(
+    val firstname: String? = null,
+    val lastname: String
+)
+
 @RunWith(AndroidJUnit4::class)
 class JsonFormatterTest {
 
@@ -45,5 +51,16 @@ class JsonFormatterTest {
             persons.any { it.firstname == "johan" && it.lastname == "ramaroson rakotomihamina"}
         )
     }
+    @Test
+    fun shouldBeAbleToMakeNullAnOptionalField(){
+        val ctx = InstrumentationRegistry.getInstrumentation().context
+        val content = ctx.loadJSONFile(R.raw.optionaltest)
+        val persons = Json.decodeFromString<List<PersonOptionalDTO>>(content ?: "fail")
+        assertEquals(3, persons.size)
+        assertTrue(
+            persons.any { it.firstname == null}
+        )
+    }
+
 }
 
