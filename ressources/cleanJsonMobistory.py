@@ -196,13 +196,20 @@ claims_id_to_keep = [18, 373, 361, 17, 710, 279, 31, 580, 582, 585, 921, 527, 27
 ###########################################################################################################
 
 exclude = []
+firstRecord = True
 
 with jsonlines.open('events.txt', 'r') as file:
-	with jsonlines.open('newEvents.json', 'w') as output_file:
+	with open('newEvents.json', 'w') as output_file:
+		output_file.write('[')
 		for record in file:
 			if len(record['label']) == 0:
 				continue
 			process(record, claims_id_to_keep)
 			del record['claims']
 			if filterType(record, types_to_remove) and filterLabel(record, label_to_remove):
-				output_file.write(record)
+				if not firstRecord:
+					output_file.write(',\n')
+				else:
+					firstRecord = False
+				json.dump(record, output_file)
+		output_file.write(']')
