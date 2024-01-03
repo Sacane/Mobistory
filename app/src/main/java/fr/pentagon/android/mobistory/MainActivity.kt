@@ -3,7 +3,6 @@ package fr.pentagon.android.mobistory
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -69,8 +68,6 @@ fun Mobistory(modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(permissions.allPermissionsGranted) {
-        Log.i(null, permissions.allPermissionsGranted.toString())
-
         if (!permissions.allPermissionsGranted) {
             permissions.launchMultiplePermissionRequest()
         }
