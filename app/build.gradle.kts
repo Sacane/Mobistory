@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "fr.pentagon.android.mobistory"
-        minSdk = 21
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -64,7 +64,6 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$room_version")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
-//    kapt("androidx.room:room-compiler:$room_version")
     //
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation(libs.core.ktx)
@@ -75,6 +74,7 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+    implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

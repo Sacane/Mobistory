@@ -1,5 +1,7 @@
 package fr.pentagon.android.mobistory
 
+import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,11 +13,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,9 +37,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Mobistory(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val permissions = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
+    val context = LocalContext.current
 
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
@@ -55,6 +64,18 @@ fun Mobistory(modifier: Modifier = Modifier) {
         }
         Box(modifier = Modifier.weight(1f).background(color = Color.Green).fillMaxSize()) {
             BottomBar(navController = navController)
+        }
+    }
+
+    LaunchedEffect(permissions.allPermissionsGranted) {
+        if (!permissions.allPermissionsGranted) {
+            permissions.launchMultiplePermissionRequest()
+        }
+        else {
+            val intent = Intent(context, LocationService::class.java).apply {
+                action = "START"
+            }
+            context.startService(intent)
         }
     }
 }
