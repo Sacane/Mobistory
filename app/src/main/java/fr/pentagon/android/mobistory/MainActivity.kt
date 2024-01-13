@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import fr.pentagon.android.mobistory.backend.json.EventInitializer
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MobistoryTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    EventInitializer(context = this)
                     Mobistory()
                 }
             }
