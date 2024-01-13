@@ -2,15 +2,17 @@ package fr.pentagon.android.mobistory.backend.json
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.Composable
 import fr.pentagon.android.mobistory.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
 
-@Composable
-fun EventInitializer(context: Context) {
+suspend fun eventInitializer(context: Context) {
     val content = context.loadJSONFile(R.raw.events) ?: throw AssertionError()
-    val events = Json.decodeFromString<List<EventDTO>>(content).let {
-        Log.i("INITIALIZER", it[0].toString())
+    val events = Json.decodeFromString<List<EventDTO>>(content)
+    Log.i("INITIALIZER", events[0].toString())
+    withContext(Dispatchers.IO) {
+
     }
 }

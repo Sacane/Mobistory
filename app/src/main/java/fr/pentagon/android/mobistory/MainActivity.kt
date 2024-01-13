@@ -22,16 +22,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import fr.pentagon.android.mobistory.backend.json.EventInitializer
+import fr.pentagon.android.mobistory.backend.Database
+import fr.pentagon.android.mobistory.backend.json.eventInitializer
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(!Database.isInitialized) {
+            Database.open(this)
+        }
         setContent {
             MobistoryTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    EventInitializer(context = this)
+                    LaunchedEffect(Unit) {
+                        eventInitializer(this@MainActivity)
+                    }
                     Mobistory()
                 }
             }
@@ -47,10 +53,14 @@ fun Mobistory(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     Column(modifier = modifier.fillMaxSize()) {
-        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+        Box(modifier = Modifier
+            .weight(1f)
+            .fillMaxSize()) {
             TopBar()
         }
-        NavHost(modifier = Modifier.weight(8f).fillMaxSize(), navController = navController, startDestination = "home") {
+        NavHost(modifier = Modifier
+            .weight(8f)
+            .fillMaxSize(), navController = navController, startDestination = "home") {
             composable("home") {
                 Text(text = "home")
             }
@@ -64,7 +74,10 @@ fun Mobistory(modifier: Modifier = Modifier) {
                 Quiz()
             }
         }
-        Box(modifier = Modifier.weight(1f).background(color = Color.Green).fillMaxSize()) {
+        Box(modifier = Modifier
+            .weight(1f)
+            .background(color = Color.Green)
+            .fillMaxSize()) {
             BottomBar(navController = navController)
         }
     }

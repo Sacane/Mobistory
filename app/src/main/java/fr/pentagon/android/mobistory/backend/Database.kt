@@ -74,14 +74,14 @@ abstract class Database : RoomDatabase() {
             require(::INSTANCE.isInitialized){ UNINITIALIZED_MESSAGE }
             INSTANCE.close()
         }
-//        fun imageDao(): ImageDao {
-//            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
-//            return INSTANCE.imageDao()
-//        }
-//        fun eventImageJoinDao(): EventImageJoinDao{
-//            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
-//            return INSTANCE.eventImageJoinDao()
-//        }
+        fun imageDao(): ImageDao {
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.imageDao()
+        }
+        fun eventImageJoinDao(): EventImageJoinDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.eventImageJoinDao()
+        }
     }
     abstract fun imageDao(): ImageDao
 //    abstract fun eventImageJoinDao(): EventImageJoinDao
