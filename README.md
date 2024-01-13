@@ -6,3 +6,4 @@
 - Yohann "Sekelenao" REGUEME
 - Quentin "Qtdrake" TELLIER
 - Mathis "Verestah" MENAA
+- Clement GAUDET
