@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.entity.EventWithAlias
+import fr.pentagon.android.mobistory.backend.entity.EventWithCoordinate
 import fr.pentagon.android.mobistory.backend.entity.EventWithCountry
 import fr.pentagon.android.mobistory.backend.entity.EventWithImages
 import fr.pentagon.android.mobistory.backend.entity.EventWithKeywords
@@ -89,4 +90,8 @@ interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
     fun findEventWithAliasesById(eventId: UUID): EventWithAlias
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE eventId = :eventId")
+    fun findEventWithCoordinateById(eventId: UUID): EventWithCoordinate
 }

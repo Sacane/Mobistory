@@ -52,8 +52,6 @@ class ParticipantTest {
         val participants = eventDao.findParticipantsByEventId(id)
         assertEquals(1, participants.size)
 
-        val first = participants[0]
-
-        assertEquals(participant, first)
+        assertEquals(participant, participants.first())
     }
 }

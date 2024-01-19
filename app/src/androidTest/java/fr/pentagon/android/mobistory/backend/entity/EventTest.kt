@@ -2,7 +2,6 @@ package fr.pentagon.android.mobistory.backend.entity
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -13,12 +12,10 @@ import fr.pentagon.android.mobistory.backend.KeyDatesContainer
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
-import junit.framework.TestCase.fail
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
@@ -120,5 +117,19 @@ class EventTest{
 
         assertEquals(1, aliases.aliases.size)
         assertEquals("ev1", aliases.aliases.first().label)
+    }
+
+    @Test
+    fun shouldPersistEventWithCoordinates() = runTest {
+        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
+            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
+        eventDao.save(event1)
+        val aliasDao = db.coordinateDao()
+        aliasDao.save(Coordinate(value = "ev1", eventId = event1.eventId))
+
+        val coordinates = eventDao.findEventWithCoordinateById(event1.eventId)
+
+        assertEquals(1, coordinates.coordinates.size)
+        assertEquals("ev1", coordinates.coordinates.first().value)
     }
 }

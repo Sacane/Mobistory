@@ -20,7 +20,7 @@ data class Keyword(
     val keywordId: UUID = UUID.randomUUID()
 ) {
     init {
-        require(label != "")
+        require(label.isNotBlank() && label.isNotEmpty())
     }
 }
 

@@ -8,15 +8,20 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import fr.pentagon.android.mobistory.backend.entity.Alias
 import fr.pentagon.android.mobistory.backend.entity.AliasDao
+import fr.pentagon.android.mobistory.backend.entity.Coordinate
+import fr.pentagon.android.mobistory.backend.entity.CoordinateDao
 import fr.pentagon.android.mobistory.backend.entity.Country
 import fr.pentagon.android.mobistory.backend.entity.CountryDao
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoin
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoinDao
-import fr.pentagon.android.mobistory.backend.entity.EventImageJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoin
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoinDao
+import fr.pentagon.android.mobistory.backend.entity.EventLocationJoin
+import fr.pentagon.android.mobistory.backend.entity.EventLocationJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventParticipantJoin
 import fr.pentagon.android.mobistory.backend.entity.EventParticipantJoinDao
+import fr.pentagon.android.mobistory.backend.entity.EventTypeJoin
+import fr.pentagon.android.mobistory.backend.entity.EventTypeJoinDao
 import fr.pentagon.android.mobistory.backend.entity.FavoriteDao
 import fr.pentagon.android.mobistory.backend.entity.FavoriteEvent
 import fr.pentagon.android.mobistory.backend.entity.Image
@@ -27,9 +32,12 @@ import fr.pentagon.android.mobistory.backend.entity.Keyword
 import fr.pentagon.android.mobistory.backend.entity.KeywordDao
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoinDao
+import fr.pentagon.android.mobistory.backend.entity.Location
+import fr.pentagon.android.mobistory.backend.entity.LocationDao
 import fr.pentagon.android.mobistory.backend.entity.Participant
 import fr.pentagon.android.mobistory.backend.entity.ParticipantDao
-import fr.pentagon.android.mobistory.backend.entity.StringConverter
+import fr.pentagon.android.mobistory.backend.entity.Type
+import fr.pentagon.android.mobistory.backend.entity.TypeDao
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -47,15 +55,19 @@ import java.util.Locale
         FavoriteEvent::class,
         Participant::class,
         EventParticipantJoin::class,
-        Alias::class
+        Alias::class,
+        Coordinate::class,
+        Location::class,
+        EventLocationJoin::class,
+        Type::class,
+        EventTypeJoin::class
     ],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(
     DateConverter::class,
-    UriConverter::class,
-    StringConverter::class
+    UriConverter::class
 )
 abstract class Database : RoomDatabase() {
     private var isInitialized: Boolean = false
@@ -96,12 +108,37 @@ abstract class Database : RoomDatabase() {
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
             return INSTANCE.aliasDao()
         }
+        fun coordinateDao(): CoordinateDao {
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.coordinateDao()
+        }
+        fun locationDao(): LocationDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.locationDao()
+        }
+        fun eventLocationJoinDao(): EventLocationJoinDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.eventLocationJoinDao()
+        }
+        fun typeDao(): TypeDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.typeDao()
+        }
+        fun eventTypeJoinDao(): EventTypeJoinDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.eventTypeJoinDao()
+        }
     }
     abstract fun imageDao(): ImageDao
     abstract fun aliasDao(): AliasDao
+    abstract fun locationDao(): LocationDao
+    abstract fun typeDao(): TypeDao
+    abstract fun eventTypeJoinDao(): EventTypeJoinDao
+    abstract fun eventLocationJoinDao(): EventLocationJoinDao
 //    abstract fun eventImageJoinDao(): EventImageJoinDao
 //    abstract fun keywordDao(): KeywordEventJoinDao
     abstract fun eventDao(): EventDao
+    abstract fun coordinateDao(): CoordinateDao
     abstract fun keywordDao(): KeywordDao
     abstract fun keywordEventJoinDao(): KeywordEventJoinDao
     abstract fun countryDao(): CountryDao
@@ -122,15 +159,6 @@ class DateConverter {
     @TypeConverter
     fun dateToString(date: Date?): String? {
         return date?.let { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it) }
-    }
-    @TypeConverter
-    fun stringListToString(list: List<String>?): String? {
-        return list?.joinToString(",")
-    }
-
-    @TypeConverter
-    fun stringToStringList(value: String?): List<String>? {
-        return value?.split(",")?.map { it.trim() }
     }
     @TypeConverter
     fun stringToDates(value: String?): KeyDatesContainer? {
