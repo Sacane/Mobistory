@@ -8,9 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.backend.EventDao
-import fr.pentagon.android.mobistory.backend.KeyDatesContainer
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -67,6 +65,7 @@ class EventTest{
 
     @Test
     fun shouldGetAllKeyDatesWhenInserted() = runTest {
+        val keyDateDao = db.keyDateDao()
         val dateStrings = listOf(
             "2023-01-01",
             "2023-02-15",
@@ -77,17 +76,12 @@ class EventTest{
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomUri", keyDates = KeyDatesContainer( dateStrings.map { dateString ->
-            dateFormat.parse(dateString) ?: throw IllegalArgumentException("Invalid date format: $dateString")
-        }))
+            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
         eventDao.save(event1)
+        dateStrings.map { dateFormat.parse(it) }.forEach { date -> if(date != null) keyDateDao.save(KeyDate(date = date, eventId = event1.eventId)) }
 
-        val list = eventDao.findAllKeyDate(event1.eventId)
-        assertEquals(5, list.keyDates.size)
-
-        val keydates = eventDao.findById(event1.eventId)?.keyDates
-        assertNotNull(keydates)
-        assertEquals(5, keydates?.keyDates?.size)
+        val eventDates = eventDao.findEventWithKeyDateById(event1.eventId)
+        assertEquals(5, eventDates.keyDates.size)
     }
 
     @Test

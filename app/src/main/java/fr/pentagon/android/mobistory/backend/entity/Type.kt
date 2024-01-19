@@ -40,7 +40,7 @@ interface TypeDao{
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = Participant::class,
+            entity = Type::class,
             parentColumns = ["typeId"],
             childColumns = ["typeId"],
             onDelete = ForeignKey.CASCADE
@@ -62,8 +62,8 @@ data class EventWithTypes(
     @Embedded val event: Event,
     @Relation(
         parentColumn = "eventId",
-        entityColumn = "participantId",
-        associateBy = Junction(EventTypeJoinDao::class)
+        entityColumn = "typeId",
+        associateBy = Junction(EventTypeJoin::class)
     )
-    val participants: List<Participant>
+    val types: List<Type>
 )

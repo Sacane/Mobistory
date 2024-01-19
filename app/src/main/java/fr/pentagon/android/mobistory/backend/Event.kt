@@ -11,7 +11,9 @@ import fr.pentagon.android.mobistory.backend.entity.EventWithAlias
 import fr.pentagon.android.mobistory.backend.entity.EventWithCoordinate
 import fr.pentagon.android.mobistory.backend.entity.EventWithCountry
 import fr.pentagon.android.mobistory.backend.entity.EventWithImages
+import fr.pentagon.android.mobistory.backend.entity.EventWithKeyDate
 import fr.pentagon.android.mobistory.backend.entity.EventWithKeywords
+import fr.pentagon.android.mobistory.backend.entity.EventWithTypes
 import fr.pentagon.android.mobistory.backend.entity.Participant
 import java.io.Serializable
 import java.util.Date
@@ -24,7 +26,6 @@ data class Event(
     val endDate: Date? = null, // It means the event can have only 1 reference date
     val description: String? = null,
     val wikipedia: String,
-    val keyDates: KeyDatesContainer? = null,
     @PrimaryKey
     val eventId: UUID = UUID.randomUUID()
 ): Serializable {
@@ -82,11 +83,6 @@ interface EventDao{
             "WHERE event_participant_join.eventId = :eventId")
     suspend fun findParticipantsByEventId(eventId: UUID): List<Participant>
 
-
-    @Transaction
-    @Query("SELECT e.keyDates FROM event e WHERE e.eventId = :eventId")
-    suspend fun findAllKeyDate(eventId: UUID): KeyDatesContainer
-
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
     fun findEventWithAliasesById(eventId: UUID): EventWithAlias
@@ -94,4 +90,14 @@ interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
     fun findEventWithCoordinateById(eventId: UUID): EventWithCoordinate
+
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE eventId = :eventId")
+    fun findEventWithKeyDateById(eventId: UUID): EventWithKeyDate
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE eventId = :eventId")
+    fun findEventWithTypeById(eventId: UUID): EventWithTypes
+
 }

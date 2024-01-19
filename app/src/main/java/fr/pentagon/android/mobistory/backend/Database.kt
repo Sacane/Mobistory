@@ -14,8 +14,6 @@ import fr.pentagon.android.mobistory.backend.entity.Country
 import fr.pentagon.android.mobistory.backend.entity.CountryDao
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoin
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoinDao
-import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoin
-import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventLocationJoin
 import fr.pentagon.android.mobistory.backend.entity.EventLocationJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventParticipantJoin
@@ -50,8 +48,6 @@ import java.util.Locale
         Keyword::class,
         Country::class,
         CountryEventJoin::class,
-        KeyDate::class,
-        EventKeyDateJoin::class,
         FavoriteEvent::class,
         Participant::class,
         EventParticipantJoin::class,
@@ -60,7 +56,8 @@ import java.util.Locale
         Location::class,
         EventLocationJoin::class,
         Type::class,
-        EventTypeJoin::class
+        EventTypeJoin::class,
+        KeyDate::class
     ],
     version = 1,
     exportSchema = false
@@ -128,23 +125,25 @@ abstract class Database : RoomDatabase() {
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
             return INSTANCE.eventTypeJoinDao()
         }
+        fun keyDateDao(): KeyDateDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.keyDateDao()
+        }
     }
+
     abstract fun imageDao(): ImageDao
     abstract fun aliasDao(): AliasDao
     abstract fun locationDao(): LocationDao
     abstract fun typeDao(): TypeDao
     abstract fun eventTypeJoinDao(): EventTypeJoinDao
     abstract fun eventLocationJoinDao(): EventLocationJoinDao
-//    abstract fun eventImageJoinDao(): EventImageJoinDao
-//    abstract fun keywordDao(): KeywordEventJoinDao
+    abstract fun keyDateDao(): KeyDateDao
     abstract fun eventDao(): EventDao
     abstract fun coordinateDao(): CoordinateDao
     abstract fun keywordDao(): KeywordDao
     abstract fun keywordEventJoinDao(): KeywordEventJoinDao
     abstract fun countryDao(): CountryDao
     abstract fun eventCountryJoinDao(): CountryEventJoinDao
-    abstract fun keyDateDao(): KeyDateDao
-    abstract fun eventKeyDateJoinDao(): EventKeyDateJoinDao
     abstract fun favoriteDao(): FavoriteDao
     abstract fun participantDao(): ParticipantDao
     abstract fun eventParticipantJoinDao(): EventParticipantJoinDao

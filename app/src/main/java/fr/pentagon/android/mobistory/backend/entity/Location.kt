@@ -48,6 +48,7 @@ data class EventLocationJoin(
     val locationId: UUID
 )
 
+@Dao
 interface EventLocationJoinDao{
 
     @Insert

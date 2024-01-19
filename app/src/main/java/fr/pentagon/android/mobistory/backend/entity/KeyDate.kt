@@ -13,11 +13,12 @@ import fr.pentagon.android.mobistory.backend.Event
 import java.util.Date
 import java.util.UUID
 
-@Entity
+@Entity(tableName = "key_date")
 data class KeyDate(
     @PrimaryKey
     val keyDateId: UUID = UUID.randomUUID(),
-    val date: Date
+    val date: Date,
+    val eventId: UUID
 )
 
 @Dao
@@ -59,8 +60,7 @@ data class EventWithKeyDate(
     @Embedded val event: Event,
     @Relation(
         parentColumn = "eventId",
-        entityColumn = "keyDateId",
-        associateBy = Junction(EventKeyDateJoin::class)
+        entityColumn = "eventId"
     )
     val keyDates: List<KeyDate>
 )
