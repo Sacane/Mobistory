@@ -2,16 +2,16 @@ package fr.pentagon.android.mobistory.backend
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import fr.pentagon.android.mobistory.backend.entity.Alias
+import fr.pentagon.android.mobistory.backend.entity.AliasDao
 import fr.pentagon.android.mobistory.backend.entity.Country
 import fr.pentagon.android.mobistory.backend.entity.CountryDao
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoin
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoinDao
-import fr.pentagon.android.mobistory.backend.entity.EventImageJoin
 import fr.pentagon.android.mobistory.backend.entity.EventImageJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoin
 import fr.pentagon.android.mobistory.backend.entity.EventKeyDateJoinDao
@@ -29,6 +29,7 @@ import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoinDao
 import fr.pentagon.android.mobistory.backend.entity.Participant
 import fr.pentagon.android.mobistory.backend.entity.ParticipantDao
+import fr.pentagon.android.mobistory.backend.entity.StringConverter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -38,7 +39,6 @@ import java.util.Locale
         Event::class,
         Image::class,
         KeywordEventJoin::class,
-        EventImageJoin::class,
         Keyword::class,
         Country::class,
         CountryEventJoin::class,
@@ -46,14 +46,16 @@ import java.util.Locale
         EventKeyDateJoin::class,
         FavoriteEvent::class,
         Participant::class,
-        EventParticipantJoin::class
+        EventParticipantJoin::class,
+        Alias::class
     ],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(
     DateConverter::class,
-    UriConverter::class
+    UriConverter::class,
+    StringConverter::class
 )
 abstract class Database : RoomDatabase() {
     private var isInitialized: Boolean = false
@@ -78,16 +80,28 @@ abstract class Database : RoomDatabase() {
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
             return INSTANCE.imageDao()
         }
-        fun eventImageJoinDao(): EventImageJoinDao{
+        fun eventDao(): EventDao {
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
-            return INSTANCE.eventImageJoinDao()
+            return INSTANCE.eventDao()
+        }
+        fun keywordDao(): KeywordDao {
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.keywordDao()
+        }
+        fun keywordEventJoinDao(): KeywordEventJoinDao {
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.keywordEventJoinDao()
+        }
+        fun aliasDao(): AliasDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.aliasDao()
         }
     }
     abstract fun imageDao(): ImageDao
+    abstract fun aliasDao(): AliasDao
 //    abstract fun eventImageJoinDao(): EventImageJoinDao
 //    abstract fun keywordDao(): KeywordEventJoinDao
     abstract fun eventDao(): EventDao
-    abstract fun eventImageJoinDao(): EventImageJoinDao
     abstract fun keywordDao(): KeywordDao
     abstract fun keywordEventJoinDao(): KeywordEventJoinDao
     abstract fun countryDao(): CountryDao
@@ -132,7 +146,6 @@ class DateConverter {
     fun datesToString(dates: KeyDatesContainer?): String? {
         if(dates == null) return null
         return dates.keyDates.joinToString(",") {
-            Log.i("dateTest", "???")
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
         }
     }

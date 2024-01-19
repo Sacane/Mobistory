@@ -1,6 +1,7 @@
 package fr.pentagon.android.mobistory.backend.entity
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -10,11 +11,14 @@ import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.backend.EventDao
 import fr.pentagon.android.mobistory.backend.KeyDatesContainer
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.fail
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.net.URI
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
@@ -83,5 +87,38 @@ class EventTest{
 
         val list = eventDao.findAllKeyDate(event1.eventId)
         assertEquals(5, list.keyDates.size)
+
+        val keydates = eventDao.findById(event1.eventId)?.keyDates
+        assertNotNull(keydates)
+        assertEquals(5, keydates?.keyDates?.size)
+    }
+
+    @Test
+    fun shouldPersistCorrectlyImageFromEvent() = runTest {
+        val imageDao = db.imageDao()
+        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
+            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
+        eventDao.save(event1)
+        val image = Image(link = Uri.parse("http://localhost:8080/image.png"), eventId = event1.eventId)
+        imageDao.insertImage(image)
+
+
+        val images = eventDao.getImagesByEventId(event1.eventId)
+        assertEquals(1, images.images.size)
+        assertEquals(image, images.images.first())
+    }
+
+    @Test
+    fun shouldPersistEventKeywords() = runTest {
+        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
+            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
+        eventDao.save(event1)
+        val aliasDao = db.aliasDao()
+        aliasDao.insertAlias(Alias(label = "ev1", eventId = event1.eventId))
+
+        val aliases = eventDao.findEventWithAliasesById(event1.eventId)
+
+        assertEquals(1, aliases.aliases.size)
+        assertEquals("ev1", aliases.aliases.first().label)
     }
 }

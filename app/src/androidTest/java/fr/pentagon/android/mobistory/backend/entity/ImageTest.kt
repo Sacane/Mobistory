@@ -19,6 +19,7 @@ import java.time.Instant
 import java.util.Date
 import java.util.UUID
 
+/*
 @RunWith(AndroidJUnit4::class)
 class ImageTest {
     private lateinit var db: Database
@@ -86,3 +87,5 @@ class ImageTest {
 
     }
 }
+
+ */

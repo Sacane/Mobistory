@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
+import fr.pentagon.android.mobistory.backend.entity.EventWithAlias
 import fr.pentagon.android.mobistory.backend.entity.EventWithCountry
 import fr.pentagon.android.mobistory.backend.entity.EventWithImages
 import fr.pentagon.android.mobistory.backend.entity.EventWithKeywords
@@ -48,14 +49,19 @@ data class KeyDatesContainer(
 interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
-    suspend fun findById(eventId: UUID): Event
+    suspend fun findById(eventId: UUID): Event?
 
     @Insert
     suspend fun save(event: Event)
 
     @Transaction
+    @Query("SELECT * FROM event WHERE eventId = :eventId")
+    suspend fun getImagesByEventId(eventId: UUID): EventWithImages
+
+    @Transaction
     @Query("SELECT * FROM event")
     suspend fun getAll(): List<Event>
+
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :uuid")
@@ -79,4 +85,8 @@ interface EventDao{
     @Transaction
     @Query("SELECT e.keyDates FROM event e WHERE e.eventId = :eventId")
     suspend fun findAllKeyDate(eventId: UUID): KeyDatesContainer
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE eventId = :eventId")
+    fun findEventWithAliasesById(eventId: UUID): EventWithAlias
 }

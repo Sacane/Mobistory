@@ -21,21 +21,21 @@ private fun <T> emptyLanguageListReference() = LanguageReferenceListDTO<T>()
 data class EventDTO(
     val id: Int,
     val label: LanguageReferenceDTO<String>,
-    val aliases: LanguageReferenceListDTO<String> = emptyLanguageListReference(),
+    val aliases: LanguageReferenceListDTO<String> = emptyLanguageListReference(), // specific
     val description: LanguageReferenceDTO<String>? = null,
-    val keywords: LanguageReferenceListDTO<String> = emptyLanguageListReference(),
-    val images: List<String> = emptyList(),
+    val keywords: LanguageReferenceListDTO<String> = emptyLanguageListReference(), // table
+    val images: List<String> = emptyList(), // specific
     val wikipedia: LanguageReferenceDTO<String>? = null,
     val popularity: LanguageReferenceDTO<Int>? = null,
-    val type: LanguageReferenceListDTO<String> = emptyLanguageListReference(),
-    val locations: LanguageReferenceListDTO<String> = emptyLanguageListReference(),
-    val countries: LanguageReferenceListDTO<String> = emptyLanguageListReference(),
-    val participants: LanguageReferenceListDTO<String> = emptyLanguageListReference(),
+    val type: LanguageReferenceListDTO<String> = emptyLanguageListReference(), // table
+    val locations: LanguageReferenceListDTO<String> = emptyLanguageListReference(), // table
+    val countries: LanguageReferenceListDTO<String> = emptyLanguageListReference(), // table
+    val participants: LanguageReferenceListDTO<String> = emptyLanguageListReference(), // table
     val diaporama: String? = null,
-    val coords: List<String> = emptyList(),
+    val coords: List<String> = emptyList(), // specific
     @SerialName("start_date")
     val startDate: String? = null,
     @SerialName("end_date")
     val endDate: String? = null,
-    val dates: List<String> = emptyList()
+    val dates: List<String> = emptyList() // specific
 )

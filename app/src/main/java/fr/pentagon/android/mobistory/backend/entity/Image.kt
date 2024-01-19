@@ -6,7 +6,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Insert
-import androidx.room.Junction
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
@@ -22,7 +21,8 @@ import java.util.UUID
 data class Image(
     val link: Uri,
     @PrimaryKey
-    val imageId: UUID = UUID.randomUUID()
+    val imageId: UUID = UUID.randomUUID(),
+    val eventId: UUID
 )
 
 @Dao
@@ -68,8 +68,7 @@ data class EventWithImages(
     @Embedded val event: Event,
     @Relation(
         parentColumn = "eventId",
-        entityColumn = "imageId",
-        associateBy = Junction(EventImageJoin::class)
+        entityColumn = "eventId"
     )
     val images: List<Image>
 )
