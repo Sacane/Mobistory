@@ -49,7 +49,7 @@ interface ParticipantDao{
     ]
 )
 data class EventParticipantJoin(
-    val eventId: UUID,
+    val eventId: Int,
     val participantId: UUID
 )
 

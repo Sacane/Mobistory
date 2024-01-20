@@ -19,6 +19,7 @@ import java.time.Instant
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class EventTest{
@@ -35,7 +36,7 @@ class EventTest{
     }
     @Test
     fun simpleEventInsertTest() = runTest {
-        val id = UUID.randomUUID()
+        val id = Random.nextInt()
         val toInsert = Event(eventId = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
         eventDao.save(toInsert)

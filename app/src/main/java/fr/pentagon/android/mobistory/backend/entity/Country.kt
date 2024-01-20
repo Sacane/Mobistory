@@ -56,7 +56,7 @@ interface CountryDao{
     ]
 )
 data class CountryEventJoin(
-    val eventId: UUID,
+    val eventId: Int,
     val countryId: UUID
 )
 

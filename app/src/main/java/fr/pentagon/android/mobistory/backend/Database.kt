@@ -8,6 +8,8 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import fr.pentagon.android.mobistory.backend.entity.Alias
 import fr.pentagon.android.mobistory.backend.entity.AliasDao
+import fr.pentagon.android.mobistory.backend.entity.AppVersion
+import fr.pentagon.android.mobistory.backend.entity.AppVersionDao
 import fr.pentagon.android.mobistory.backend.entity.Coordinate
 import fr.pentagon.android.mobistory.backend.entity.CoordinateDao
 import fr.pentagon.android.mobistory.backend.entity.Country
@@ -57,7 +59,8 @@ import java.util.Locale
         EventLocationJoin::class,
         Type::class,
         EventTypeJoin::class,
-        KeyDate::class
+        KeyDate::class,
+        AppVersion::class
     ],
     version = 1,
     exportSchema = false
@@ -84,6 +87,10 @@ abstract class Database : RoomDatabase() {
         fun close() {
             require(::INSTANCE.isInitialized){ UNINITIALIZED_MESSAGE }
             INSTANCE.close()
+        }
+        fun appVersionDao(): AppVersionDao{
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.appVersionDao()
         }
         fun imageDao(): ImageDao {
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
@@ -131,6 +138,7 @@ abstract class Database : RoomDatabase() {
         }
     }
 
+    abstract fun appVersionDao(): AppVersionDao
     abstract fun imageDao(): ImageDao
     abstract fun aliasDao(): AliasDao
     abstract fun locationDao(): LocationDao

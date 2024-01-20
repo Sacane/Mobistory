@@ -21,7 +21,7 @@ data class Image(
     val link: Uri,
     @PrimaryKey
     val imageId: UUID = UUID.randomUUID(),
-    val eventId: UUID
+    val eventId: Int
 )
 
 @Dao

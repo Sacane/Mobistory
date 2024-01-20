@@ -51,7 +51,7 @@ interface KeywordDao{
     ]
 )
 data class KeywordEventJoin(
-    val eventId: UUID,
+    val eventId: Int,
     val keywordId: UUID
 )
 @Dao

@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import fr.pentagon.android.mobistory.backend.Database
+import fr.pentagon.android.mobistory.backend.entity.AppVersion
 import fr.pentagon.android.mobistory.backend.json.eventInitializer
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
@@ -36,7 +37,12 @@ class MainActivity : ComponentActivity() {
             MobistoryTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     LaunchedEffect(Unit) {
-                        eventInitializer(this@MainActivity)
+                        val versionDao = Database.appVersionDao()
+                        val version = versionDao.getVersion()
+                        if(version == null) {
+                            versionDao.save(AppVersion(version = "1.0"))
+                            eventInitializer(this@MainActivity, {})
+                        }
                     }
                     Mobistory()
                 }

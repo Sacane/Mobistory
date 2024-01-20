@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
+import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class FavoriteTest {
@@ -35,7 +36,7 @@ class FavoriteTest {
 
     @Test
     fun simpleAddFavoriteTest() = runTest {
-        val id = UUID.randomUUID()
+        val id = Random.nextInt()
         val event = Event(eventId = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
         eventDao.save(event)
@@ -48,7 +49,7 @@ class FavoriteTest {
 
     @Test
     fun deleteFavoriteTest() = runTest {
-        val id = UUID.randomUUID()
+        val id = Random.nextInt()
         val event = Event(eventId = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
         eventDao.save(event)

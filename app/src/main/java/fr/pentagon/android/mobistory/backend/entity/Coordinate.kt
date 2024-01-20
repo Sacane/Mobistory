@@ -13,7 +13,7 @@ import java.util.UUID
 @Entity(tableName = "coordinate")
 data class Coordinate(
     val value: String,
-    val eventId: UUID,
+    val eventId: Int,
     @PrimaryKey val coordinateId: UUID = UUID.randomUUID()
 )
 

@@ -48,7 +48,7 @@ interface TypeDao{
     ]
 )
 data class EventTypeJoin(
-    val eventId: UUID,
+    val eventId: Int,
     val typeId: UUID
 )
 

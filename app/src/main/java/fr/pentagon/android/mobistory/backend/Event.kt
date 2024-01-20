@@ -18,16 +18,17 @@ import fr.pentagon.android.mobistory.backend.entity.Participant
 import java.io.Serializable
 import java.util.Date
 import java.util.UUID
+import kotlin.random.Random
 
 @Entity(tableName = "event")
 data class Event(
     val label: String,
-    val startDate: Date,
+    val startDate: Date? = null,
     val endDate: Date? = null, // It means the event can have only 1 reference date
     val description: String? = null,
-    val wikipedia: String,
+    val wikipedia: String? = null,
     @PrimaryKey
-    val eventId: UUID = UUID.randomUUID()
+    val eventId: Int = Random.nextInt()
 ): Serializable {
     override fun equals(other: Any?): Boolean {
         return if (other is Event) {
@@ -49,16 +50,21 @@ data class KeyDatesContainer(
 
 @Dao
 interface EventDao{
+
+    @Transaction
+    @Query("SELECT COUNT(*) FROM event e WHERE e.label = :label")
+    suspend fun existsByLabel(label: String): Boolean
+
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
-    suspend fun findById(eventId: UUID): Event?
+    suspend fun findById(eventId: Int): Event?
 
     @Insert
     suspend fun save(event: Event)
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
-    suspend fun getImagesByEventId(eventId: UUID): EventWithImages
+    suspend fun getImagesByEventId(eventId: Int): EventWithImages
 
     @Transaction
     @Query("SELECT * FROM event")
@@ -67,37 +73,37 @@ interface EventDao{
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :uuid")
-    suspend fun findEventWithImageById(uuid: UUID): EventWithImages?
+    suspend fun findEventWithImageById(uuid: Int): EventWithImages?
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :uuid")
-    suspend fun findEventWithKeywordById(uuid: UUID): EventWithKeywords?
+    suspend fun findEventWithKeywordById(uuid: Int): EventWithKeywords?
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :uuid")
-    suspend fun findEventWithCountryById(uuid: UUID): EventWithCountry?
+    suspend fun findEventWithCountryById(uuid: Int): EventWithCountry?
 
     @Transaction
     @Query("SELECT participant.* FROM participant INNER JOIN event_participant_join " +
             "ON participant.participantId = event_participant_join.participantId " +
             "WHERE event_participant_join.eventId = :eventId")
-    suspend fun findParticipantsByEventId(eventId: UUID): List<Participant>
+    suspend fun findParticipantsByEventId(eventId: Int): List<Participant>
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
-    fun findEventWithAliasesById(eventId: UUID): EventWithAlias
+    fun findEventWithAliasesById(eventId: Int): EventWithAlias
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
-    fun findEventWithCoordinateById(eventId: UUID): EventWithCoordinate
+    fun findEventWithCoordinateById(eventId: Int): EventWithCoordinate
 
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
-    fun findEventWithKeyDateById(eventId: UUID): EventWithKeyDate
+    fun findEventWithKeyDateById(eventId: Int): EventWithKeyDate
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
-    fun findEventWithTypeById(eventId: UUID): EventWithTypes
+    fun findEventWithTypeById(eventId: Int): EventWithTypes
 
 }

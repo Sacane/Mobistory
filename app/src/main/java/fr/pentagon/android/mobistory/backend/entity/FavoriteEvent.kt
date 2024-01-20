@@ -22,7 +22,7 @@ import java.util.UUID
 )
 data class FavoriteEvent(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val favoriteEventId: UUID
+    val favoriteEventId: Int
 )
 
 @Dao
@@ -34,5 +34,5 @@ interface FavoriteDao{
     suspend fun getAllFavorite(): List<Event>
 
     @Query("DELETE FROM favorites WHERE favoriteEventId = :eventId")
-    suspend fun deleteFavorite(eventId: UUID)
+    suspend fun deleteFavorite(eventId: Int)
 }

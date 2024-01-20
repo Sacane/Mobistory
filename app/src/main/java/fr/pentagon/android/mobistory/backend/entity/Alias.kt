@@ -13,7 +13,7 @@ import java.util.UUID
 @Entity(tableName = "alias")
 data class Alias(
     val label: String,
-    val eventId: UUID,
+    val eventId: Int,
     @PrimaryKey val aliasId: UUID = UUID.randomUUID()
 )
 

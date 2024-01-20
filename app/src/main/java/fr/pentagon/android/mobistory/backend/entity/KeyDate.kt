@@ -18,7 +18,7 @@ data class KeyDate(
     @PrimaryKey
     val keyDateId: UUID = UUID.randomUUID(),
     val date: Date,
-    val eventId: UUID
+    val eventId: Int
 )
 
 @Dao

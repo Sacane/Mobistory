@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
+import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class KeywordTest {
@@ -77,10 +78,10 @@ class KeywordTest {
         val k3 = "war".asKeyword(idK3)
         keywordDao.saveAll(listOf(k1, k2, k3))
 
-        val eventId = UUID.randomUUID()
+        val eventId = Random.nextInt()
         val event = Event(eventId = eventId, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
-        val eventId2 = UUID.randomUUID()
+        val eventId2 = Random.nextInt()
         val event2 = Event(eventId = eventId2, label = "Hello2", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know2")
 
