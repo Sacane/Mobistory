@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                             Log.i("database", "Database is already initialized")
                         }
                     }
-//                    Mobistory()
+                    Mobistory()
                 }
                 DisposableEffect(Unit){
                     onDispose {
