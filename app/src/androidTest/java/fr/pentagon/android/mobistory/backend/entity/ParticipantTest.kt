@@ -45,7 +45,7 @@ class ParticipantTest {
         eventDao.save(toInsert)
 
         val participantId = UUID.randomUUID()
-        val participant = Participant(participantId = participantId, name = "Jean", firstName = "Paul")
+        val participant = Participant(participantId = participantId, name = "Jean Paul")
         participantDao.save(participant)
 
         eventParticipantJoinDao.save(EventParticipantJoin(id, participantId))
