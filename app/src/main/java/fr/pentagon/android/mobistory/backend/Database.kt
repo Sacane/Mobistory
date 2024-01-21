@@ -136,6 +136,14 @@ abstract class Database : RoomDatabase() {
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
             return INSTANCE.keyDateDao()
         }
+        fun countryDao(): CountryDao {
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.countryDao()
+        }
+        fun eventCountryJoinDao(): CountryEventJoinDao {
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.eventCountryJoinDao()
+        }
     }
 
     abstract fun appVersionDao(): AppVersionDao

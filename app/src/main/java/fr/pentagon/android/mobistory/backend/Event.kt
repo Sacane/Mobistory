@@ -28,7 +28,8 @@ data class Event(
     val description: String? = null,
     val wikipedia: String? = null,
     @PrimaryKey
-    val eventId: Int = Random.nextInt()
+    val eventId: Int = Random.nextInt(),
+    val popularity: Int = 0
 ): Serializable {
     override fun equals(other: Any?): Boolean {
         return if (other is Event) {

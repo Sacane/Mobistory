@@ -8,7 +8,9 @@ import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Insert
 import androidx.room.Junction
 import androidx.room.PrimaryKey
+import androidx.room.Query
 import androidx.room.Relation
+import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
@@ -21,8 +23,13 @@ data class Location(
 @Dao
 interface LocationDao{
 
+    @Transaction
+    @Query("SELECT COUNT(*) FROM location l WHERE l.location = :label")
+    suspend fun existsByLabel(label: String): Boolean
     @Insert
     suspend fun save(location: Location)
+
+    suspend fun findByLabel(label: String): Location?
 }
 
 @Entity(
@@ -44,7 +51,7 @@ interface LocationDao{
     ]
 )
 data class EventLocationJoin(
-    val eventId: UUID,
+    val eventId: Int,
     val locationId: UUID
 )
 

@@ -7,22 +7,24 @@ import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.backend.entity.Alias
 import fr.pentagon.android.mobistory.backend.entity.Coordinate
+import fr.pentagon.android.mobistory.backend.entity.Country
+import fr.pentagon.android.mobistory.backend.entity.EventLocationJoin
+import fr.pentagon.android.mobistory.backend.entity.EventTypeJoin
 import fr.pentagon.android.mobistory.backend.entity.KeyDate
+import fr.pentagon.android.mobistory.backend.entity.Location
+import fr.pentagon.android.mobistory.backend.entity.Type
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
+import java.util.UUID
 
 
 fun LanguageReferenceDTO<String>?.representation(): String? {
     if(this == null) return null
     return (this.fr ?: "").plus("||").plus(this.en ?: "")
-}
-fun LanguageReferenceListDTO<String>.representation(): String {
-    return ""
 }
 
 fun String?.toDate(): Date? {
@@ -40,6 +42,12 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
         val eventDao = Database.eventDao()
         val coordinateDao = Database.coordinateDao()
         val keyDateDao = Database.keyDateDao()
+        val typeDao = Database.typeDao()
+        val typeJoinDao = Database.eventTypeJoinDao()
+        val locationDao = Database.locationDao()
+        val locationEventDao = Database.eventLocationJoinDao()
+        val countryDao = Database.countryDao()
+        val eventCountryJoinDao = Database.eventCountryJoinDao()
         for(event in events) {
             if(eventDao.existsByLabel(event.label.representation()!!)){
                 continue
@@ -50,12 +58,21 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
                 startDate = event.startDate.toDate(),
                 endDate = event.endDate.toDate(),
                 description = event.description.representation(),
-                wikipedia = event.wikipedia.representation()
+                wikipedia = event.wikipedia.representation(),
+                popularity = event.popularity?.fr ?: 0
             )
             eventDao.save(toInsert)
-            val sized = if (event.aliases.fr.size > event.aliases.en.size) event.aliases.fr.size else event.aliases.en.size
-            for(i in 0 until sized){
-                aliasesDao.insertAlias(Alias(label = event.aliases.fr[i].plus("||").plus(event.aliases.en[i]), eventId = toInsert.eventId))
+            if(event.aliases.fr.isNotEmpty() || event.aliases.en.isNotEmpty()) {
+                for(alias in event.aliases.fr) {
+                    aliasesDao.insertAlias(
+                        Alias(label = alias, eventId = event.id)
+                    )
+                }
+                for(alias in event.aliases.en) {
+                    aliasesDao.insertAlias(
+                        Alias(label = alias, eventId = event.id)
+                    )
+                }
             }
             for(coordinate in event.coords) {
                 coordinateDao.save(Coordinate(value = coordinate, eventId = toInsert.eventId))
@@ -63,6 +80,51 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
             for(keyDate in event.dates) {
                 val date = keyDate.toDate()
                 keyDateDao.save(KeyDate(date = date!!, eventId = event.id))
+            }
+            for(type in event.type.fr) {
+                val typeRegistered = typeDao.findByLabel(type)
+                if(typeRegistered == null) {
+                    val typeId = UUID.randomUUID()
+                    val created = Type(typeId = typeId, label = type)
+                    typeDao.save(created)
+                    typeJoinDao.save(EventTypeJoin(eventId = event.id, typeId = typeId))
+                }else {
+                    typeJoinDao.save(EventTypeJoin(eventId = event.id, typeId = typeRegistered.typeId))
+                }
+            }
+            for(type in event.type.en) {
+                val typeRegistered = typeDao.findByLabel(type)
+                if(typeRegistered == null) {
+                    val created = Type(label = type)
+                    typeDao.save(created)
+                }else {
+                    typeJoinDao.save(EventTypeJoin(eventId = event.id, typeId = typeRegistered.typeId))
+                }
+            }
+            for(location in event.locations.fr) {
+                val locationRegistered = locationDao.findByLabel(location)
+                if(locationRegistered == null) {
+                    locationDao.save(Location(location = location))
+                } else {
+                    locationEventDao.save(EventLocationJoin(eventId = event.id, locationId = locationRegistered.locationId))
+                }
+            }
+            for(location in event.locations.en) {
+                val locationRegistered = locationDao.findByLabel(location)
+                if(locationRegistered == null) {
+                    locationDao.save(Location(location = location))
+                } else {
+                    locationEventDao.save(EventLocationJoin(eventId = event.id, locationId = locationRegistered.locationId))
+                }
+            }
+
+            for(country in event.countries.fr) {
+                val countryRegistered = countryDao.findByLabel(country)
+                if(countryRegistered == null) {
+                    countryDao.save(Country(label = country))
+                } else {
+
+                }
             }
         }
     }

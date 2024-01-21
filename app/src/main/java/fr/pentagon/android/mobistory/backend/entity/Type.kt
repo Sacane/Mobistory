@@ -27,6 +27,15 @@ interface TypeDao{
     @Transaction
     @Query("SELECT * FROM type WHERE typeId = :uuid")
     suspend fun findById(uuid: UUID): Type?
+
+    @Transaction
+    @Query("SELECT COUNT(*) FROM type t WHERE t.label = :type")
+    suspend fun existsByLabel(type: String): Boolean
+
+    @Transaction
+    @Query("SELECT * FROM type s WHERE s.label = :label")
+    suspend fun findByLabel(label: String): Type?
+
 }
 
 @Entity(
