@@ -6,9 +6,11 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Insert
 import androidx.room.Junction
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
+import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
@@ -26,7 +28,7 @@ data class Country(
 
 @Dao
 interface CountryDao{
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun save(country: Country)
 
     @Query("SELECT * FROM country WHERE countryId = :id")
@@ -40,6 +42,10 @@ interface CountryDao{
 
     @Query("SELECT * FROM country WHERE label = :label")
     suspend fun findByLabel(label: String): Country?
+
+    @Transaction
+    @Query("SELECT COUNT(*) FROM Country c WHERE c.label = :label")
+    suspend fun existsByLabel(label: String): Boolean
 }
 
 @Entity(tableName = "event_country_join",
@@ -56,13 +62,13 @@ interface CountryDao{
     ]
 )
 data class CountryEventJoin(
-    val eventId: UUID,
+    val eventId: Int,
     val countryId: UUID
 )
 
 @Dao
 interface CountryEventJoinDao{
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(crossRef: CountryEventJoin)
 }
 

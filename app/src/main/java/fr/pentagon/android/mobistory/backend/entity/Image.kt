@@ -4,9 +4,7 @@ import android.net.Uri
 import androidx.room.Dao
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Insert
-import androidx.room.Junction
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
@@ -22,7 +20,8 @@ import java.util.UUID
 data class Image(
     val link: Uri,
     @PrimaryKey
-    val imageId: UUID = UUID.randomUUID()
+    val imageId: UUID = UUID.randomUUID(),
+    val eventId: Int
 )
 
 @Dao
@@ -33,43 +32,17 @@ interface ImageDao {
     @Transaction
     @Query("SELECT * FROM image WHERE imageId = :uuid")
     suspend fun findById(uuid: UUID): Image
-}
 
-@Entity(
-    tableName = "event_image_join",
-    primaryKeys = ["eventId", "imageId"],
-    foreignKeys = [
-        ForeignKey(
-            entity = Event::class,
-            parentColumns = ["eventId"],
-            childColumns = ["eventId"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Image::class,
-            parentColumns = ["imageId"],
-            childColumns = ["imageId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
-)
-data class EventImageJoin(
-    val eventId: UUID,
-    val imageId: UUID
-)
-
-@Dao
-interface EventImageJoinDao{
-    @Insert
-    fun save(eventImageJoin: EventImageJoin)
+    @Transaction
+    @Query("SELECT * FROM image i WHERE i.link = :image")
+    suspend fun findByUrl(image: String): Image?
 }
 
 data class EventWithImages(
     @Embedded val event: Event,
     @Relation(
         parentColumn = "eventId",
-        entityColumn = "imageId",
-        associateBy = Junction(EventImageJoin::class)
+        entityColumn = "eventId"
     )
     val images: List<Image>
 )

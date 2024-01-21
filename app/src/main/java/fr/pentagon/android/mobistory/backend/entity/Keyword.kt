@@ -10,6 +10,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
+import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
@@ -20,7 +21,7 @@ data class Keyword(
     val keywordId: UUID = UUID.randomUUID()
 ) {
     init {
-        require(label != "")
+        require(label.isNotBlank() && label.isNotEmpty())
     }
 }
 
@@ -35,6 +36,9 @@ interface KeywordDao{
     suspend fun saveAll(keywords: List<Keyword>)
     @Query("SELECT * FROM keyword")
     suspend fun getAll(): List<Keyword>
+    @Transaction
+    @Query("SELECT * FROM keyword k WHERE k.label = :keyword")
+    suspend fun findByLabel(keyword: String): Keyword?
 }
 
 @Entity(tableName = "keyword_event_join",
@@ -51,12 +55,12 @@ interface KeywordDao{
     ]
 )
 data class KeywordEventJoin(
-    val eventId: UUID,
+    val eventId: Int,
     val keywordId: UUID
 )
 @Dao
 interface KeywordEventJoinDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(crossRef: KeywordEventJoin)
 }
 

@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
+import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class ParticipantTest {
@@ -38,7 +39,7 @@ class ParticipantTest {
 
     @Test
     fun participantDaoTest() = runTest {
-        val id = UUID.randomUUID()
+        val id = Random.nextInt()
         val toInsert = Event(eventId = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
         eventDao.save(toInsert)
@@ -52,8 +53,6 @@ class ParticipantTest {
         val participants = eventDao.findParticipantsByEventId(id)
         assertEquals(1, participants.size)
 
-        val first = participants[0]
-
-        assertEquals(participant, first)
+        assertEquals(participant, participants.first())
     }
 }

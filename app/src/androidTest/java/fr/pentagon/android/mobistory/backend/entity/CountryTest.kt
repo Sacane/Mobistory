@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
+import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class CountryTest {
@@ -57,7 +58,7 @@ class CountryTest {
         val country2 = "Eng".asCountry(idCountry2)
         val country3 = "Dutch".asCountry(idCountry3)
 
-        val eventId = UUID.randomUUID()
+        val eventId = Random.nextInt()
         val event = Event(eventId = eventId, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
 

@@ -14,29 +14,34 @@ import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
-@Entity(tableName = "participant")
-data class Participant(
-    @PrimaryKey val participantId: UUID = UUID.randomUUID(),
-    val name: String
+@Entity
+data class Type(
+    @PrimaryKey val typeId: UUID = UUID.randomUUID(),
+    val label: String
 )
 
 @Dao
-interface ParticipantDao{
+interface TypeDao{
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun save(participant: Participant)
+    suspend fun save(type: Type)
 
     @Transaction
-    @Query("SELECT * FROM participant WHERE participantId = :uuid")
-    suspend fun findById(uuid: UUID): Participant
+    @Query("SELECT * FROM type WHERE typeId = :uuid")
+    suspend fun findById(uuid: UUID): Type?
 
     @Transaction
-    @Query("SELECT * FROM participant WHERE name = :participant")
-    suspend fun findByLabel(participant: String): Participant?
+    @Query("SELECT COUNT(*) FROM type t WHERE t.label = :type")
+    suspend fun existsByLabel(type: String): Boolean
+
+    @Transaction
+    @Query("SELECT * FROM type s WHERE s.label = :label")
+    suspend fun findByLabel(label: String): Type?
+
 }
 
 @Entity(
-    tableName = "event_participant_join",
-    primaryKeys = ["eventId", "participantId"],
+    tableName = "event_type_join",
+    primaryKeys = ["eventId", "typeId"],
     foreignKeys = [
         ForeignKey(
             entity = Event::class,
@@ -45,30 +50,30 @@ interface ParticipantDao{
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = Participant::class,
-            parentColumns = ["participantId"],
-            childColumns = ["participantId"],
+            entity = Type::class,
+            parentColumns = ["typeId"],
+            childColumns = ["typeId"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
-data class EventParticipantJoin(
+data class EventTypeJoin(
     val eventId: Int,
-    val participantId: UUID
+    val typeId: UUID
 )
 
 @Dao
-interface EventParticipantJoinDao {
+interface EventTypeJoinDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun save(eventParticipantJoin: EventParticipantJoin)
+    suspend fun save(eventTypeJoin: EventTypeJoin)
 }
 
-data class EventWithParticipants(
+data class EventWithTypes(
     @Embedded val event: Event,
     @Relation(
         parentColumn = "eventId",
-        entityColumn = "participantId",
-        associateBy = Junction(EventParticipantJoin::class)
+        entityColumn = "typeId",
+        associateBy = Junction(EventTypeJoin::class)
     )
-    val participants: List<Participant>
+    val types: List<Type>
 )
