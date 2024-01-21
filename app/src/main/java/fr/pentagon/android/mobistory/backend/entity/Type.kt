@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Insert
 import androidx.room.Junction
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
@@ -21,7 +22,7 @@ data class Type(
 
 @Dao
 interface TypeDao{
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun save(type: Type)
 
     @Transaction
@@ -63,8 +64,8 @@ data class EventTypeJoin(
 
 @Dao
 interface EventTypeJoinDao {
-    @Insert
-    fun save(eventTypeJoin: EventTypeJoin)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun save(eventTypeJoin: EventTypeJoin)
 }
 
 data class EventWithTypes(

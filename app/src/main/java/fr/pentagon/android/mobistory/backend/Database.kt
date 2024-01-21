@@ -75,7 +75,7 @@ abstract class Database : RoomDatabase() {
         private const val UNINITIALIZED_MESSAGE = "Database instance has not been initialized yet"
         private lateinit var INSTANCE: Database
         val isInitialized: Boolean
-            get() = INSTANCE.isInitialized
+            get() = ::INSTANCE.isInitialized
         fun open(context: Context){
             INSTANCE = Room.databaseBuilder(
                 context,
@@ -84,9 +84,13 @@ abstract class Database : RoomDatabase() {
             ).build()
             INSTANCE.isInitialized = true
         }
+        private fun requireInitialized() {
+            require(INSTANCE.isInitialized){ UNINITIALIZED_MESSAGE}
+        }
         fun close() {
             require(::INSTANCE.isInitialized){ UNINITIALIZED_MESSAGE }
             INSTANCE.close()
+            INSTANCE.isInitialized = false
         }
         fun appVersionDao(): AppVersionDao{
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
@@ -143,6 +147,20 @@ abstract class Database : RoomDatabase() {
         fun eventCountryJoinDao(): CountryEventJoinDao {
             require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
             return INSTANCE.eventCountryJoinDao()
+        }
+
+        fun participantDao(): ParticipantDao {
+            require(::INSTANCE.isInitialized) { UNINITIALIZED_MESSAGE }
+            return INSTANCE.participantDao()
+        }
+        fun eventParticipantJoinDao(): EventParticipantJoinDao{
+            requireInitialized()
+            return INSTANCE.eventParticipantJoinDao()
+        }
+
+        fun clearAllTables() {
+            requireInitialized()
+            INSTANCE.clearAllTables()
         }
     }
 

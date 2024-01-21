@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Insert
 import androidx.room.Junction
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
@@ -27,7 +28,7 @@ data class Country(
 
 @Dao
 interface CountryDao{
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun save(country: Country)
 
     @Query("SELECT * FROM country WHERE countryId = :id")
@@ -67,7 +68,7 @@ data class CountryEventJoin(
 
 @Dao
 interface CountryEventJoinDao{
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(crossRef: CountryEventJoin)
 }
 

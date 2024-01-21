@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Insert
 import androidx.room.Junction
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
@@ -26,9 +27,11 @@ interface LocationDao{
     @Transaction
     @Query("SELECT COUNT(*) FROM location l WHERE l.location = :label")
     suspend fun existsByLabel(label: String): Boolean
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun save(location: Location)
 
+    @Transaction
+    @Query("SELECT * FROM Location l WHERE l.location = :label")
     suspend fun findByLabel(label: String): Location?
 }
 
@@ -58,8 +61,8 @@ data class EventLocationJoin(
 @Dao
 interface EventLocationJoinDao{
 
-    @Insert
-    fun save(eventLocationJoin: EventLocationJoin)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun save(eventLocationJoin: EventLocationJoin)
 }
 
 data class EventWithLocations(

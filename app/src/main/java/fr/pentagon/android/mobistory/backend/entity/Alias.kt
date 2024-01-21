@@ -6,7 +6,9 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.ABORT
 import androidx.room.PrimaryKey
+import androidx.room.Query
 import androidx.room.Relation
+import androidx.room.Transaction
 import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
@@ -21,6 +23,10 @@ data class Alias(
 interface AliasDao {
     @Insert(onConflict = ABORT)
     suspend fun insertAlias(alias: Alias)
+
+    @Transaction
+    @Query("SELECT * FROM alias a WHERE a.label = :label")
+    suspend fun findByAlias(label: String): Alias?
 }
 
 data class EventWithAlias(

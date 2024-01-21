@@ -32,6 +32,10 @@ interface ImageDao {
     @Transaction
     @Query("SELECT * FROM image WHERE imageId = :uuid")
     suspend fun findById(uuid: UUID): Image
+
+    @Transaction
+    @Query("SELECT * FROM image i WHERE i.link = :image")
+    suspend fun findByUrl(image: String): Image?
 }
 
 data class EventWithImages(

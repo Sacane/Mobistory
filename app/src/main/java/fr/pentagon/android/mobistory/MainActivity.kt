@@ -3,6 +3,7 @@ package fr.pentagon.android.mobistory
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -26,6 +27,9 @@ import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.entity.AppVersion
 import fr.pentagon.android.mobistory.backend.json.eventInitializer
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,14 +43,29 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(Unit) {
                         val versionDao = Database.appVersionDao()
                         val version = versionDao.getVersion()
-                        if(version == null) {
+                        if(version == null) { // TODO ajouter le traitement de mise à jour du json (via script python et requête client)
                             versionDao.save(AppVersion(version = "1.0"))
-                            eventInitializer(this@MainActivity, {})
+                            eventInitializer(this@MainActivity) {
+                                Log.i("DATABASE", "Data insertion complete")
+                            }
+                        } else {
+                            Log.i("database", "already init")
                         }
+//                        withContext(Dispatchers.IO){
+//                            Database.clearAllTables()
+//                            Database.close()
+//                            Log.i("DATABASE", "close db")
+//                        }
                     }
-                    Mobistory()
+//                    Mobistory()
                 }
             }
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        runBlocking {
+
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Insert
 import androidx.room.Junction
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
@@ -16,18 +17,21 @@ import java.util.UUID
 @Entity(tableName = "participant")
 data class Participant(
     @PrimaryKey val participantId: UUID = UUID.randomUUID(),
-    val name: String,
-    val firstName: String? = null
+    val name: String
 )
 
 @Dao
 interface ParticipantDao{
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun save(participant: Participant)
 
     @Transaction
     @Query("SELECT * FROM participant WHERE participantId = :uuid")
     suspend fun findById(uuid: UUID): Participant
+
+    @Transaction
+    @Query("SELECT * FROM participant WHERE name = :participant")
+    suspend fun findByLabel(participant: String): Participant?
 }
 
 @Entity(
@@ -55,8 +59,8 @@ data class EventParticipantJoin(
 
 @Dao
 interface EventParticipantJoinDao {
-    @Insert
-    fun save(eventParticipantJoin: EventParticipantJoin)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun save(eventParticipantJoin: EventParticipantJoin)
 }
 
 data class EventWithParticipants(
