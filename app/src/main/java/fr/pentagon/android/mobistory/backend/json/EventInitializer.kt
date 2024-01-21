@@ -63,6 +63,7 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
         val keywordDao = Database.keywordDao()
         val keywordEventJoinDao = Database.keywordEventJoinDao()
         for(event in events) {
+            Log.i("Database initialisation", "Inserting the event number ${event.id}")
             if(eventDao.existsByLabel(event.label.representation()!!)){
                 continue
             }
@@ -241,7 +242,6 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
                 imageDao.insertImage(Image(eventId = event.id, link = Uri.parse(image)))
             }
             for(keyword in event.keywords.fr) {
-                Log.i("keyword track fr ", "keyword :$keyword and eventId : ${event.id}")
                 val keywordRegistered = keywordDao.findByLabel(keyword)
                 if(keywordRegistered == null) {
                     val keywordId = UUID.randomUUID()
@@ -259,7 +259,6 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
                 }
             }
             for(keyword in event.keywords.en) {
-                Log.i("keyword track en ", "keyword :$keyword and eventId : ${event.id}")
                 val keywordRegistered = keywordDao.findByLabel(keyword)
                 if(keywordRegistered == null) {
                     val keywordId = UUID.randomUUID()

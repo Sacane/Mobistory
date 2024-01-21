@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,23 +50,23 @@ class MainActivity : ComponentActivity() {
                                 Log.i("DATABASE", "Data insertion complete")
                             }
                         } else {
-                            Log.i("database", "already init")
+                            Log.i("database", "Database is already initialized")
                         }
-//                        withContext(Dispatchers.IO){
-//                            Database.clearAllTables()
-//                            Database.close()
-//                            Log.i("DATABASE", "close db")
-//                        }
                     }
 //                    Mobistory()
                 }
+                DisposableEffect(Unit){
+                    onDispose {
+                        runBlocking {
+                            withContext(Dispatchers.IO) {
+                                Database.clearAllTables()
+                                Database.close()
+                                Log.i("DATABASE", "Database has been purge successfully")
+                            }
+                        }
+                    }
+                }
             }
-        }
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        runBlocking {
-
         }
     }
 }
