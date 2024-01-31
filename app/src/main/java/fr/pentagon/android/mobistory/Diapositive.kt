@@ -1,9 +1,23 @@
 package fr.pentagon.android.mobistory
 
+import android.graphics.drawable.Icon
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
@@ -26,5 +40,28 @@ fun ImageDisplayer(modifier: Modifier = Modifier, url: String) {
 fun ImageDisplayerPreview() {
     MobistoryTheme {
         ImageDisplayer(url = "https://material.angular.io/assets/img/examples/shiba2.jpg")
+    }
+}
+
+@Composable
+fun Diapositive(modifier: Modifier = Modifier, images: List<String>) {
+    var index by remember { mutableStateOf(0) }
+
+    Row(modifier = modifier.fillMaxSize()) {
+        IconButton(onClick = { index = if(index == 0) images.size - 1 else index - 1 }, modifier = Modifier.fillMaxHeight()) {
+            Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = "Previous")
+        }
+        ImageDisplayer(modifier = Modifier.weight(1f).fillMaxSize(), url = images[index])
+        IconButton(onClick = { index = if(index == (images.size - 1)) 0 else index + 1 }, modifier = Modifier.fillMaxHeight()) {
+            Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = "Next")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DiapositivePreview() {
+    MobistoryTheme {
+        Diapositive(images = listOf("https://material.angular.io/assets/img/examples/shiba2.jpg", "https://fastly.picsum.photos/id/142/900/500.jpg?hmac=yW-6OCY-ziKkCVsveX1uRcd1Ew765Mp8Pm0gdn8NRPs"))
     }
 }
