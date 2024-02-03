@@ -78,9 +78,12 @@ fun EventTimelineDisplayerPreview() {
 }
 
 @Composable
-fun TimeLine(modifier: Modifier = Modifier) {
+fun TimeLine(modifier: Modifier = Modifier, events: List<Event>) {
     val state = rememberScrollState()
     var arrowSize by remember { mutableStateOf(IntSize.Zero) }
+    val (top, bottom) = events.withIndex().partition { it.index % 2 == 0 }
+    val topEvents = top.map { it.value }
+    val bottomEvents = bottom.map { it.value }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val constraints = this.constraints
@@ -93,29 +96,27 @@ fun TimeLine(modifier: Modifier = Modifier) {
                     .fillMaxSize(),
                 horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp())
             ) {
-                EventTimelineDisplayer(
-                    modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
-                    position = EventTimeLinePosition.TOP
-                )
-                EventTimelineDisplayer(
-                    modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
-                    position = EventTimeLinePosition.TOP
-                )
-                Box() {}
+                for (event in topEvents) {
+                    EventTimelineDisplayer(
+                        modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
+                        position = EventTimeLinePosition.TOP
+                    )
+                }
+                if (topEvents.size == bottomEvents.size) {
+                    Box {}
+                }
             }
             Spacer(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
             )
-            Row(
-                modifier = Modifier
-                    .weight(3f)
-                    .onSizeChanged {
-                        arrowSize = it
-                    }
-                    .fillMaxSize()
-            ) {
+            Row(modifier = Modifier
+                .weight(3f)
+                .onSizeChanged {
+                    arrowSize = it
+                }
+                .fillMaxSize()) {
                 Box(
                     modifier = Modifier
                         .weight(8f)
@@ -150,15 +151,18 @@ fun TimeLine(modifier: Modifier = Modifier) {
                     .fillMaxSize(),
                 horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp())
             ) {
-                Box() {}
-                EventTimelineDisplayer(
-                    modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
-                    position = EventTimeLinePosition.BOTTOM
-                )
-                EventTimelineDisplayer(
-                    modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
-                    position = EventTimeLinePosition.BOTTOM
-                )
+                if (bottomEvents.size > 0) {
+                    Box {}
+                }
+                for (event in bottomEvents) {
+                    EventTimelineDisplayer(
+                        modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
+                        position = EventTimeLinePosition.BOTTOM
+                    )
+                }
+                if (topEvents.size > bottomEvents.size) {
+                    Box {}
+                }
             }
         }
     }
@@ -168,6 +172,21 @@ fun TimeLine(modifier: Modifier = Modifier) {
 @Composable
 fun TimeLinePreview() {
     MobistoryTheme {
-        TimeLine()
+        /*Column {
+            Box(modifier = Modifier.weight(1f).fillMaxSize()) {}
+            Row(modifier = Modifier.weight(1f).fillMaxSize()) {
+                Box(modifier = Modifier.weight(1f).fillMaxSize()) {}
+                TimeLine(modifier = Modifier.weight(1f).fillMaxSize())
+            }
+        }*/
+
+        TimeLine(
+            events = listOf(
+                Event("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
+                Event("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
+                Event("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
+                Event("EVENT 4", "DESCRIPTION 4", "03/02/2024")
+            )
+        )
     }
 }
