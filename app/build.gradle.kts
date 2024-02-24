@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     //
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jsoup:jsoup:1.17.2")
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -76,6 +77,7 @@ dependencies {
     implementation(libs.material3)
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+    implementation("com.android.volley:volley:1.2.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
