@@ -62,7 +62,9 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
         val imageDao = Database.imageDao()
         val keywordDao = Database.keywordDao()
         val keywordEventJoinDao = Database.keywordEventJoinDao()
+        var i = 0
         for(event in events) {
+            if(i == 200) break //TODO remove this in production
             Log.i("Database initialisation", "Inserting the event number ${event.id}")
             if(eventDao.existsByLabel(event.label.representation()!!)){
                 continue
@@ -277,6 +279,7 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
                     }
                 }
             }
+            i += 1
         }
     }
     onFinish()
