@@ -33,7 +33,7 @@ import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50) {
+fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, onSearch: (TextFieldValue) -> Unit) {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -47,6 +47,7 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50)
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
                 keyboardController?.hide()
+                onSearch.invoke(searchText)
                 //TODO
             })
         )
@@ -93,7 +94,7 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50)
 @Preview(showBackground = true)
 fun SearchBarPreview() {
     MobistoryTheme {
-        SearchBarComponent()
+        //SearchBarComponent()
     }
 }
 

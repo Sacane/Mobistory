@@ -26,10 +26,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 
-data class Event(val name: String, val description: String, val date: String)
+data class FakeEvent(val name: String, val description: String, val date: String)
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
@@ -47,8 +48,8 @@ fun Preview() {
                 .fillMaxWidth()){
                 PrintText("SearchField")
             }*/
-            val list = listOf(Event("Seconde Guerre mondiale", "La Seconde Guerre mondiale, ou Deuxième Guerre mondiale, est un conflit armé à l'échelle planétaire qui dure du 1er septembre 1939 au 2 septembre 1945. Ce conflit oppose schématiquement les Alliés (La Grande-Bretagne, l'URSS et les États-Unis) et l'Axe (l'Allemagne nazie, l'Empire japonais et l'Empire italien).","1939"), Event("test", "test", "00/00/0000"),Event("test", "test", "00/00/0000"),Event("test", "test", "00/00/0000"),Event("test", "test" ,"00/00/0000"),Event("test", "test", "00/00/0000"),Event("test", "test", "00/00/0000"),Event("test", "test", "00/00/0000"))
-            DisplaySmallEventsList(events = list, modifier = Modifier)
+            //val list = listOf(FakeEvent("Seconde Guerre mondiale", "La Seconde Guerre mondiale, ou Deuxième Guerre mondiale, est un conflit armé à l'échelle planétaire qui dure du 1er septembre 1939 au 2 septembre 1945. Ce conflit oppose schématiquement les Alliés (La Grande-Bretagne, l'URSS et les États-Unis) et l'Axe (l'Allemagne nazie, l'Empire japonais et l'Empire italien).","1939"), FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test" ,"00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"))
+            //DisplaySmallEventsList(events = list, modifier = Modifier)
 
            /* Box(modifier = Modifier
                 .weight(0.1f)
@@ -124,7 +125,11 @@ fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier){
         items(events.size) { index ->
             Spacer(modifier = Modifier.height(8.dp))
             val currentEv = events[index]
-            SmallEventComponent(name = currentEv.name, description = currentEv.description, date =  currentEv.date)
+
+            SmallEventComponent(name = currentEv.getFrenchLabel(),
+                description = currentEv.getFrenchDescription(),
+                date = currentEv.getCleanDate()
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
     }

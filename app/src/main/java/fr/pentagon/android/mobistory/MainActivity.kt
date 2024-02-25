@@ -91,7 +91,7 @@ fun Mobistory(modifier: Modifier = Modifier) {
                 Text(text = "home")
             }
             composable("search") {
-                Text(text = "search")
+                Search()
             }
             composable("favorites") {
                 Text(text = "favorites")

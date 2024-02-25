@@ -22,7 +22,7 @@ import java.util.UUID
 import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
-class EventTest{
+class FakeEventTest{
     private lateinit var db: Database
     private lateinit var eventDao: EventDao
     @Before

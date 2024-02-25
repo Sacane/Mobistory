@@ -16,8 +16,8 @@ import fr.pentagon.android.mobistory.backend.entity.EventWithKeywords
 import fr.pentagon.android.mobistory.backend.entity.EventWithTypes
 import fr.pentagon.android.mobistory.backend.entity.Participant
 import java.io.Serializable
+import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.UUID
 import kotlin.random.Random
 
 @Entity(tableName = "event")
@@ -41,6 +41,30 @@ data class Event(
 
     override fun hashCode(): Int {
         return eventId.hashCode()
+    }
+
+    fun getFrenchDescription(): String {
+        return if (this.description == null) "<empty description>" else this.description.split("||")[0]
+    }
+    fun getFrenchLabel(): String {
+        return this.label.split("||")[0]
+    }
+    fun getFormatStartDate(): String {
+        val formatDate = SimpleDateFormat("MM/yyyy")
+        return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
+    }
+
+    fun getFormatEndDate(): String {
+        val formatDate = SimpleDateFormat("MM/yyyy")
+        return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
+    }
+
+    fun getCleanDate(): String {
+        val startDate = getFormatStartDate()
+        if( startDate == "<empty date>") return startDate
+        val endDate = getFormatEndDate()
+        if(endDate == "<empty date>") return startDate
+        return "$startDate - $endDate"
     }
 }
 
@@ -107,4 +131,11 @@ interface EventDao{
     @Query("SELECT * FROM event WHERE eventId = :eventId")
     fun findEventWithTypeById(eventId: Int): EventWithTypes
 
+    @Transaction
+    @Query("SELECT * FROM event LIMIT 50")
+    suspend fun getEventsLimitOf50(): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
+    suspend fun getEventsContainsSearchQuery(searchQuery: String): List<Event>
 }
