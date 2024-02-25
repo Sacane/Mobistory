@@ -47,11 +47,6 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
     Log.i("INITIALIZER", events[0].toString())
 
     withContext(Dispatchers.IO) {
-        val aliasesDao = Database.aliasDao()
-        val eventDao = Database.eventDao()
-        val coordinateDao = Database.coordinateDao()
-        val keyDateDao = Database.keyDateDao()
-        val typeDao = Database.typeDao()
         val typeJoinDao = Database.eventTypeJoinDao()
         val locationDao = Database.locationDao()
         val locationEventDao = Database.eventLocationJoinDao()
@@ -64,9 +59,9 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
         val keywordEventJoinDao = Database.keywordEventJoinDao()
         var i = 0
         for(event in events) {
-            if(i == 200) break //TODO remove this in production
+            if(i == 150) break //TODO remove this in production
             Log.i("Database initialisation", "Inserting the event number ${event.id}")
-            if(eventDao.existsByLabel(event.label.representation()!!)){
+            if(Database.eventDao().existsByLabel(event.label.representation()!!)){
                 continue
             }
             val toInsert = Event(
@@ -78,26 +73,26 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
                 wikipedia = event.wikipedia.representation(),
                 popularity = event.popularity?.fr ?: 0
             )
-            eventDao.save(toInsert)
+            Database.eventDao().save(toInsert)
             for(alias in event.aliases.fr) {
-                aliasesDao.insertAlias(Alias(label = alias, eventId = event.id))
+                Database.aliasDao().insertAlias(Alias(label = alias, eventId = event.id))
             }
             for(alias in event.aliases.en) {
-                aliasesDao.insertAlias(Alias(label = alias, eventId = event.id))
+                Database.aliasDao().insertAlias(Alias(label = alias, eventId = event.id))
             }
             for(coordinate in event.coords) {
-                coordinateDao.save(Coordinate(value = coordinate, eventId = toInsert.eventId))
+                Database.coordinateDao().save(Coordinate(value = coordinate, eventId = toInsert.eventId))
             }
             for(keyDate in event.dates) {
                 val date = keyDate.toDate()
-                keyDateDao.save(KeyDate(date = date!!, eventId = event.id))
+                Database.keyDateDao().save(KeyDate(date = date!!, eventId = event.id))
             }
             for(type in event.type.fr) {
-                val typeRegistered = typeDao.findByLabel(type)
+                val typeRegistered = Database.typeDao().findByLabel(type)
                 if(typeRegistered == null) {
                     val typeId = UUID.randomUUID()
                     val created = Type(typeId = typeId, label = type)
-                    typeDao.save(created)
+                    Database.typeDao().save(created)
                     typeJoinDao.save(EventTypeJoin(eventId = event.id, typeId = typeId))
                 }else {
                     try {
@@ -113,10 +108,10 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
                 }
             }
             for(type in event.type.en) {
-                val typeRegistered = typeDao.findByLabel(type)
+                val typeRegistered = Database.typeDao().findByLabel(type)
                 if(typeRegistered == null) {
                     val created = Type(label = type)
-                    typeDao.save(created)
+                    Database.typeDao().save(created)
                 }else {
                     try {
                         typeJoinDao.save(
