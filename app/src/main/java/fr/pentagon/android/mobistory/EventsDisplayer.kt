@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
-import java.text.SimpleDateFormat
 
 
 data class FakeEvent(val name: String, val description: String, val date: String)
@@ -126,10 +125,11 @@ fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier){
         items(events.size) { index ->
             Spacer(modifier = Modifier.height(8.dp))
             val currentEv = events[index]
-            var formatDate = SimpleDateFormat("MM/yyyy")
-            SmallEventComponent(name = currentEv.label,
-                description = if (currentEv.description == null) "<empty description>" else currentEv.description,
-                date = if (currentEv.startDate == null) "" else formatDate.format(currentEv.startDate))
+
+            SmallEventComponent(name = currentEv.getFrenchLabel(),
+                description = currentEv.getFrenchDescription(),
+                date = currentEv.getCleanDate()
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
