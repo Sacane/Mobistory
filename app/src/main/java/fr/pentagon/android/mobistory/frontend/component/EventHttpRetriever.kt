@@ -111,6 +111,9 @@ fun findContentPageFromUrl(
         url, {response ->
             val document = Jsoup.parse(response)
             val mainContentDiv = document.select("div.mw-body-content")
+            mainContentDiv.select("figure").remove()
+            mainContentDiv.select("sup").remove()
+            mainContentDiv.select("div.printfooter").remove()
             if(mainContentDiv.isNotEmpty()) {
                 mainContentDiv.first()?.let {
                     onRetrieve(it.text())
