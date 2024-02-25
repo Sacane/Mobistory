@@ -107,4 +107,11 @@ interface EventDao{
     @Query("SELECT * FROM event WHERE eventId = :eventId")
     fun findEventWithTypeById(eventId: Int): EventWithTypes
 
+    @Transaction
+    @Query("SELECT * FROM event LIMIT 50")
+    suspend fun getEventsLimitOf50(): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
+    suspend fun getEventsContainsSearchQuery(searchQuery: String): List<Event>
 }

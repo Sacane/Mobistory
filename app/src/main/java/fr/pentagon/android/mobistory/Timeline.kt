@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +25,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 enum class EventTimeLinePosition {
@@ -35,7 +32,7 @@ enum class EventTimeLinePosition {
 }
 
 @Composable
-fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position: EventTimeLinePosition) {
+fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: FakeEvent, position: EventTimeLinePosition) {
     Column(modifier = modifier.fillMaxSize()) {
         if (position == EventTimeLinePosition.BOTTOM) {
             Box(
@@ -88,12 +85,12 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position
 @Composable
 fun EventTimelineDisplayerPreview() {
     MobistoryTheme {
-        EventTimelineDisplayer(event = Event("TITLE", "DESCRIPTION DESCRIPTIOND ESCRIPTIONDESCRIPTI", "12/02/2024"), position = EventTimeLinePosition.TOP)
+        EventTimelineDisplayer(event = FakeEvent("TITLE", "DESCRIPTION DESCRIPTIOND ESCRIPTIONDESCRIPTI", "12/02/2024"), position = EventTimeLinePosition.TOP)
     }
 }
 
 @Composable
-fun TimeLine(modifier: Modifier = Modifier, events: List<Event>) {
+fun TimeLine(modifier: Modifier = Modifier, events: List<FakeEvent>) {
     val state = rememberScrollState()
     var arrowSize by remember { mutableStateOf(IntSize.Zero) }
     val (top, bottom) = events.withIndex().partition { it.index % 2 == 0 }
@@ -194,10 +191,10 @@ fun TimeLinePreview() {
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
                 Box(modifier = Modifier.weight(1f).fillMaxSize()) {}
                 TimeLine(events = listOf(
-                    Event("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
-                    Event("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
-                    Event("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
-                    Event("EVENT 4", "DESCRIPTION 4", "03/02/2024")
+                    FakeEvent("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
+                    FakeEvent("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
+                    FakeEvent("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
+                    FakeEvent("EVENT 4", "DESCRIPTION 4", "03/02/2024")
                 ), modifier = Modifier.weight(1f).fillMaxSize())
             }
         }
