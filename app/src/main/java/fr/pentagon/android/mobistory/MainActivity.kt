@@ -27,6 +27,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.entity.AppVersion
 import fr.pentagon.android.mobistory.backend.json.eventInitializer
+import fr.pentagon.android.mobistory.frontend.component.findContentPageFromUrl
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
             MobistoryTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     LaunchedEffect(Unit) {
+                        findContentPageFromUrl(this@MainActivity, "https://fr.wikipedia.org/wiki/Traité de Paris (1763)")
                         val versionDao = Database.appVersionDao()
                         val version = versionDao.getVersion()
                         if(version == null) { // TODO ajouter le traitement de mise à jour du json (via script python et requête client)
