@@ -52,13 +52,13 @@ fun TitledContent(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-fun EventDetail(context: Context, label: String) {
+fun EventDetail(context: Context, label: String, language: LanguageUrlReference = LanguageUrlReference.FR) {
     var content by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf("Chargement des données...")
     }
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
-        findUrlFromLabel(context, label){ url ->
+        findUrlFromLabel(ctx = context, label = label, language = language){ url ->
             findContentPageFromUrl(context, url) {
                 content = it
             }
@@ -71,17 +71,21 @@ fun EventDetail(context: Context, label: String) {
     }
 }
 
+enum class LanguageUrlReference(val representation: String) {
+    FR("fr"),
+    EN("en");
+}
 
 @Composable
 @Preview
 fun EventDetailPreview() {
     MobistoryTheme {
-        EventDetail(context = LocalContext.current, label = "déportés guadeloupéens et haïtiens en Corse")
+        EventDetail(context = LocalContext.current, label = "Storm Franklin", language = LanguageUrlReference.EN)
     }
 }
 
-fun findUrlFromLabel(ctx: Context, label: String, onRetrieve: (String) -> Unit) {
-    val apiUrl = "https://fr.wikipedia.org/w/api.php?action=opensearch&format=json&search=${label.replace("[ ]*", "%20")}"
+fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String, onRetrieve: (String) -> Unit) {
+    val apiUrl = "https://${language.representation}.wikipedia.org/w/api.php?action=opensearch&format=json&search=${label.replace("[ ]*", "%20")}"
     val queue = Volley.newRequestQueue(ctx)
     val request = StringRequest(
         Request.Method.GET,
