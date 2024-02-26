@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import org.json.JSONArray
 import org.jsoup.Jsoup
@@ -51,20 +52,31 @@ fun TitledContent(title: String, content: @Composable () -> Unit) {
     }
 }
 
+/**
+ * @param context le contexte de l'application (main activity en l'occurence)
+ * @param title Le titre de la page à afficher (le label d'un event)
+ * @param language Le language de la page à afficher, si un event est en anglais
+ */
 @Composable
-fun EventDetail(context: Context, label: String, language: LanguageUrlReference = LanguageUrlReference.FR) {
+fun EventDetail(context: Context, event: Event) {
     var content by rememberSaveable {
         mutableStateOf("Chargement des données...")
     }
     val scrollState = rememberScrollState()
+    val label = event.label.split("||")
     LaunchedEffect(Unit) {
-        findUrlFromLabel(ctx = context, label = label, language = language){ url ->
+        val language: LanguageUrlReference = if(label.first().isEmpty()){
+            LanguageUrlReference.EN
+        }else {
+            LanguageUrlReference.FR
+        }
+        findUrlFromLabel(ctx = context, label = event.title, language = language){ url ->
             findContentPageFromUrl(context, url) {
                 content = it
             }
         }
     }
-    TitledContent(label) {
+    TitledContent(event.title) {
         Column(Modifier.verticalScroll(scrollState)) {
             Text(content)
         }
@@ -80,12 +92,12 @@ enum class LanguageUrlReference(val representation: String) {
 @Preview
 fun EventDetailPreview() {
     MobistoryTheme {
-        EventDetail(context = LocalContext.current, label = "Storm Franklin", language = LanguageUrlReference.EN)
+        EventDetail(context = LocalContext.current, Event("||Attempted assassination of Alexandre Millerand"))
     }
 }
 
 fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String, onRetrieve: (String) -> Unit) {
-    val apiUrl = "https://${language.representation}.wikipedia.org/w/api.php?action=opensearch&format=json&search=${label.replace("[ ]*", "%20")}"
+    val apiUrl = "https://${language.representation}.wikipedia.org/w/api.php?action=opensearch&format=json&search=${label.replace(" ", "%20")}"
     val queue = Volley.newRequestQueue(ctx)
     val request = StringRequest(
         Request.Method.GET,

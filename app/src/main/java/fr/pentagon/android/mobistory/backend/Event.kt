@@ -31,6 +31,8 @@ data class Event(
     val eventId: Int = Random.nextInt(),
     val popularity: Int = 0
 ): Serializable {
+    val title: String
+        get() = label.split("||").first().ifEmpty { label.replace("||", "") }
     override fun equals(other: Any?): Boolean {
         return if (other is Event) {
             eventId == other.eventId
