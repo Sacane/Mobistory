@@ -1,5 +1,6 @@
 package fr.pentagon.android.mobistory
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,35 +33,6 @@ import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 
 data class FakeEvent(val name: String, val description: String, val date: String)
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    MobistoryTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-           /* Box(modifier = Modifier
-                .weight(0.1f)
-                .background(Color.Red)
-                .fillMaxWidth()){
-                PrintText("Title")
-            }
-            Box(modifier = Modifier
-                .weight(0.1f)
-                .background(Color.Blue)
-                .fillMaxWidth()){
-                PrintText("SearchField")
-            }*/
-            //val list = listOf(FakeEvent("Seconde Guerre mondiale", "La Seconde Guerre mondiale, ou Deuxième Guerre mondiale, est un conflit armé à l'échelle planétaire qui dure du 1er septembre 1939 au 2 septembre 1945. Ce conflit oppose schématiquement les Alliés (La Grande-Bretagne, l'URSS et les États-Unis) et l'Axe (l'Allemagne nazie, l'Empire japonais et l'Empire italien).","1939"), FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test" ,"00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"),FakeEvent("test", "test", "00/00/0000"))
-            //DisplaySmallEventsList(events = list, modifier = Modifier)
-
-           /* Box(modifier = Modifier
-                .weight(0.1f)
-                .background(Color.Green)
-                .fillMaxWidth()){
-                PrintText("Nav Zone")
-            }*/
-        }
-    }
-}
 
 /**
  * Represent on small event component. (ex : During a research)

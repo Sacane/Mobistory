@@ -33,14 +33,16 @@ import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, onSearch: (TextFieldValue) -> Unit) {
+fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, onSearch: (TextFieldValue) -> Unit, onActiveFilter: () -> Unit) {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
         TextField(
-            modifier = Modifier.weight(1f).height(height = componentHeight.dp),
+            modifier = Modifier
+                .weight(1f)
+                .height(height = componentHeight.dp),
             value = searchText,
             onValueChange = { searchText = it },
             label = { Text("Search...") },
@@ -65,7 +67,8 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
                     .fillMaxSize()
                     .scale(0.8f)
                     .clickable {
-                        //TODO
+                        //TODO BOOLEAN POUR AFFICHER LE FILTER
+                        onActiveFilter.invoke()
                     }
             )
         }

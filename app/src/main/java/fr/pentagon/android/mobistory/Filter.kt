@@ -24,12 +24,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 enum class SortOrder(val value: String) {
-    POPULARITY("Popularity"), DATE_ASC("Date ascending"), DATE_DESC("Date descending")
+    POPULARITY("Popularity"), DATE_ASC("Date ascending"), DATE_DESC("Date descending"), INIT("None")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterComponent(modifier: Modifier = Modifier) {
+fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit) {
     val sortOptions = listOf(SortOrder.POPULARITY, SortOrder.DATE_DESC, SortOrder.DATE_ASC)
     var selectedSort by remember { mutableStateOf(sortOptions[0]) }
 
@@ -44,9 +44,7 @@ fun FilterComponent(modifier: Modifier = Modifier) {
         Divider()
         Text(text = "Sort", style = MaterialTheme.typography.headlineSmall)
         Divider()
-        SortSelectComponent(sortOptions, selectedSort) {
-            selectedSort = it
-        }
+        SortSelectComponent(sortOptions, selectedSort, onSelectedSortOrder)
     }
 }
 
@@ -61,20 +59,22 @@ fun EventDatePickerComponent(state: DateRangePickerState) {
 
 
 @Composable
-fun SortSelectComponent(sortOptions: List<SortOrder>, selectedOption: SortOrder, onSelection: (SortOrder) -> Unit) {
+fun SortSelectComponent(sortOptions: List<SortOrder>, selectedOption: SortOrder, onSelectedSortOrder: (SortOrder) -> Unit) {
     Column(
         modifier = Modifier.padding(8.dp)
     ) {
         sortOptions.forEach { sortOption ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = selectedOption == sortOption,
-                    onClick = { onSelection(sortOption) }
-                )
-                Text(
-                    text = sortOption.value,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            if(sortOption != SortOrder.INIT) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = selectedOption == sortOption,
+                        onClick = { onSelectedSortOrder(sortOption) }
+                    )
+                    Text(
+                        text = sortOption.value,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }
@@ -83,7 +83,8 @@ fun SortSelectComponent(sortOptions: List<SortOrder>, selectedOption: SortOrder,
 @Preview(showBackground = true)
 @Composable
 fun FilterPreview() {
-    FilterComponent()
+    var test = SortOrder.POPULARITY
+    FilterComponent(onSelectedSortOrder = {it -> test = it})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
