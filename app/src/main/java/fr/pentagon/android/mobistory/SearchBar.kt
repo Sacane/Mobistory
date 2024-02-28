@@ -50,7 +50,6 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
             keyboardActions = KeyboardActions(onSearch = {
                 keyboardController?.hide()
                 onSearch.invoke(searchText)
-                //TODO
             })
         )
 
@@ -67,7 +66,6 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
                     .fillMaxSize()
                     .scale(0.8f)
                     .clickable {
-                        //TODO BOOLEAN POUR AFFICHER LE FILTER
                         onActiveFilter.invoke()
                     }
             )
@@ -85,7 +83,7 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
                     .fillMaxSize()
                     .scale(0.8f)
                     .clickable {
-                        //TODO
+                        //TODO Affichage de la frise chronologique
                     }
             )
         }

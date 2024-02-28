@@ -140,4 +140,11 @@ interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
     suspend fun getEventsContainsSearchQuery(searchQuery: String): List<Event>
+    @Transaction
+    @Query("SELECT * FROM event WHERE startDate IS NOT NULL ORDER BY startDate")
+    suspend fun findEventsOrderedAscendingDateLimit50(): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE startDate IS NOT NULL ORDER BY startDate DESC")
+    suspend fun findEventsOrderedDescendingDateLimit50(): List<Event>
 }

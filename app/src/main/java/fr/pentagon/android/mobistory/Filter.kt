@@ -1,6 +1,5 @@
 package fr.pentagon.android.mobistory
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -14,6 +13,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,18 +29,17 @@ enum class SortOrder(val value: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit) {
+fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit, onSelectedDateInterval: (DateRangePickerState) -> Unit) {
     val sortOptions = listOf(SortOrder.POPULARITY, SortOrder.DATE_DESC, SortOrder.DATE_ASC)
-    var selectedSort by remember { mutableStateOf(sortOptions[0]) }
+    val selectedSort by remember { mutableStateOf(sortOptions[0]) }
 
     val dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
-
 
     Column(modifier = modifier.padding(8.dp)) {
         Divider()
         Text(text = "Filters", style = MaterialTheme.typography.headlineSmall)
         Divider()
-        EventDatePickerComponent(dateState)
+        EventDatePickerComponent(dateState, onSelectedDateInterval)
         Divider()
         Text(text = "Sort", style = MaterialTheme.typography.headlineSmall)
         Divider()
@@ -50,9 +49,12 @@ fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventDatePickerComponent(state: DateRangePickerState) {
+fun EventDatePickerComponent(state: DateRangePickerState, onSelectedDateInterval: (DateRangePickerState) -> Unit) {
     Column (modifier = Modifier.padding(8.dp)) {
         Text(text = "Event Date",  style = MaterialTheme.typography.titleMedium)
+        LaunchedEffect(state) {
+            onSelectedDateInterval.invoke(state)
+        }
         DateRangePicker(state = state, showModeToggle = false, title = {})
     }
 }
@@ -80,19 +82,21 @@ fun SortSelectComponent(sortOptions: List<SortOrder>, selectedOption: SortOrder,
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun FilterPreview() {
     var test = SortOrder.POPULARITY
-    FilterComponent(onSelectedSortOrder = {it -> test = it})
+    var test2 = rememberDateRangePickerState()
+    FilterComponent(onSelectedSortOrder = {it -> test = it}, onSelectedDateInterval = {it -> test2 = it})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun EventDatePickerPreview() {
-    val dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input)
-    EventDatePickerComponent(dateState)
+    var dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input)
+    EventDatePickerComponent(dateState, onSelectedDateInterval = {it -> dateState = it})
 }
 
 @Preview(showBackground = true)
