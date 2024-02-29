@@ -27,6 +27,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.entity.AppVersion
 import fr.pentagon.android.mobistory.backend.json.eventInitializer
+import fr.pentagon.android.mobistory.frontend.component.FavoritePage
 import fr.pentagon.android.mobistory.frontend.component.findContentPageFromUrl
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +97,7 @@ fun Mobistory(modifier: Modifier = Modifier) {
                 Search()
             }
             composable("favorites") {
-                Text(text = "favorites")
+                FavoritePage()
             }
             composable("quiz") {
                 Quiz()
