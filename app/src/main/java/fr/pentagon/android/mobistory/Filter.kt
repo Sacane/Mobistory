@@ -1,5 +1,6 @@
 package fr.pentagon.android.mobistory
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -29,10 +30,8 @@ enum class SortOrder(val value: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit, onSelectedDateInterval: (DateRangePickerState) -> Unit) {
+fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit, onSelectedDateInterval: (DateRangePickerState) -> Unit, selectedSort: SortOrder) {
     val sortOptions = listOf(SortOrder.POPULARITY, SortOrder.DATE_DESC, SortOrder.DATE_ASC)
-    val selectedSort by remember { mutableStateOf(sortOptions[0]) }
-
     val dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
 
     Column(modifier = modifier.padding(8.dp)) {
@@ -88,7 +87,7 @@ fun SortSelectComponent(sortOptions: List<SortOrder>, selectedOption: SortOrder,
 fun FilterPreview() {
     var test = SortOrder.POPULARITY
     var test2 = rememberDateRangePickerState()
-    FilterComponent(onSelectedSortOrder = {it -> test = it}, onSelectedDateInterval = {it -> test2 = it})
+    FilterComponent(onSelectedSortOrder = {it -> test = it}, onSelectedDateInterval = {it -> test2 = it}, selectedSort = test)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

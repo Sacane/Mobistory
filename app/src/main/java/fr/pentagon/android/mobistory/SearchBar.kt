@@ -1,5 +1,6 @@
 package fr.pentagon.android.mobistory
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,9 +37,7 @@ import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, onSearch: (TextFieldValue) -> Unit, onActiveFilter: () -> Unit) {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
     val keyboardController = LocalSoftwareKeyboardController.current
-
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-
         TextField(
             modifier = Modifier
                 .weight(1f)

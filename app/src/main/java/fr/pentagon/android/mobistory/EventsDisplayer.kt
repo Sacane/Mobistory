@@ -99,7 +99,7 @@ fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier){
             Spacer(modifier = Modifier.height(8.dp))
             val currentEv = events[index]
 
-            SmallEventComponent(name = currentEv.getFrenchLabel(),
+            SmallEventComponent(name = currentEv.title,
                 description = currentEv.getFrenchDescription(),
                 date = currentEv.getCleanDate()
             )

@@ -48,9 +48,7 @@ data class Event(
     fun getFrenchDescription(): String {
         return if (this.description == null) "<empty description>" else this.description.split("||")[0]
     }
-    fun getFrenchLabel(): String {
-        return this.label.split("||")[0]
-    }
+
     fun getFormatStartDate(): String {
         val formatDate = SimpleDateFormat("MM/yyyy")
         return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
@@ -135,16 +133,20 @@ interface EventDao{
 
     @Transaction
     @Query("SELECT * FROM event LIMIT 50")
-    suspend fun getEventsLimitOf50(): List<Event>
-
-    @Transaction
-    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
-    suspend fun getEventsContainsSearchQuery(searchQuery: String): List<Event>
+    suspend fun findEventsLimitOf50(): List<Event>
     @Transaction
     @Query("SELECT * FROM event WHERE startDate IS NOT NULL ORDER BY startDate")
     suspend fun findEventsOrderedAscendingDateLimit50(): List<Event>
-
     @Transaction
     @Query("SELECT * FROM event WHERE startDate IS NOT NULL ORDER BY startDate DESC")
     suspend fun findEventsOrderedDescendingDateLimit50(): List<Event>
+    @Transaction
+    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
+    suspend fun findEventsContainsSearchQuery(searchQuery: String): List<Event>
+    @Transaction
+    @Query("SELECT * FROM event WHERE (label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%') AND startDate IS NOT NULL AND startDate <> 'null' ORDER BY startDate")
+    suspend fun findEventsContainsSearchQueryOrderedAscendingDate(searchQuery: String): List<Event>
+    @Transaction
+    @Query("SELECT * FROM event WHERE (label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%') AND startDate IS NOT NULL AND startDate <> 'null' ORDER BY startDate DESC")
+    suspend fun findEventsContainsSearchQueryOrderedDescendingDate(searchQuery: String): List<Event>
 }

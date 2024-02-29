@@ -10,6 +10,7 @@ import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,31 +31,40 @@ import kotlinx.coroutines.withContext
 fun Search(modifier: Modifier = Modifier) {
     var searchedText by remember { mutableStateOf(TextFieldValue()) }
     var listOfEv by remember { mutableStateOf(emptyList<Event>()) }
-    var visible by remember { mutableStateOf(true) }
+    var visible by remember { mutableStateOf(false) }
     var selectedOrder by remember { mutableStateOf(SortOrder.INIT) }
     var dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
 
-    LaunchedEffect(searchedText.text) {
-        if (searchedText.text.isNullOrBlank()) {
-            listOfEv = withContext(Dispatchers.IO) {
-                when(selectedOrder) {
-                    SortOrder.INIT -> Database.eventDao().getEventsLimitOf50()
-                    SortOrder.DATE_ASC -> Database.eventDao().findEventsOrderedAscendingDateLimit50()
-                    SortOrder.DATE_DESC -> Database.eventDao().findEventsOrderedDescendingDateLimit50()
-                    SortOrder.POPULARITY -> listOf()//TODO FILTER POPULARITY
+    var searchKey by remember { mutableStateOf(0) }
+
+    Log.i("Search", "search: ${searchedText}")
+
+    LaunchedEffect(searchedText, searchKey) {
+        listOfEv = withContext(Dispatchers.IO) {
+            when {
+                searchedText.text.isNullOrBlank() -> {
+                    when(selectedOrder) {
+                        SortOrder.INIT -> Database.eventDao().findEventsLimitOf50()
+                        SortOrder.DATE_ASC -> Database.eventDao().findEventsOrderedAscendingDateLimit50()
+                        SortOrder.DATE_DESC -> Database.eventDao().findEventsOrderedDescendingDateLimit50()
+                        SortOrder.POPULARITY -> listOf()//TODO FILTER Popularity
+                        else -> listOf() // TODO: Gérer le cas par défaut
+                    }
+                }
+                else -> {
+                    when(selectedOrder) {
+                        SortOrder.INIT -> Database.eventDao().findEventsContainsSearchQuery(searchedText.text)
+                        SortOrder.DATE_ASC -> Database.eventDao().findEventsContainsSearchQueryOrderedAscendingDate(searchedText.text)
+                        SortOrder.DATE_DESC -> Database.eventDao().findEventsContainsSearchQueryOrderedDescendingDate(searchedText.text)
+                        SortOrder.POPULARITY -> listOf()//TODO FILTER Popularity
+                        else -> listOf() // TODO: Gérer le cas par défaut
+                    }
                 }
             }
-        } else {
-            listOfEv = withContext(Dispatchers.IO) {
-                Database.eventDao().getEventsContainsSearchQuery(searchedText.text)
-            }
-            when(selectedOrder) {
-                SortOrder.INIT -> Database.eventDao().getEventsLimitOf50()
-                SortOrder.DATE_ASC -> Database.eventDao().findEventsOrderedAscendingDateLimit50()
-                SortOrder.DATE_DESC -> Database.eventDao().findEventsOrderedDescendingDateLimit50()
-                SortOrder.POPULARITY -> listOf()//TODO FILTER POPULARITY
-            }
         }
+    }
+    listOfEv.forEach {
+        Log.i("EVENT", "$it")
     }
     Column {
         Box(modifier = Modifier
@@ -66,7 +76,7 @@ fun Search(modifier: Modifier = Modifier) {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .weight(0.8f)){
-                FilterComponent(onSelectedSortOrder = {it -> selectedOrder = it}, onSelectedDateInterval = {it -> dateState = it})
+                FilterComponent(onSelectedSortOrder = {it -> selectedOrder = it}, onSelectedDateInterval = {it -> dateState = it}, selectedSort = selectedOrder)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -76,6 +86,10 @@ fun Search(modifier: Modifier = Modifier) {
             .weight(listWeight)){
             DisplaySmallEventsList(events = listOfEv, modifier = modifier)
         }
+    }
+    DisposableEffect(selectedOrder) {
+        searchKey++
+        onDispose { /* Rien à faire ici */ }
     }
 }
 
