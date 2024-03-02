@@ -62,16 +62,14 @@ fun Search(modifier: Modifier = Modifier) {
         }
     }
     val filteredEvents = listOfEv.filter { event ->
-        // Filtrer par date de début si sélectionnée
         dateState.selectedStartDateMillis?.let { selectedStartDate ->
             event.startDate?.time ?: 0 > selectedStartDate
-        } ?: true // Inclure tous les événements si la date de début n'est pas sélectionnée
+        } ?: true
 
     } .filter { event ->
-        // Filtrer par date de fin si sélectionnée
         dateState.selectedEndDateMillis?.let { selectedEndDate ->
             event.endDate?.time ?: Long.MAX_VALUE < selectedEndDate
-        } ?: true // Inclure tous les événements si la date de fin n'est pas sélectionnée
+        } ?: true
     }
     Column {
         Box(modifier = Modifier
