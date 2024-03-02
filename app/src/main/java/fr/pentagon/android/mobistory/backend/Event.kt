@@ -145,7 +145,7 @@ interface EventDao{
     suspend fun findEventsOrderedDescendingDateLimit50(): List<Event>
 
     @Transaction
-    @Query("SELECT * FROM event ORDER BY popularity DESC LIMIT 50")
+    @Query("SELECT * FROM event ORDER BY popularity LIMIT 50")
     suspend fun findEventsOrderedByPopularityLimit50(): List<Event>
 
     @Transaction
@@ -161,6 +161,6 @@ interface EventDao{
     suspend fun findEventsContainsSearchQueryOrderedDescendingDate(searchQuery: String): List<Event>
 
     @Transaction
-    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' ORDER BY popularity DESC")
+    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' ORDER BY popularity")
     suspend fun findEventsContainsSearchOrderedByPopularity(searchQuery: String): List<Event>
 }

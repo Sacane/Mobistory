@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,12 +35,12 @@ fun Search(modifier: Modifier = Modifier) {
     var visible by remember { mutableStateOf(false) }
     var selectedOrder by remember { mutableStateOf(SortOrder.INIT) }
     var dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
-    var searchKey by remember { mutableStateOf(0) }
+    var searchKey by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(searchedText, searchKey) {
         listOfEv = withContext(Dispatchers.IO) {
             when {
-                searchedText.text.isNullOrBlank() -> {
+                searchedText.text.isBlank() -> {
                     when(selectedOrder) {
                         SortOrder.INIT -> Database.eventDao().findEventsLimitOf50()
                         SortOrder.DATE_ASC -> Database.eventDao().findEventsOrderedAscendingDateLimit50()
@@ -61,12 +62,12 @@ fun Search(modifier: Modifier = Modifier) {
 
     val filteredEvents = listOfEv.filter { event ->
         dateState.selectedStartDateMillis?.let { selectedStartDate ->
-            event.startDate?.time ?: 0 > selectedStartDate
+            (event.startDate?.time ?: 0) > selectedStartDate
         } ?: true
 
     } .filter { event ->
         dateState.selectedEndDateMillis?.let { selectedEndDate ->
-            event.endDate?.time ?: Long.MAX_VALUE < selectedEndDate
+            (event.endDate?.time ?: Long.MAX_VALUE) < selectedEndDate
         } ?: true
     }
 
