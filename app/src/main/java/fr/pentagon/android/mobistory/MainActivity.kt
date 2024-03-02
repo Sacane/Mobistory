@@ -16,6 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -27,6 +32,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.entity.AppVersion
 import fr.pentagon.android.mobistory.backend.json.eventInitializer
+import fr.pentagon.android.mobistory.frontend.component.LoadingScreen
 import fr.pentagon.android.mobistory.frontend.component.findContentPageFromUrl
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
@@ -42,20 +48,24 @@ class MainActivity : ComponentActivity() {
         setContent {
             MobistoryTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    var percentage by remember { mutableFloatStateOf(0f) }
+                    var loaded by remember { mutableStateOf(false) }
                     LaunchedEffect(Unit) {
                         findContentPageFromUrl(this@MainActivity, "https://fr.wikipedia.org/wiki/Traité de Paris (1763)")
                         val versionDao = Database.appVersionDao()
                         val version = versionDao.getVersion()
                         if(version == null) { // TODO ajouter le traitement de mise à jour du json (via script python et requête client)
                             versionDao.save(AppVersion(version = "1.0"))
-                            eventInitializer(this@MainActivity) {
+                            eventInitializer(this@MainActivity, {p -> percentage = p}) {
                                 Log.i("DATABASE", "Data insertion complete")
+                                loaded = true
                             }
                         } else {
                             Log.i("database", "Database is already initialized")
+                            loaded = true
                         }
                     }
-                    Mobistory()
+                    if (loaded) Mobistory() else LoadingScreen(percentage = percentage)
                 }
                 DisposableEffect(Unit){
                     onDispose {
@@ -79,7 +89,6 @@ fun Mobistory(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val permissions = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
     val context = LocalContext.current
-
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier
             .weight(1f)

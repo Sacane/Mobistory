@@ -40,7 +40,9 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
         TextField(
-            modifier = Modifier.weight(1f).height(height = componentHeight.dp),
+            modifier = Modifier
+                .weight(1f)
+                .height(height = componentHeight.dp),
             value = searchText,
             onValueChange = { searchText = it },
             label = { Text("Search...") },
@@ -89,12 +91,11 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
     }
 }
 
-
 @Composable
 @Preview(showBackground = true)
 fun SearchBarPreview() {
     MobistoryTheme {
-        //SearchBarComponent()
+        SearchBarComponent {}
     }
 }
 
