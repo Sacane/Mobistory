@@ -1,6 +1,7 @@
 package fr.pentagon.android.mobistory
 
 import android.os.SystemClock
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +28,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.delay
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 import kotlin.math.absoluteValue
 
 @Composable
@@ -230,5 +235,42 @@ fun Answer(modifier: Modifier = Modifier, answer: Answer, selected: Boolean, sel
         Box(modifier = Modifier.fillMaxSize().background(color =  if (selected) Color.Red else Color(red = 255, green = 213, blue = 141, alpha = 255)).clickable { selectAnswer(answer) }, contentAlignment = Alignment.Center) {
             Text(answer.label)
         }
+    }
+}
+
+data class Question(val question: String, val answers: List<Answer>)
+
+fun generateQuestion(): Question  {
+    var events = listOf(
+        Event(label = "event 1", startDate = Date(), endDate = null),
+        Event(label = "event 2", startDate = null, endDate = Date()),
+        Event(label = "event 3", startDate = null, endDate = null)
+    )
+    events = events.filter({ event -> event.startDate != null && event.endDate == null })
+    /*events.forEach { event ->
+        val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
+        cal.setTime(event.startDate!!)
+        Log.i(null, event.toString() + " " + cal.get(Calendar.YEAR))
+    }*/
+    val event = events.random()
+    val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
+    cal.setTime(event.startDate!!)
+    val year = cal.get(Calendar.YEAR)
+    val question = Question(question = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf<Answer>(
+        Answer(label = year.toString(), goodAnswer = true),
+        Answer(label = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random().toString(), goodAnswer = false),
+        Answer(label = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random().toString(), goodAnswer = false),
+        Answer(label = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random().toString(), goodAnswer = false)
+    ).shuffled())
+
+    return question
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TestPreview() {
+    MobistoryTheme {
+        val question = generateQuestion()
+        Log.i(null, question.toString())
     }
 }
