@@ -50,12 +50,12 @@ data class Event(
     }
 
     fun getFormatStartDate(): String {
-        val formatDate = SimpleDateFormat("MM/yyyy")
+        val formatDate = SimpleDateFormat("dd/MM/yyyy")
         return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
     }
 
     fun getFormatEndDate(): String {
-        val formatDate = SimpleDateFormat("MM/yyyy")
+        val formatDate = SimpleDateFormat("dd/MM/yyyy")
         return if (this.endDate == null) "<empty date>" else formatDate.format(this.endDate)
     }
 

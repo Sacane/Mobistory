@@ -32,7 +32,6 @@ enum class SortOrder(val value: String) {
 @Composable
 fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit, onSelectedDateInterval: (DateRangePickerState) -> Unit, selectedSort: SortOrder, dateState: DateRangePickerState) {
     val sortOptions = listOf(SortOrder.POPULARITY, SortOrder.DATE_DESC, SortOrder.DATE_ASC)
-    //val dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
 
     Column(modifier = modifier.padding(8.dp)) {
         Divider()
