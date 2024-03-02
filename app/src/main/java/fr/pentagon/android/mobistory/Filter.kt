@@ -30,9 +30,9 @@ enum class SortOrder(val value: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit, onSelectedDateInterval: (DateRangePickerState) -> Unit, selectedSort: SortOrder) {
+fun FilterComponent(modifier: Modifier = Modifier, onSelectedSortOrder: (SortOrder) -> Unit, onSelectedDateInterval: (DateRangePickerState) -> Unit, selectedSort: SortOrder, dateState: DateRangePickerState) {
     val sortOptions = listOf(SortOrder.POPULARITY, SortOrder.DATE_DESC, SortOrder.DATE_ASC)
-    val dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
+    //val dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
 
     Column(modifier = modifier.padding(8.dp)) {
         Divider()
@@ -87,7 +87,7 @@ fun SortSelectComponent(sortOptions: List<SortOrder>, selectedOption: SortOrder,
 fun FilterPreview() {
     var test = SortOrder.POPULARITY
     var test2 = rememberDateRangePickerState()
-    FilterComponent(onSelectedSortOrder = {it -> test = it}, onSelectedDateInterval = {it -> test2 = it}, selectedSort = test)
+    FilterComponent(onSelectedSortOrder = {it -> test = it}, onSelectedDateInterval = {it -> test2 = it}, selectedSort = test, dateState = test2)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

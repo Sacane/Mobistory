@@ -63,6 +63,24 @@ fun Search(modifier: Modifier = Modifier) {
             }
         }
     }
+    Log.i("DateValue", "${dateState.selectedStartDateMillis} - ${dateState.selectedEndDateMillis}")
+
+    dateState.selectedStartDateMillis?.let { selectedStartDate ->
+        listOfEv = listOfEv.filter { event ->
+            event.startDate != null
+        }.filter { event ->
+            (event.startDate?.time ?: 0) > selectedStartDate
+        }
+    }
+
+    dateState.selectedEndDateMillis?.let { selectedEndDate ->
+        listOfEv = listOfEv.filter { event ->
+            event.endDate != null
+        }.filter { event ->
+            (event.endDate?.time ?: 0) < selectedEndDate
+        }
+    }
+
     listOfEv.forEach {
         Log.i("EVENT", "$it")
     }
@@ -70,13 +88,17 @@ fun Search(modifier: Modifier = Modifier) {
         Box(modifier = Modifier
             .fillMaxSize()
             .weight(0.1f)){
-            SearchBarComponent(onSearch = { it -> searchedText = it }, onActiveFilter = {visible = !visible})
+            SearchBarComponent(onSearch = { it -> searchedText = it },
+                onActiveFilter = {visible = !visible})
         }
         if(visible){
             Box(modifier = Modifier
                 .fillMaxSize()
                 .weight(0.8f)){
-                FilterComponent(onSelectedSortOrder = {it -> selectedOrder = it}, onSelectedDateInterval = {it -> dateState = it}, selectedSort = selectedOrder)
+                FilterComponent(onSelectedSortOrder = {it -> selectedOrder = it},
+                    onSelectedDateInterval = {it -> dateState = it},
+                    selectedSort = selectedOrder,
+                    dateState = dateState)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -92,6 +114,8 @@ fun Search(modifier: Modifier = Modifier) {
         onDispose { /* Rien à faire ici */ }
     }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable

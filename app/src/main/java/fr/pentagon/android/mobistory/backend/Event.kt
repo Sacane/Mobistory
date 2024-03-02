@@ -56,7 +56,7 @@ data class Event(
 
     fun getFormatEndDate(): String {
         val formatDate = SimpleDateFormat("MM/yyyy")
-        return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
+        return if (this.endDate == null) "<empty date>" else formatDate.format(this.endDate)
     }
 
     fun getCleanDate(): String {
