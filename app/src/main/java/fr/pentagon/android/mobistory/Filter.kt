@@ -1,6 +1,5 @@
 package fr.pentagon.android.mobistory
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -86,7 +85,7 @@ fun SortSelectComponent(sortOptions: List<SortOrder>, selectedOption: SortOrder,
 fun FilterPreview() {
     var test = SortOrder.POPULARITY
     var test2 = rememberDateRangePickerState()
-    FilterComponent(onSelectedSortOrder = {it -> test = it}, onSelectedDateInterval = {it -> test2 = it}, selectedSort = test, dateState = test2)
+    FilterComponent(onSelectedSortOrder = {test = it}, onSelectedDateInterval = {test2 = it}, selectedSort = test, dateState = test2)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +93,7 @@ fun FilterPreview() {
 @Composable
 fun EventDatePickerPreview() {
     var dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input)
-    EventDatePickerComponent(dateState, onSelectedDateInterval = {it -> dateState = it})
+    EventDatePickerComponent(dateState, onSelectedDateInterval = {dateState = it})
 }
 
 @Preview(showBackground = true)

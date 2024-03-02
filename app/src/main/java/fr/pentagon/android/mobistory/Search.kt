@@ -48,7 +48,6 @@ fun Search(modifier: Modifier = Modifier) {
                         SortOrder.DATE_ASC -> Database.eventDao().findEventsOrderedAscendingDateLimit50()
                         SortOrder.DATE_DESC -> Database.eventDao().findEventsOrderedDescendingDateLimit50()
                         SortOrder.POPULARITY -> listOf()//TODO FILTER Popularity
-                        else -> listOf() // TODO: Gérer le cas par défaut
                     }
                 }
                 else -> {
@@ -57,14 +56,12 @@ fun Search(modifier: Modifier = Modifier) {
                         SortOrder.DATE_ASC -> Database.eventDao().findEventsContainsSearchQueryOrderedAscendingDate(searchedText.text)
                         SortOrder.DATE_DESC -> Database.eventDao().findEventsContainsSearchQueryOrderedDescendingDate(searchedText.text)
                         SortOrder.POPULARITY -> listOf()//TODO FILTER Popularity
-                        else -> listOf() // TODO: Gérer le cas par défaut
                     }
                 }
             }
         }
     }
     Log.i("DateValue", "${dateState.selectedStartDateMillis} - ${dateState.selectedEndDateMillis}")
-
     dateState.selectedStartDateMillis?.let { selectedStartDate ->
         listOfEv = listOfEv.filter { event ->
             event.startDate != null
@@ -80,7 +77,6 @@ fun Search(modifier: Modifier = Modifier) {
             (event.endDate?.time ?: 0) < selectedEndDate
         }
     }
-
     listOfEv.forEach {
         Log.i("EVENT", "$it")
     }
@@ -88,21 +84,21 @@ fun Search(modifier: Modifier = Modifier) {
         Box(modifier = Modifier
             .fillMaxSize()
             .weight(0.1f)){
-            SearchBarComponent(onSearch = { it -> searchedText = it },
+            SearchBarComponent(onSearch = { searchedText = it },
                 onActiveFilter = {visible = !visible})
         }
         if(visible){
             Box(modifier = Modifier
                 .fillMaxSize()
                 .weight(0.8f)){
-                FilterComponent(onSelectedSortOrder = {it -> selectedOrder = it},
-                    onSelectedDateInterval = {it -> dateState = it},
+                FilterComponent(onSelectedSortOrder = {selectedOrder = it},
+                    onSelectedDateInterval = {dateState = it},
                     selectedSort = selectedOrder,
                     dateState = dateState)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        var listWeight = if (visible) 0.2f else 0.9f
+        val listWeight = if (visible) 0.2f else 0.9f
         Box(modifier = Modifier
             .fillMaxSize()
             .weight(listWeight)){
@@ -114,8 +110,6 @@ fun Search(modifier: Modifier = Modifier) {
         onDispose { /* Rien à faire ici */ }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
