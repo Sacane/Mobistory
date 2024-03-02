@@ -61,24 +61,17 @@ fun Search(modifier: Modifier = Modifier) {
             }
         }
     }
-    Log.i("DateValue", "${dateState.selectedStartDateMillis} - ${dateState.selectedEndDateMillis}")
-    dateState.selectedStartDateMillis?.let { selectedStartDate ->
-        listOfEv = listOfEv.filter { event ->
-            event.startDate != null
-        }.filter { event ->
-            (event.startDate?.time ?: 0) > selectedStartDate
-        }
-    }
+    val filteredEvents = listOfEv.filter { event ->
+        // Filtrer par date de début si sélectionnée
+        dateState.selectedStartDateMillis?.let { selectedStartDate ->
+            event.startDate?.time ?: 0 > selectedStartDate
+        } ?: true // Inclure tous les événements si la date de début n'est pas sélectionnée
 
-    dateState.selectedEndDateMillis?.let { selectedEndDate ->
-        listOfEv = listOfEv.filter { event ->
-            event.endDate != null
-        }.filter { event ->
-            (event.endDate?.time ?: 0) < selectedEndDate
-        }
-    }
-    listOfEv.forEach {
-        Log.i("EVENT", "$it")
+    } .filter { event ->
+        // Filtrer par date de fin si sélectionnée
+        dateState.selectedEndDateMillis?.let { selectedEndDate ->
+            event.endDate?.time ?: Long.MAX_VALUE < selectedEndDate
+        } ?: true // Inclure tous les événements si la date de fin n'est pas sélectionnée
     }
     Column {
         Box(modifier = Modifier
@@ -102,7 +95,7 @@ fun Search(modifier: Modifier = Modifier) {
         Box(modifier = Modifier
             .fillMaxSize()
             .weight(listWeight)){
-            DisplaySmallEventsList(events = listOfEv, modifier = modifier)
+            DisplaySmallEventsList(events = filteredEvents, modifier = modifier)
         }
     }
     DisposableEffect(selectedOrder) {
