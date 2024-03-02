@@ -87,12 +87,13 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
         }
     }
 }
-
+/*
 @Composable
 @Preview(showBackground = true)
 fun SearchBarPreview() {
     MobistoryTheme {
-        SearchBarComponent {}
+        SearchBarComponent() {}
     }
 }
 
+*/
