@@ -34,10 +34,7 @@ fun Search(modifier: Modifier = Modifier) {
     var visible by remember { mutableStateOf(false) }
     var selectedOrder by remember { mutableStateOf(SortOrder.INIT) }
     var dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
-
     var searchKey by remember { mutableStateOf(0) }
-
-    Log.i("Search", "search: ${searchedText}")
 
     LaunchedEffect(searchedText, searchKey) {
         listOfEv = withContext(Dispatchers.IO) {
@@ -47,7 +44,7 @@ fun Search(modifier: Modifier = Modifier) {
                         SortOrder.INIT -> Database.eventDao().findEventsLimitOf50()
                         SortOrder.DATE_ASC -> Database.eventDao().findEventsOrderedAscendingDateLimit50()
                         SortOrder.DATE_DESC -> Database.eventDao().findEventsOrderedDescendingDateLimit50()
-                        SortOrder.POPULARITY -> listOf()//TODO FILTER Popularity
+                        SortOrder.POPULARITY -> Database.eventDao().findEventsOrderedByPopularityLimit50()
                     }
                 }
                 else -> {
@@ -55,12 +52,13 @@ fun Search(modifier: Modifier = Modifier) {
                         SortOrder.INIT -> Database.eventDao().findEventsContainsSearchQuery(searchedText.text)
                         SortOrder.DATE_ASC -> Database.eventDao().findEventsContainsSearchQueryOrderedAscendingDate(searchedText.text)
                         SortOrder.DATE_DESC -> Database.eventDao().findEventsContainsSearchQueryOrderedDescendingDate(searchedText.text)
-                        SortOrder.POPULARITY -> listOf()//TODO FILTER Popularity
+                        SortOrder.POPULARITY -> Database.eventDao().findEventsContainsSearchOrderedByPopularity(searchedText.text)
                     }
                 }
             }
         }
     }
+
     val filteredEvents = listOfEv.filter { event ->
         dateState.selectedStartDateMillis?.let { selectedStartDate ->
             event.startDate?.time ?: 0 > selectedStartDate
@@ -71,6 +69,7 @@ fun Search(modifier: Modifier = Modifier) {
             event.endDate?.time ?: Long.MAX_VALUE < selectedEndDate
         } ?: true
     }
+
     Column {
         Box(modifier = Modifier
             .fillMaxSize()
