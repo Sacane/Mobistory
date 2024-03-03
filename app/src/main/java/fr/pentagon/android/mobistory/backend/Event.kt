@@ -1,5 +1,6 @@
 package fr.pentagon.android.mobistory.backend
 
+import androidx.compose.ui.text.capitalize
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
@@ -32,7 +33,16 @@ data class Event(
     val popularity: Int = 0
 ): Serializable {
     val title: String
-        get() = label.split("||").first().ifEmpty { label.replace("||", "") }
+        get() = label.split("||").first()
+            .replaceFirstChar { it.uppercase() }
+            .ifEmpty { label.replace("||", "") }
+
+    val brief: String
+        get() = description?.split("||")?.first()
+            ?.replaceFirstChar { it.uppercase() }
+            ?.ifEmpty { description.replace("||", "") }
+            ?: "<empty description>"
+
     override fun equals(other: Any?): Boolean {
         return if (other is Event) {
             eventId == other.eventId
@@ -140,4 +150,12 @@ interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
     suspend fun getEventsContainsSearchQuery(searchQuery: String): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE strftime('%d/%m', startDate) = format('%02d/%02d', :day, :month) ORDER BY popularity DESC LIMIT 5")
+    suspend fun findTop5EventByDay(day: Int, month: Int): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE strftime('%m', startDate) = format('%02d', :month) ORDER BY popularity DESC LIMIT 5")
+    suspend fun findTop5EventByMonth(month: Int): List<Event>
 }

@@ -38,7 +38,7 @@ fun TitledContent(title: String, content: @Composable () -> Unit) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier
                 .border(
                     width = 1.dp,
@@ -103,7 +103,6 @@ fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String
         Request.Method.GET,
         apiUrl, { response ->
             val url = URLDecoder.decode(JSONArray(response)[3].toString().removeSurrounding("[\"", "\"]"), "UTF-8").replace("\\", "")
-            Log.i("response for url", url)
             onRetrieve(url)
         }
     ){error ->
