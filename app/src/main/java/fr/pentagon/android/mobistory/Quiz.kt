@@ -41,7 +41,7 @@ fun Quiz(modifier: Modifier = Modifier) {
     var running by remember { mutableStateOf(false) }
     var over by remember { mutableStateOf(false) }
     var nbRemainingQuestions by remember { mutableIntStateOf(0) }
-    var question by remember { mutableStateOf("") }
+    var question by remember { mutableStateOf<Question?>(null) }
     var score by remember { mutableStateOf(0) }
 
     if (!running && !over) {
@@ -53,8 +53,8 @@ fun Quiz(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = {
                 running = true
-                nbRemainingQuestions = 2
-                question = "Question " + nbRemainingQuestions
+                nbRemainingQuestions = 3
+                question = generateQuestion()
             }) {
                 Text(text = "Démarrer")
             }
@@ -64,20 +64,20 @@ fun Quiz(modifier: Modifier = Modifier) {
     else if (running && nbRemainingQuestions > 0) {
         Column(modifier = modifier.padding(20.dp).fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(modifier = Modifier.weight(1f))
-            QuestionManager(modifier = Modifier.weight(12f), question = question, onGoodAnswer = { score++ }, onCountdownEnd = {
+            QuestionManager(modifier = Modifier.weight(12f), question = question!!, onGoodAnswer = { score++ }, onCountdownEnd = {
                 nbRemainingQuestions--
                 if (nbRemainingQuestions == 0) {
                     running = false
                     over = true
                 }
                 else {
-                    question = "Question " + nbRemainingQuestions
+                    question = generateQuestion()
                 }
             })
             Spacer(modifier = Modifier.weight(1f))
         }
     }
-    else if (!running && over) {
+    else {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "Nombre de réponses correctes : ${score}")
@@ -92,7 +92,7 @@ fun Quiz(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun QuestionManager(modifier: Modifier = Modifier, question: String, onGoodAnswer: () -> Unit, onCountdownEnd: () -> Unit) {
+fun QuestionManager(modifier: Modifier = Modifier, question: Question, onGoodAnswer: () -> Unit, onCountdownEnd: () -> Unit) {
     var selectedAnswer by remember { mutableStateOf<Answer?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -209,19 +209,19 @@ fun CountdownPreview() {
 }
 
 @Composable
-fun QuizQuestion(modifier: Modifier = Modifier, question: String, selectedAnswer: Answer?, selectAnswer: (Answer) -> Unit) {
+fun QuizQuestion(modifier: Modifier = Modifier, question: Question, selectedAnswer: Answer?, selectAnswer: (Answer) -> Unit) {
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(question)
+            Text(question.label)
         }
         Column(modifier = Modifier.weight(3f).fillMaxSize()) {
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer1", goodAnswer = true), selected = selectedAnswer?.label == "answer1", selectAnswer = { answer -> selectAnswer(answer)})
-                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer2", goodAnswer = false), selected = selectedAnswer?.label == "answer2", selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(0), selected = selectedAnswer?.label == question.answers.get(0).label, selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(1), selected = selectedAnswer?.label == question.answers.get(1).label, selectAnswer = { answer -> selectAnswer(answer)})
             }
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer3", goodAnswer = false), selected = selectedAnswer?.label == "answer3", selectAnswer = { answer -> selectAnswer(answer)})
-                Answer(modifier = Modifier.weight(1f), answer = Answer(label = "answer4", goodAnswer = false), selected = selectedAnswer?.label == "answer4", selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(2), selected = selectedAnswer?.label == question.answers.get(2).label, selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(3), selected = selectedAnswer?.label == question.answers.get(3).label, selectAnswer = { answer -> selectAnswer(answer)})
             }
         }
     }
@@ -238,7 +238,7 @@ fun Answer(modifier: Modifier = Modifier, answer: Answer, selected: Boolean, sel
     }
 }
 
-data class Question(val question: String, val answers: List<Answer>)
+data class Question(val label: String, val answers: List<Answer>)
 
 fun generateQuestion(): Question  {
     var events = listOf(
@@ -247,20 +247,23 @@ fun generateQuestion(): Question  {
         Event(label = "event 3", startDate = null, endDate = null)
     )
     events = events.filter({ event -> event.startDate != null && event.endDate == null })
-    /*events.forEach { event ->
-        val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
-        cal.setTime(event.startDate!!)
-        Log.i(null, event.toString() + " " + cal.get(Calendar.YEAR))
-    }*/
+
     val event = events.random()
     val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
     cal.setTime(event.startDate!!)
     val year = cal.get(Calendar.YEAR)
-    val question = Question(question = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf<Answer>(
+    val years = ArrayList<Int>(3)
+
+    while (years.size < 3) {
+        val randomYear = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random()
+        if (!years.contains(randomYear)) years.add(randomYear)
+    }
+
+    val question = Question(label = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf<Answer>(
         Answer(label = year.toString(), goodAnswer = true),
-        Answer(label = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random().toString(), goodAnswer = false),
-        Answer(label = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random().toString(), goodAnswer = false),
-        Answer(label = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random().toString(), goodAnswer = false)
+        Answer(label = years.get(0).toString(), goodAnswer = false),
+        Answer(label = years.get(1).toString(), goodAnswer = false),
+        Answer(label = years.get(2).toString(), goodAnswer = false)
     ).shuffled())
 
     return question
