@@ -186,18 +186,12 @@ fun TimeLine(modifier: Modifier = Modifier, events: List<FakeEvent>) {
 @Composable
 fun TimeLinePreview() {
     MobistoryTheme {
-        Column {
-            Box(modifier = Modifier.weight(1f).fillMaxSize()) {}
-            Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Box(modifier = Modifier.weight(1f).fillMaxSize()) {}
-                TimeLine(events = listOf(
-                    FakeEvent("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
-                    FakeEvent("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
-                    FakeEvent("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
-                    FakeEvent("EVENT 4", "DESCRIPTION 4", "03/02/2024")
-                ), modifier = Modifier.weight(1f).fillMaxSize())
-            }
-        }
+        TimeLine(events = listOf(
+            FakeEvent("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
+            FakeEvent("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
+            FakeEvent("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
+            FakeEvent("EVENT 4", "DESCRIPTION 4", "03/02/2024")
+        ))
 
         /*TimeLine(
             events = listOf(

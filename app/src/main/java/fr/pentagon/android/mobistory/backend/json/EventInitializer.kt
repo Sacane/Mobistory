@@ -41,7 +41,7 @@ fun String?.toDate(): Date? {
     return if(this == null) null else dateFormat.parse(this)
 }
 
-suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
+suspend fun eventInitializer(context: Context, onInserting: (Float) -> Unit, onFinish: () -> Unit) {
     val content = context.loadJSONFile(R.raw.events) ?: throw AssertionError()
     val events = Json.decodeFromString<List<EventDTO>>(content)
     Log.i("INITIALIZER", events[0].toString())
@@ -274,7 +274,7 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
                     }
                 }
             }
-            i += 1
+            onInserting(((++i).toFloat() / 150) * 100) // TODO change for prod
         }
     }
     onFinish()

@@ -158,6 +158,11 @@ abstract class Database : RoomDatabase() {
             return INSTANCE.eventParticipantJoinDao()
         }
 
+        fun favoriteDao(): FavoriteDao{
+            requireInitialized()
+            return INSTANCE.favoriteDao()
+        }
+
         fun clearAllTables() {
             requireInitialized()
             INSTANCE.clearAllTables()
