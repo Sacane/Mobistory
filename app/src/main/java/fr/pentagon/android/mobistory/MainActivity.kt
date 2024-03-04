@@ -101,7 +101,7 @@ fun Mobistory(modifier: Modifier = Modifier) {
             .weight(8f)
             .fillMaxSize(), navController = navController, startDestination = "home") {
             composable("home") {
-                Text(text = "home")
+                Home()
             }
             composable("search") {
                 Search()

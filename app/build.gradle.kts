@@ -87,4 +87,6 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
     kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
 }
