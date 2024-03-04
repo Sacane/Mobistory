@@ -1,6 +1,5 @@
 package fr.pentagon.android.mobistory.backend
 
-import androidx.compose.ui.text.capitalize
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
