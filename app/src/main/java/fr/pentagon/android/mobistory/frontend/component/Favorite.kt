@@ -45,7 +45,7 @@ fun FavoritePage() {
                 ) {
                     items(events.size) {
                         SmallEventComponent(
-                            events[it].getFrenchLabel(),
+                            events[it].title,
                             events[it].description ?: "Pas de description disponible",
                             events[it].getFormatStartDate()
                         )
