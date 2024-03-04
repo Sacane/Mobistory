@@ -24,12 +24,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import java.util.Calendar
 import java.util.Date
@@ -43,6 +46,7 @@ fun Quiz(modifier: Modifier = Modifier) {
     var nbRemainingQuestions by remember { mutableIntStateOf(0) }
     var question by remember { mutableStateOf<Question?>(null) }
     var score by remember { mutableStateOf(0) }
+    val context = LocalContext.current
 
     if (!running && !over) {
         Column(modifier = modifier.padding(20.dp).fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -80,7 +84,7 @@ fun Quiz(modifier: Modifier = Modifier) {
     else {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Nombre de réponses correctes : ${score}")
+                Text(text = "Nombre de réponses correctes : $score")
                 Row {
                     Button(onClick = { over = false; score = 0 }) {
                         Text(text = "Retour")
@@ -88,6 +92,20 @@ fun Quiz(modifier: Modifier = Modifier) {
                 }
             }
         }
+    }
+
+    LaunchedEffect(Dispatchers.IO) {
+        Database.open(context)
+        val events = Database.eventDao().getAll()
+        Log.i(null, events.toString())
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun QuizPreview() {
+    MobistoryTheme {
+        Quiz()
     }
 }
 
@@ -112,14 +130,6 @@ fun QuestionManager(modifier: Modifier = Modifier, question: Question, onGoodAns
                 selectedAnswer = answer
             })
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun QuizPreview() {
-    MobistoryTheme {
-        Quiz()
     }
 }
 
@@ -216,12 +226,12 @@ fun QuizQuestion(modifier: Modifier = Modifier, question: Question, selectedAnsw
         }
         Column(modifier = Modifier.weight(3f).fillMaxSize()) {
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(0), selected = selectedAnswer?.label == question.answers.get(0).label, selectAnswer = { answer -> selectAnswer(answer)})
-                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(1), selected = selectedAnswer?.label == question.answers.get(1).label, selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers[0], selected = selectedAnswer?.label == question.answers[0].label, selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers[1], selected = selectedAnswer?.label == question.answers[1].label, selectAnswer = { answer -> selectAnswer(answer)})
             }
             Row(modifier = Modifier.weight(1f).fillMaxSize()) {
-                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(2), selected = selectedAnswer?.label == question.answers.get(2).label, selectAnswer = { answer -> selectAnswer(answer)})
-                Answer(modifier = Modifier.weight(1f), answer = question.answers.get(3), selected = selectedAnswer?.label == question.answers.get(3).label, selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers[2], selected = selectedAnswer?.label == question.answers[2].label, selectAnswer = { answer -> selectAnswer(answer)})
+                Answer(modifier = Modifier.weight(1f), answer = question.answers[3], selected = selectedAnswer?.label == question.answers[3].label, selectAnswer = { answer -> selectAnswer(answer)})
             }
         }
     }
@@ -246,7 +256,7 @@ fun generateQuestion(): Question  {
         Event(label = "event 2", startDate = null, endDate = Date()),
         Event(label = "event 3", startDate = null, endDate = null)
     )
-    events = events.filter({ event -> event.startDate != null && event.endDate == null })
+    events = events.filter { event -> event.startDate != null && event.endDate == null }
 
     val event = events.random()
     val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
@@ -259,11 +269,11 @@ fun generateQuestion(): Question  {
         if (!years.contains(randomYear)) years.add(randomYear)
     }
 
-    val question = Question(label = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf<Answer>(
+    val question = Question(label = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf(
         Answer(label = year.toString(), goodAnswer = true),
-        Answer(label = years.get(0).toString(), goodAnswer = false),
-        Answer(label = years.get(1).toString(), goodAnswer = false),
-        Answer(label = years.get(2).toString(), goodAnswer = false)
+        Answer(label = years[0].toString(), goodAnswer = false),
+        Answer(label = years[1].toString(), goodAnswer = false),
+        Answer(label = years[2].toString(), goodAnswer = false)
     ).shuffled())
 
     return question
