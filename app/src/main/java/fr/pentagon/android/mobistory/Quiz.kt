@@ -35,7 +35,6 @@ import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import java.util.Calendar
-import java.util.Date
 import java.util.TimeZone
 import kotlin.math.absoluteValue
 
@@ -46,6 +45,7 @@ fun Quiz(modifier: Modifier = Modifier) {
     var nbRemainingQuestions by remember { mutableIntStateOf(0) }
     var question by remember { mutableStateOf<Question?>(null) }
     var score by remember { mutableStateOf(0) }
+    var questions by remember { mutableStateOf<List<Question>>(listOf()) }
     val context = LocalContext.current
 
     if (!running && !over) {
@@ -58,7 +58,7 @@ fun Quiz(modifier: Modifier = Modifier) {
             Button(onClick = {
                 running = true
                 nbRemainingQuestions = 3
-                question = generateQuestion()
+                question = questions.random()
             }) {
                 Text(text = "Démarrer")
             }
@@ -75,7 +75,7 @@ fun Quiz(modifier: Modifier = Modifier) {
                     over = true
                 }
                 else {
-                    question = generateQuestion()
+                    question = questions.random()
                 }
             })
             Spacer(modifier = Modifier.weight(1f))
@@ -97,7 +97,10 @@ fun Quiz(modifier: Modifier = Modifier) {
     LaunchedEffect(Dispatchers.IO) {
         Database.open(context)
         val events = Database.eventDao().getAll()
-        Log.i(null, events.toString())
+        events.forEach { event -> Log.i(null, event.startDate.toString() + " " + event.endDate.toString()) }
+
+        questions = generateQuestion(events)
+        Log.i(null, "QUESTIONS CREATED")
     }
 }
 
@@ -250,15 +253,17 @@ fun Answer(modifier: Modifier = Modifier, answer: Answer, selected: Boolean, sel
 
 data class Question(val label: String, val answers: List<Answer>)
 
-fun generateQuestion(): Question  {
-    var events = listOf(
+fun generateQuestion(events: List<Event>): List<Question>  {
+    /*var events = listOf(
         Event(label = "event 1", startDate = Date(), endDate = null),
         Event(label = "event 2", startDate = null, endDate = Date()),
         Event(label = "event 3", startDate = null, endDate = null)
-    )
-    events = events.filter { event -> event.startDate != null && event.endDate == null }
+    )*/
+    /*val questions = ArrayList<Question>()
 
-    val event = events.random()
+    val filteredEvents = events.filter { event -> event.startDate != null && event.endDate == null }
+
+    val event = filteredEvents.random()
     val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
     cal.setTime(event.startDate!!)
     val year = cal.get(Calendar.YEAR)
@@ -269,21 +274,52 @@ fun generateQuestion(): Question  {
         if (!years.contains(randomYear)) years.add(randomYear)
     }
 
-    val question = Question(label = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf(
+    questions.add(Question(label = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf(
         Answer(label = year.toString(), goodAnswer = true),
         Answer(label = years[0].toString(), goodAnswer = false),
         Answer(label = years[1].toString(), goodAnswer = false),
         Answer(label = years[2].toString(), goodAnswer = false)
-    ).shuffled())
+    ).shuffled()))
 
-    return question
+    return questions*/
+    val questions = ArrayList<Question>()
+
+    questions.addAll(generateQuestionsWithStartDate(events))
+
+    return questions
+}
+
+private fun generateQuestionsWithStartDate(events: List<Event>): List<Question> {
+    val questions = ArrayList<Question>()
+
+    val filteredEvents = events.filter { event -> event.startDate != null && event.endDate == null }
+
+    val event = filteredEvents.random()
+    val cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
+    cal.setTime(event.startDate!!)
+    val year = cal.get(Calendar.YEAR)
+    val years = ArrayList<Int>(3)
+
+    while (years.size < 3) {
+        val randomYear = (((year - 20)..(year - 1)) + ((year + 1)..(year + 20))).random()
+        if (!years.contains(randomYear)) years.add(randomYear)
+    }
+
+    questions.add(Question(label = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf(
+        Answer(label = year.toString(), goodAnswer = true),
+        Answer(label = years[0].toString(), goodAnswer = false),
+        Answer(label = years[1].toString(), goodAnswer = false),
+        Answer(label = years[2].toString(), goodAnswer = false)
+    ).shuffled()))
+
+    return questions
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TestPreview() {
     MobistoryTheme {
-        val question = generateQuestion()
+        val question = generateQuestion(listOf())
         Log.i(null, question.toString())
     }
 }

@@ -59,7 +59,7 @@ suspend fun eventInitializer(context: Context, onFinish: () -> Unit) {
         val keywordEventJoinDao = Database.keywordEventJoinDao()
         var i = 0
         for(event in events) {
-            if(i == 150) break //TODO remove this in production
+            if(i == 1000) break //TODO remove this in production
             Log.i("Database initialisation", "Inserting the event number ${event.id}")
             if(Database.eventDao().existsByLabel(event.label.representation()!!)){
                 continue
