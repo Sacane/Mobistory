@@ -102,7 +102,8 @@ fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String
     val request = StringRequest(
         Request.Method.GET,
         apiUrl, { response ->
-            val url = URLDecoder.decode(JSONArray(response)[3].toString().removeSurrounding("[\"", "\"]"), "UTF-8").replace("\\", "")
+            val url = URLDecoder.decode(JSONArray(response)[3].toString().split(",")[0].removeSurrounding("[\"", "\"]"), "UTF-8").replace("[\\\\\\[\"]".toRegex(), "")
+            Log.i("url", url)
             onRetrieve(url)
         }
     ){error ->
