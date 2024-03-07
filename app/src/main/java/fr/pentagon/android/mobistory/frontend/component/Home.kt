@@ -20,18 +20,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.backend.getEventOfTheDayId
 import fr.pentagon.android.mobistory.ui.theme.Typography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import fr.pentagon.android.mobistory.backend.getEventOfTheDayId
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
 
 @Composable
-fun Home() {
+fun HomePage() {
     val context = LocalContext.current
-    var event by remember { mutableStateOf<Event?>(null)}
+    var event by remember { mutableStateOf<Event?>(null) }
 
     LaunchedEffect(true) {
         withContext(Dispatchers.IO) {
@@ -80,7 +80,10 @@ fun EventOfTheDayDateDisplayer(event: Event) {
         Row {
             Text(text = SimpleDateFormat("dd/MM/yyyy").format(it), style = Typography.bodyMedium)
             event.endDate?.let {
-                Text(text = " - " + SimpleDateFormat("dd/MM/yyyy").format(it), style = Typography.bodyMedium)
+                Text(
+                    text = " - " + SimpleDateFormat("dd/MM/yyyy").format(it),
+                    style = Typography.bodyMedium
+                )
             }
         }
     }
@@ -89,10 +92,11 @@ fun EventOfTheDayDateDisplayer(event: Event) {
 @Preview(showBackground = true)
 @Composable
 fun EventOfTheDayPreview() {
-    val event = Event(label = "Révolution française||French Revolution",
+    val event = Event(
+        label = "Révolution française||French Revolution",
         startDate = Date.from(Instant.parse("1789-07-14T12:00:00Z")),
         endDate = Date.from(Instant.parse("1799-11-09T12:00:00Z")),
         description = "période de l'histoire de France et de ses colonies, entre le 5 mai 1789 et le 9 novembre 1799||revolution in France from 1789 to 1799"
-        )
+    )
     HomeContainer(event = event)
 }
