@@ -1,15 +1,12 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,8 +24,6 @@ import fr.pentagon.android.mobistory.ui.theme.Typography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import fr.pentagon.android.mobistory.backend.getEventOfTheDayId
-import fr.pentagon.android.mobistory.frontend.component.EventDetail
-import fr.pentagon.android.mobistory.frontend.component.EventDetailPreview
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
@@ -65,15 +60,8 @@ fun EventOfTheDayContainer(event: Event) {
 
 @Composable
 fun EventOfTheDayDisplayer(event: Event, modifier: Modifier) {
-    Column(modifier = modifier
-        .padding(8.dp)) {
-        Text(
-            text = "Évènement du jour",
-            style = Typography.headlineLarge,
-            modifier = Modifier.padding(8.dp)
-        )
-        Divider()
-        Column (modifier = Modifier.padding(8.dp)) {
+    TitledContent(title = "Évènement du jour", modifier = modifier) {
+        Column {
             Text(text = event.title, style = Typography.headlineMedium)
             EventOfTheDayDateDisplayer(event = event)
             Spacer(modifier = Modifier.size(8.dp))

@@ -2,6 +2,7 @@ package fr.pentagon.android.mobistory.backend
 
 import android.content.Context
 import android.net.Uri
+import androidx.room.AutoMigration
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter

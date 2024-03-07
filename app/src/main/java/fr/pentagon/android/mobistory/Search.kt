@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
@@ -88,7 +90,7 @@ fun Search(modifier: Modifier = Modifier) {
                     dateState = dateState)
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Divider(modifier = Modifier.padding(8.dp))
         val listWeight = if (visible) 0.2f else 0.9f
         Box(modifier = Modifier
             .fillMaxSize()

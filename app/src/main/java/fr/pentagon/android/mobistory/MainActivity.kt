@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +35,7 @@ import fr.pentagon.android.mobistory.backend.json.eventInitializer
 import fr.pentagon.android.mobistory.frontend.component.LoadingScreen
 
 import fr.pentagon.android.mobistory.frontend.component.FavoritePage
+import fr.pentagon.android.mobistory.frontend.component.Home
 import fr.pentagon.android.mobistory.frontend.component.findContentPageFromUrl
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
