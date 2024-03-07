@@ -1,5 +1,6 @@
 package fr.pentagon.android.mobistory
 
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -29,6 +29,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.frontend.component.FavoriteButton
+
+
+data class FakeEvent(val name: String, val description: String, val date: String)
 
 /**
  * Represent on small event component. (ex : During a research)
@@ -37,7 +41,7 @@ import fr.pentagon.android.mobistory.backend.Event
  * @param label
  */
 @Composable
-fun SmallEventComponent(event: Event, label: String? = null) {
+fun SmallEventComponent(event: Event, label: String? = null, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -76,19 +80,14 @@ fun SmallEventComponent(event: Event, label: String? = null) {
             )
             Divider(modifier = Modifier.padding(vertical = 8.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
-                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = { onClick() }, modifier = Modifier.size(32.dp)) {
                     Icon(
                         Icons.Default.ArrowForward, contentDescription = "Regarder l'article",
                         modifier = Modifier.size(32.dp)
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(32.dp)) {
-                    Icon(
-                        Icons.Default.FavoriteBorder, contentDescription = "Favori",
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
+                FavoriteButton(event = event, buttonSize = 32.dp)
             }
         }
     }
@@ -112,7 +111,8 @@ fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier) {
         items(events.size) { index ->
             val currentEv = events[index]
             SmallEventComponent(
-                event = currentEv
+                event = currentEv,
+                onClick = {}
             )
         }
     }

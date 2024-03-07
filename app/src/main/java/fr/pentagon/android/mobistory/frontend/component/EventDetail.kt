@@ -7,40 +7,28 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
-import fr.pentagon.android.mobistory.backend.entity.FavoriteEvent
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import fr.pentagon.android.mobistory.ui.theme.Typography
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.jsoup.Jsoup
@@ -83,17 +71,11 @@ fun EventDetail(context: Context, event: Event) {
     var content by rememberSaveable {
         mutableStateOf("Chargement des données...")
     }
-    var isFavorited by remember {
-        mutableStateOf(false)
-    }
     val scrollState = rememberScrollState()
     val label = event.label.split("||")
-    var openAlertDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(event) {
         withContext(Dispatchers.IO) {
-            isFavorited = Database.favoriteDao().isFavorited(event.eventId)
             val language: LanguageUrlReference = if (label.first().isEmpty()) {
                 LanguageUrlReference.EN
             } else {
@@ -108,43 +90,8 @@ fun EventDetail(context: Context, event: Event) {
     }
 
     TitledContent(event.title, actionButton = {
-        IconButton(onClick = {
-            if (!isFavorited) {
-                openAlertDialog = true
-            } else {
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        Database.favoriteDao().deleteFavorite(event.eventId)
-                    }
-                    isFavorited = false
-                }
-            }
-        }) {
-            Icon(
-                if (isFavorited) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = "Favorite",
-                tint = Color.Magenta,
-                modifier = Modifier.size(72.dp)
-            )
-        }
+        FavoriteButton(event = event, buttonSize = 72.dp)
     }) {
-        if (openAlertDialog) {
-            FavoriteDialogConfirm(
-                onDismissRequest = { openAlertDialog = false },
-                onConfirmation = { label ->
-                    openAlertDialog = false
-                    isFavorited = true
-                    scope.launch {
-                        Database.favoriteDao().addFavorite(
-                            FavoriteEvent(
-                                favoriteEventId = event.eventId,
-                                customLabel = label
-                            )
-                        )
-                    }
-                }
-            )
-        }
         Column(Modifier.verticalScroll(scrollState)) {
             Text(content)
         }
