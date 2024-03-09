@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,12 +59,17 @@ fun Quiz(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.weight(1.4f))
             Text(text = "Le quiz est composé de 3 questions avec 4 possibilités pour chaque question mais une seule réponse possible, vous avez 10 secondes pour répondre à chaque question.")
             Spacer(modifier = Modifier.weight(1f))
-            Button(onClick = {
-                running = true
-                nbRemainingQuestions = 3
-                question = questions.random()
-            }) {
-                Text(text = "Démarrer")
+            if (questions.isNotEmpty()) {
+                Button(onClick = {
+                    running = true
+                    nbRemainingQuestions = 3
+                    question = questions.random()
+                }) {
+                    Text(text = "Démarrer")
+                }
+            }
+            else {
+                Text(text = "Questions en cours de chargement ...")
             }
             Spacer(modifier = Modifier.weight(2f))
         }
@@ -234,7 +241,9 @@ fun QuizQuestion(modifier: Modifier = Modifier, question: Question, selectedAnsw
         Box(modifier = Modifier
             .weight(1f)
             .fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(question.label)
+            val scrollState = rememberScrollState()
+
+            Text(text = question.label, modifier = Modifier.verticalScroll(scrollState))
         }
         Column(modifier = Modifier
             .weight(3f)
@@ -273,14 +282,15 @@ fun Answer(modifier: Modifier = Modifier, answer: Answer, selected: Boolean, sel
                 )
             )
             .clickable { selectAnswer(answer) }, contentAlignment = Alignment.Center) {
-            Text(answer.label)
+            val scrollState = rememberScrollState()
+
+            Text(text = answer.label, modifier = Modifier.verticalScroll(scrollState))
         }
     }
 }
 
 data class Question(val label: String, val answers: List<Answer>)
 
-// TODO fix bug affichage
 fun generateQuestion(events: List<Event>): List<Question>  {
     val questions = ArrayList<Question>()
 
