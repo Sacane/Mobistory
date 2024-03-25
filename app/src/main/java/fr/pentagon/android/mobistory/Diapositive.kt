@@ -1,7 +1,6 @@
 package fr.pentagon.android.mobistory
 
-import android.graphics.drawable.Icon
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,11 +12,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
@@ -30,7 +28,7 @@ fun ImageDisplayer(modifier: Modifier = Modifier, url: String) {
             modifier = modifier.fillMaxSize(),
             model = url,
             contentDescription = "My async image",
-            contentScale = ContentScale.FillBounds
+            contentScale = ContentScale.FillWidth
         )
     }
 }
@@ -45,8 +43,8 @@ fun ImageDisplayerPreview() {
 
 @Composable
 fun Diapositive(modifier: Modifier = Modifier, images: List<String>) {
-    var index by remember { mutableStateOf(0) }
-
+    var index by remember { mutableIntStateOf(0) }
+    Log.i("imgs", images.joinToString(", "))
     Row(modifier = modifier.fillMaxSize()) {
         IconButton(onClick = { index = if(index == 0) images.size - 1 else index - 1 }, modifier = Modifier.fillMaxHeight()) {
             Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = "Previous")

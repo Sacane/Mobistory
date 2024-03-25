@@ -3,17 +3,25 @@ package fr.pentagon.android.mobistory.frontend.component
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -24,11 +32,14 @@ import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import fr.pentagon.android.mobistory.Diapositive
 import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import org.json.JSONArray
 import org.jsoup.Jsoup
 import java.net.URLDecoder
+import java.util.Calendar
+import java.util.TimeZone
 
 @Composable
 fun TitledContent(title: String, content: @Composable () -> Unit) {
@@ -59,6 +70,10 @@ fun TitledContent(title: String, content: @Composable () -> Unit) {
  */
 @Composable
 fun EventDetail(context: Context, event: Event) {
+    var displayDiaporama by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val listOfImages = remember {mutableStateListOf<String>()}
     var content by rememberSaveable {
         mutableStateOf("Chargement des données...")
     }
@@ -71,15 +86,25 @@ fun EventDetail(context: Context, event: Event) {
             LanguageUrlReference.FR
         }
         findUrlFromLabel(ctx = context, label = event.title, language = language){ url ->
-            findContentPageFromUrl(context, url) {
-                content = it
+            findContentPageFromUrl(context, url) { s, imgs ->
+                content = s
+                listOfImages.addAll(imgs)
             }
         }
     }
-    TitledContent(event.title) {
-        Column(Modifier.verticalScroll(scrollState)) {
-            Text(content)
+    if(!displayDiaporama) {
+        TitledContent(event.title) {
+            Column(Modifier.fillMaxHeight()) {
+                Column(Modifier.verticalScroll(scrollState).weight(8f)) {
+                    Text(content)
+                }
+                Button(onClick = { displayDiaporama = true }, modifier = Modifier.weight(1f)) {
+                    Text(text = "Acceder au diapositif")
+                }
+            }
         }
+    } else {
+        Diapositive(images = listOfImages)
     }
 }
 
@@ -92,21 +117,35 @@ enum class LanguageUrlReference(val representation: String) {
 @Preview
 fun EventDetailPreview() {
     MobistoryTheme {
-        EventDetail(context = LocalContext.current, Event("||Attempted assassination of Alexandre Millerand"))
+        EventDetail(context = LocalContext.current, Event("Concertina, rencontres estivales autour des enfermements 2021"))
     }
 }
 
 fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String, onRetrieve: (String) -> Unit) {
-    val apiUrl = "https://${language.representation}.wikipedia.org/w/api.php?action=opensearch&format=json&search=${label.replace(" ", "%20")}"
+    val apiUrl =
+        "https://${language.representation}.wikipedia.org/w/api.php?action=opensearch&format=json&search=${
+            label.replace(
+                " ",
+                "%20"
+            )
+        }"
+    Log.i("apiUrl", apiUrl)
     val queue = Volley.newRequestQueue(ctx)
     val request = StringRequest(
         Request.Method.GET,
         apiUrl, { response ->
-            val url = URLDecoder.decode(JSONArray(response)[3].toString().split(",")[0].removeSurrounding("[\"", "\"]"), "UTF-8").replace("[\\\\\\[\"]".toRegex(), "")
+            val urlResponse = JSONArray(response)[3].toString().split(",")
+            val urlTarget = if (urlResponse.size > 1 && urlResponse[1].contains("http")) {
+                urlResponse[0]
+            } else {
+                JSONArray(response)[3].toString()
+            }
+            val url = URLDecoder.decode(urlTarget.removeSurrounding("[\"", "\"]"), "UTF-8")
+                .replace("[\\\\\\[\"]".toRegex(), "")
             Log.i("url", url)
             onRetrieve(url)
         }
-    ){error ->
+    ) { error ->
         Log.w("NO CONTENT", "There is no url for this label...")
     }
     queue.add(request)
@@ -115,7 +154,7 @@ fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String
 fun findContentPageFromUrl(
     context: Context,
     url: String,
-    onRetrieve: (String) -> Unit = { content ->
+    onRetrieve: (String, List<String>) -> Unit = { content, images ->
     Log.i(
         "Content",
         content
@@ -132,11 +171,14 @@ fun findContentPageFromUrl(
             mainContentDiv.select("div.printfooter").remove()
             if(mainContentDiv.isNotEmpty()) {
                 mainContentDiv.first()?.let {
-                    onRetrieve(it.text())
+                    onRetrieve(it.text(), mainContentDiv.select("img")
+                        .map { img -> "https:" + img.attr("src") }.filter { src -> !src.contains("static")}
+                    )
                 }
             } else {
                 Log.w("NO CONTENT", "There is not final content...")
             }
+
         }
     ) {error ->
         Log.w("error at retrieving -> ", error.message ?: "unknown")

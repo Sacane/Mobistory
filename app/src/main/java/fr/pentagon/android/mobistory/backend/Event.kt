@@ -35,7 +35,7 @@ data class Event(
     val title: String
         get() = label.split("||").first()
             .replaceFirstChar { it.uppercase() }
-            .ifEmpty { label.replace("||", "") }
+            .ifEmpty { label.replace("||", "") }.replace(",", "")
 
     val brief: String
         get() = description?.split("||")?.first()
