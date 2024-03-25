@@ -106,7 +106,6 @@ fun Quiz(modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(Dispatchers.IO) {
-        Database.open(context)
         val events = Database.eventDao().getAll()
 
         questions = generateQuestion(events)
