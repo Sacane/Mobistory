@@ -5,16 +5,20 @@ import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import fr.pentagon.android.mobistory.Diapositive
 import fr.pentagon.android.mobistory.backend.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import fr.pentagon.android.mobistory.ui.theme.Typography
@@ -68,13 +73,16 @@ fun TitledContent(
  */
 @Composable
 fun EventDetail(context: Context, event: Event) {
+    var displayDiaporama by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val listOfImages = remember {mutableStateListOf<String>()}
     var content by rememberSaveable {
         mutableStateOf("Chargement des données...")
     }
     val scrollState = rememberScrollState()
     val label = event.label.split("||")
-
-    LaunchedEffect(event) {
+    LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             val language: LanguageUrlReference = if (label.first().isEmpty()) {
                 LanguageUrlReference.EN
@@ -82,19 +90,28 @@ fun EventDetail(context: Context, event: Event) {
                 LanguageUrlReference.FR
             }
             findUrlFromLabel(ctx = context, label = event.title, language = language) { url ->
-                findContentPageFromUrl(context, url) {
-                    content = it
+                findContentPageFromUrl(context, url) { s, imgs ->
+                    content = s
+                    listOfImages.addAll(imgs)
                 }
             }
         }
     }
-
-    TitledContent(event.title, actionButton = {
-        FavoriteButton(event = event, buttonSize = 72.dp)
-    }) {
-        Column(Modifier.verticalScroll(scrollState)) {
-            Text(content)
+    if(!displayDiaporama) {
+        TitledContent(event.title, actionButton = {
+            FavoriteButton(event = event, buttonSize = 72.dp)
+        }) {
+            Column(Modifier.fillMaxHeight()) {
+                Column(Modifier.verticalScroll(scrollState).weight(8f)) {
+                    Text(content)
+                }
+                Button(onClick = { displayDiaporama = true }, modifier = Modifier.weight(1f)) {
+                    Text(text = "Acceder au diapositif")
+                }
+            }
         }
+    } else {
+        Diapositive(images = listOfImages)
     }
 }
 
@@ -114,12 +131,7 @@ fun EventDetailPreview() {
     }
 }
 
-fun findUrlFromLabel(
-    ctx: Context,
-    language: LanguageUrlReference,
-    label: String,
-    onRetrieve: (String) -> Unit
-) {
+fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String, onRetrieve: (String) -> Unit) {
     val apiUrl =
         "https://${language.representation}.wikipedia.org/w/api.php?action=opensearch&format=json&search=${
             label.replace(
@@ -127,16 +139,19 @@ fun findUrlFromLabel(
                 "%20"
             )
         }"
+    Log.i("apiUrl", apiUrl)
     val queue = Volley.newRequestQueue(ctx)
     val request = StringRequest(
         Request.Method.GET,
         apiUrl, { response ->
-            val url = URLDecoder.decode(
-                JSONArray(response)[3].toString().split(",")[0].removeSurrounding(
-                    "[\"",
-                    "\"]"
-                ), "UTF-8"
-            ).replace("[\\\\\\[\"]".toRegex(), "")
+            val urlResponse = JSONArray(response)[3].toString().split(",")
+            val urlTarget = if (urlResponse.size > 1 && urlResponse[1].contains("http")) {
+                urlResponse[0]
+            } else {
+                JSONArray(response)[3].toString()
+            }
+            val url = URLDecoder.decode(urlTarget.removeSurrounding("[\"", "\"]"), "UTF-8")
+                .replace("[\\\\\\[\"]".toRegex(), "")
             Log.i("url", url)
             onRetrieve(url)
         }
@@ -149,13 +164,12 @@ fun findUrlFromLabel(
 fun findContentPageFromUrl(
     context: Context,
     url: String,
-    onRetrieve: (String) -> Unit = { content ->
-        Log.i(
-            "Content",
-            content
-        )
-    }
-) {
+    onRetrieve: (String, List<String>) -> Unit = { content, images ->
+    Log.i(
+        "Content",
+        content
+    )
+}) {
     val queue = Volley.newRequestQueue(context)
     val stringRequest = StringRequest(
         Request.Method.GET,
@@ -167,11 +181,14 @@ fun findContentPageFromUrl(
             mainContentDiv.select("div.printfooter").remove()
             if (mainContentDiv.isNotEmpty()) {
                 mainContentDiv.first()?.let {
-                    onRetrieve(it.text())
+                    onRetrieve(it.text(), mainContentDiv.select("img")
+                        .map { img -> "https:" + img.attr("src") }.filter { src -> !src.contains("static")}
+                    )
                 }
             } else {
                 Log.w("NO CONTENT", "There is not final content...")
             }
+
         }
     ) { error ->
         Log.w("error at retrieving -> ", error.message ?: "unknown")
