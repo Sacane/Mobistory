@@ -1,11 +1,9 @@
 package fr.pentagon.android.mobistory
 
-import android.util.Log
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.Divider
@@ -20,11 +18,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.frontend.component.EventDetail
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,6 +38,7 @@ fun Search(modifier: Modifier = Modifier) {
     var selectedOrder by remember { mutableStateOf(SortOrder.INIT) }
     var dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
     var searchKey by remember { mutableIntStateOf(0) }
+    var eventDetail by remember { mutableStateOf<Event?>(null) }
 
     LaunchedEffect(searchedText, searchKey) {
         listOfEv = withContext(Dispatchers.IO) {
@@ -72,42 +73,55 @@ fun Search(modifier: Modifier = Modifier) {
             (event.endDate?.time ?: Long.MAX_VALUE) < selectedEndDate
         } ?: true
     }
-
-    Column {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .weight(0.1f)){
-            SearchBarComponent(onSearch = { searchedText = it },
-                onActiveFilter = {visible = !visible})
-        }
-        if(visible){
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .weight(0.8f)){
-                FilterComponent(onSelectedSortOrder = {selectedOrder = it},
-                    onSelectedDateInterval = {dateState = it},
-                    selectedSort = selectedOrder,
-                    dateState = dateState)
+    if(eventDetail == null) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(0.1f)
+            ) {
+                SearchBarComponent(onSearch = { searchedText = it },
+                    onActiveFilter = { visible = !visible })
+            }
+            if (visible) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(0.8f)
+                ) {
+                    FilterComponent(
+                        onSelectedSortOrder = { selectedOrder = it },
+                        onSelectedDateInterval = { dateState = it },
+                        selectedSort = selectedOrder,
+                        dateState = dateState
+                    )
+                }
+            }
+            Divider(modifier = Modifier.padding(8.dp))
+            val listWeight = if (visible) 0.2f else 0.9f
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(listWeight)
+            ) {
+                DisplaySmallEventsList(events = filteredEvents, modifier = modifier) {
+                    eventDetail = it
+                }
             }
         }
-        Divider(modifier = Modifier.padding(8.dp))
-        val listWeight = if (visible) 0.2f else 0.9f
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .weight(listWeight)){
-            DisplaySmallEventsList(events = filteredEvents, modifier = modifier)
+        DisposableEffect(selectedOrder) {
+            searchKey++
+            onDispose { }
         }
-    }
-    DisposableEffect(selectedOrder) {
-        searchKey++
-        onDispose { /* Rien à faire ici */ }
+    }else {
+        EventDetail(context = LocalContext.current, event = eventDetail!!)
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun SearchPreview() {
     MobistoryTheme {
         Search()
     }
-}
+}*/

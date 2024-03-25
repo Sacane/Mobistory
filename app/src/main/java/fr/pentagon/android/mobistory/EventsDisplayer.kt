@@ -41,7 +41,7 @@ data class FakeEvent(val name: String, val description: String, val date: String
  * @param label
  */
 @Composable
-fun SmallEventComponent(event: Event, label: String? = null, onClick: () -> Unit) {
+fun SmallEventComponent(event: Event, label: String? = null, onClick: (Event) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -80,7 +80,7 @@ fun SmallEventComponent(event: Event, label: String? = null, onClick: () -> Unit
             )
             Divider(modifier = Modifier.padding(vertical = 8.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
-                IconButton(onClick = { onClick() }, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = { onClick(event) }, modifier = Modifier.size(32.dp)) {
                     Icon(
                         Icons.Default.ArrowForward, contentDescription = "Regarder l'article",
                         modifier = Modifier.size(32.dp)
@@ -100,7 +100,7 @@ fun SmallEventComponent(event: Event, label: String? = null, onClick: () -> Unit
  * @param events list of events
  */
 @Composable
-fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier) {
+fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier, onClick: (Event) -> Unit = {_ -> }) {
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
@@ -112,7 +112,7 @@ fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier) {
             val currentEv = events[index]
             SmallEventComponent(
                 event = currentEv,
-                onClick = {}
+                onClick = onClick
             )
         }
     }
