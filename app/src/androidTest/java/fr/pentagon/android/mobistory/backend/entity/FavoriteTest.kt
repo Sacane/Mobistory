@@ -42,7 +42,8 @@ class FavoriteTest {
         eventDao.save(event)
         assertNotNull(eventDao.findById(id))
         favoriteDao.addFavorite(FavoriteEvent(
-            favoriteEventId = id
+            favoriteEventId = id,
+            customLabel = "idk"
         ))
         assertEquals(1, favoriteDao.getAllFavorite().size)
     }
@@ -54,7 +55,8 @@ class FavoriteTest {
             Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
         eventDao.save(event)
         favoriteDao.addFavorite(FavoriteEvent(
-            favoriteEventId = id
+            favoriteEventId = id,
+            customLabel = "idk"
         ))
 
         favoriteDao.deleteFavorite(id)

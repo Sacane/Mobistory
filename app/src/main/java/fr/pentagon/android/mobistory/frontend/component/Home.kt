@@ -1,15 +1,12 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,20 +20,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.backend.getEventOfTheDayId
 import fr.pentagon.android.mobistory.ui.theme.Typography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import fr.pentagon.android.mobistory.backend.getEventOfTheDayId
-import fr.pentagon.android.mobistory.frontend.component.EventDetail
-import fr.pentagon.android.mobistory.frontend.component.EventDetailPreview
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
 
 @Composable
-fun Home() {
+fun HomePage() {
     val context = LocalContext.current
-    var event by remember { mutableStateOf<Event?>(null)}
+    var event by remember { mutableStateOf<Event?>(null) }
 
     LaunchedEffect(true) {
         withContext(Dispatchers.IO) {
@@ -65,15 +60,8 @@ fun EventOfTheDayContainer(event: Event) {
 
 @Composable
 fun EventOfTheDayDisplayer(event: Event, modifier: Modifier) {
-    Column(modifier = modifier
-        .padding(8.dp)) {
-        Text(
-            text = "Évènement du jour",
-            style = Typography.headlineLarge,
-            modifier = Modifier.padding(8.dp)
-        )
-        Divider()
-        Column (modifier = Modifier.padding(8.dp)) {
+    TitledContent(title = "Évènement du jour", modifier = modifier) {
+        Column {
             Text(text = event.title, style = Typography.headlineMedium)
             EventOfTheDayDateDisplayer(event = event)
             Spacer(modifier = Modifier.size(8.dp))
@@ -92,7 +80,10 @@ fun EventOfTheDayDateDisplayer(event: Event) {
         Row {
             Text(text = SimpleDateFormat("dd/MM/yyyy").format(it), style = Typography.bodyMedium)
             event.endDate?.let {
-                Text(text = " - " + SimpleDateFormat("dd/MM/yyyy").format(it), style = Typography.bodyMedium)
+                Text(
+                    text = " - " + SimpleDateFormat("dd/MM/yyyy").format(it),
+                    style = Typography.bodyMedium
+                )
             }
         }
     }
@@ -101,10 +92,11 @@ fun EventOfTheDayDateDisplayer(event: Event) {
 @Preview(showBackground = true)
 @Composable
 fun EventOfTheDayPreview() {
-    val event = Event(label = "Révolution française||French Revolution",
+    val event = Event(
+        label = "Révolution française||French Revolution",
         startDate = Date.from(Instant.parse("1789-07-14T12:00:00Z")),
         endDate = Date.from(Instant.parse("1799-11-09T12:00:00Z")),
         description = "période de l'histoire de France et de ses colonies, entre le 5 mai 1789 et le 9 novembre 1799||revolution in France from 1789 to 1799"
-        )
+    )
     HomeContainer(event = event)
 }

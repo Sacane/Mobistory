@@ -53,7 +53,7 @@ class LocationService : Service() {
                 ) {
                     lm.requestLocationUpdates("gps", 10000L, 0f, object : LocationListener {
                         override fun onLocationChanged(location: Location) {
-                            Log.i(null, location.toString())
+                            // Log.i(null, location.toString())
                         }
                     })
                 }
