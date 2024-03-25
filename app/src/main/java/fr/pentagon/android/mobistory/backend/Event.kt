@@ -18,6 +18,7 @@ import fr.pentagon.android.mobistory.backend.entity.Participant
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import kotlin.random.Random
 
 @Entity(tableName = "event")
@@ -32,7 +33,16 @@ data class Event(
     val popularity: Int = 0
 ): Serializable {
     val title: String
-        get() = label.split("||").first().ifEmpty { label.replace("||", "") }
+        get() = label.split("||").first()
+            .replaceFirstChar { it.uppercase() }
+            .ifEmpty { label.replace("||", "") }
+
+    val brief: String
+        get() = description?.split("||")?.first()
+            ?.replaceFirstChar { it.uppercase() }
+            ?.ifEmpty { description.replace("||", "") }
+            ?: "<empty description>"
+
     override fun equals(other: Any?): Boolean {
         return if (other is Event) {
             eventId == other.eventId
@@ -49,22 +59,19 @@ data class Event(
         return if (this.description == null) "<empty description>" else this.description.split("||")[0]
     }
     fun getQuestionLabel(): String {
-        return if (getFrenchLabel().trim() != "") getFrenchLabel().trim() else label.split("||")[1]
+        return title
     }
     fun getQuestionDescription(): String {
         return if (getFrenchDescription().trim() != "") getFrenchDescription().trim() else description!!.split("||")[1]
     }
-    fun getFrenchLabel(): String {
-        return this.label.split("||")[0]
-    }
     fun getFormatStartDate(): String {
-        val formatDate = SimpleDateFormat("MM/yyyy")
+        val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
         return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
     }
 
     fun getFormatEndDate(): String {
-        val formatDate = SimpleDateFormat("MM/yyyy")
-        return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
+        val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+        return if (this.endDate == null) "<empty date>" else formatDate.format(this.endDate)
     }
 
     fun getCleanDate(): String {
@@ -141,9 +148,44 @@ interface EventDao{
 
     @Transaction
     @Query("SELECT * FROM event LIMIT 50")
-    suspend fun getEventsLimitOf50(): List<Event>
+    suspend fun findEventsLimitOf50(): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE startDate IS NOT NULL ORDER BY startDate")
+    suspend fun findEventsOrderedAscendingDateLimit50(): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE startDate IS NOT NULL ORDER BY startDate DESC")
+    suspend fun findEventsOrderedDescendingDateLimit50(): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event ORDER BY popularity LIMIT 50")
+    suspend fun findEventsOrderedByPopularityLimit50(): List<Event>
 
     @Transaction
     @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
     suspend fun getEventsContainsSearchQuery(searchQuery: String): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE strftime('%d/%m', startDate) = format('%02d/%02d', :day, :month) ORDER BY popularity DESC LIMIT 5")
+    suspend fun findTop5EventByDay(day: Int, month: Int): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE strftime('%m', startDate) = format('%02d', :month) ORDER BY popularity DESC LIMIT 5")
+    suspend fun findTop5EventByMonth(month: Int): List<Event>
+    @Transaction
+    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
+    suspend fun findEventsContainsSearchQuery(searchQuery: String): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE (label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%') AND startDate IS NOT NULL AND startDate <> 'null' ORDER BY startDate")
+    suspend fun findEventsContainsSearchQueryOrderedAscendingDate(searchQuery: String): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE (label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%') AND startDate IS NOT NULL AND startDate <> 'null' ORDER BY startDate DESC")
+    suspend fun findEventsContainsSearchQueryOrderedDescendingDate(searchQuery: String): List<Event>
+
+    @Transaction
+    @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' ORDER BY popularity")
+    suspend fun findEventsContainsSearchOrderedByPopularity(searchQuery: String): List<Event>
 }
