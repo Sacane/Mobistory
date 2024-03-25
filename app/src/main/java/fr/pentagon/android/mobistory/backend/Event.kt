@@ -48,6 +48,12 @@ data class Event(
     fun getFrenchDescription(): String {
         return if (this.description == null) "<empty description>" else this.description.split("||")[0]
     }
+    fun getQuestionLabel(): String {
+        return if (getFrenchLabel().trim() != "") getFrenchLabel().trim() else label.split("||")[1]
+    }
+    fun getQuestionDescription(): String {
+        return if (getFrenchDescription().trim() != "") getFrenchDescription().trim() else description!!.split("||")[1]
+    }
     fun getFrenchLabel(): String {
         return this.label.split("||")[0]
     }

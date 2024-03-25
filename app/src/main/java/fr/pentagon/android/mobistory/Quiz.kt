@@ -333,7 +333,7 @@ private fun generateQuestionsWithDate(events: List<Event>): List<Question> {
             if (!years.contains(randomYear)) years.add(randomYear)
         }
 
-        questions.add(Question(label = "En quelle année cet évènement a eu lieu: " + event.label + " ?", answers = listOf(
+        questions.add(Question(label = "En quelle année cet évènement a eu lieu: " + event.getQuestionLabel() + " ?", answers = listOf(
             Answer(label = year.toString(), goodAnswer = true),
             Answer(label = years[0].toString(), goodAnswer = false),
             Answer(label = years[1].toString(), goodAnswer = false),
@@ -361,11 +361,11 @@ private fun generateQuestionsWithDescription(events: List<Event>): List<Question
             }
         }
 
-        questions.add(Question(label = "A quel évènement correspond cette description: " + event.description + " ?", answers = listOf(
-            Answer(label = event.label, goodAnswer = true),
-            Answer(label = selected[1].label, goodAnswer = false),
-            Answer(label = selected[2].label, goodAnswer = false),
-            Answer(label = selected[3].label, goodAnswer = false)
+        questions.add(Question(label = "A quel évènement correspond cette description: " + event.getQuestionDescription() + " ?", answers = listOf(
+            Answer(label = event.getQuestionLabel(), goodAnswer = true),
+            Answer(label = selected[1].getQuestionLabel(), goodAnswer = false),
+            Answer(label = selected[2].getQuestionLabel(), goodAnswer = false),
+            Answer(label = selected[3].getQuestionLabel(), goodAnswer = false)
         ).shuffled()))
     }
 
