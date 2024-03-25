@@ -58,7 +58,12 @@ data class Event(
     fun getFrenchDescription(): String {
         return if (this.description == null) "<empty description>" else this.description.split("||")[0]
     }
-
+    fun getQuestionLabel(): String {
+        return title
+    }
+    fun getQuestionDescription(): String {
+        return if (getFrenchDescription().trim() != "") getFrenchDescription().trim() else description!!.split("||")[1]
+    }
     fun getFormatStartDate(): String {
         val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
         return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
