@@ -167,12 +167,12 @@ interface EventDao{
     suspend fun getEventsContainsSearchQuery(searchQuery: String): List<Event>
 
     @Transaction
-    @Query("SELECT * FROM event WHERE strftime('%d/%m', startDate) = format('%02d/%02d', :day, :month) ORDER BY popularity DESC LIMIT 5")
-    suspend fun findTop5EventByDay(day: Int, month: Int): List<Event>
+    @Query("SELECT * FROM event WHERE strftime('%d/%m', startDate) = :day || '/' || :month ORDER BY popularity DESC LIMIT 5")
+    suspend fun findTop5EventByDay(day: String, month: String): List<Event>
 
     @Transaction
-    @Query("SELECT * FROM event WHERE strftime('%m', startDate) = format('%02d', :month) ORDER BY popularity DESC LIMIT 5")
-    suspend fun findTop5EventByMonth(month: Int): List<Event>
+    @Query("SELECT * FROM event WHERE strftime('%m', startDate) = :month ORDER BY popularity DESC LIMIT 5")
+    suspend fun findTop5EventByMonth(month: String): List<Event>
     @Transaction
     @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
     suspend fun findEventsContainsSearchQuery(searchQuery: String): List<Event>

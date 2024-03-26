@@ -41,11 +41,12 @@ suspend fun getEventOfTheDayId(context: Context): Int {
     val lastUpdate = timestampToLocalDate(cachedEventOfTheDay.lastUpdated)
 
     if (isAnotherDay(currentDay, lastUpdate)) {
-        var eventId = Database.eventDao()
-            .findTop5EventByDay(currentDay.dayOfMonth, currentDay.monthValue)
+        Log.i("are you here ??", "${currentDay.dayOfMonth} | ${currentDay.monthValue}")
+        val eventId = Database.eventDao()
+            .findTop5EventByDay(currentDay.dayOfMonth.toFormatDate(), currentDay.monthValue.toFormatDate())
             .randomOrNull()?.eventId
             ?: Database.eventDao()
-                .findTop5EventByMonth(currentDay.monthValue)
+                .findTop5EventByMonth(currentDay.monthValue.toFormatDate())
                 .randomOrNull()?.eventId
             ?: -1
 
@@ -55,6 +56,10 @@ suspend fun getEventOfTheDayId(context: Context): Int {
     }
 
     return cachedEventOfTheDay.id
+}
+
+fun Int.toFormatDate(): String {
+    return if(this < 10) "0".plus(this.toString()) else this.toString()
 }
 
 fun isAnotherDay(date1: LocalDate, date2: LocalDate): Boolean {
