@@ -22,22 +22,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
+import fr.pentagon.android.mobistory.backend.entity.Event
 
 enum class EventTimeLinePosition {
     TOP, BOTTOM
 }
 
 @Composable
-fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: FakeEvent, position: EventTimeLinePosition) {
-    Column(modifier = modifier.fillMaxSize()) {
+fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position: EventTimeLinePosition) {
+    Column(modifier = modifier) {
         if (position == EventTimeLinePosition.BOTTOM) {
             Box(
                 modifier = Modifier
-                    .background(color = Color.Green, shape = GenericShape { size, layoutDirection ->
+                    .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255), shape = GenericShape { size, layoutDirection ->
                         moveTo(size.width - (size.width / 3), size.height)
                         lineTo(size.width, 0f)
                         lineTo(size.width, size.height)
@@ -49,26 +48,26 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: FakeEvent, posi
         }
         Column(
             modifier = Modifier
-                .background(color = Color.Green)
+                .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255))
                 .weight(4f)
                 .padding(20.dp)
                 .fillMaxSize()
         ) {
             Box(modifier = Modifier.weight(2f).fillMaxSize()) {
-                AutoTextV2(text = event.name)
+                AutoTextV2(text = event.title)
             }
             Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-                AutoText(text = event.date)
+                AutoText(text = event.getCleanDate())
             }
             Box(modifier = Modifier.weight(7f).fillMaxSize()) {
-                AutoTextV2(text = event.description)
+                AutoTextV2(text = event.brief)
                 // Text(fontSize = 5.em, text = event.description)
             }
         }
         if (position == EventTimeLinePosition.TOP) {
             Box(
                 modifier = Modifier
-                    .background(color = Color.Green, shape = GenericShape { size, layoutDirection ->
+                    .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255), shape = GenericShape { size, layoutDirection ->
                         moveTo(size.width - (size.width / 3), 0f)
                         lineTo(size.width, size.height)
                         lineTo(size.width, 0f)
@@ -81,16 +80,16 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: FakeEvent, posi
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun EventTimelineDisplayerPreview() {
-    MobistoryTheme {
-        EventTimelineDisplayer(event = FakeEvent("TITLE", "DESCRIPTION DESCRIPTIOND ESCRIPTIONDESCRIPTI", "12/02/2024"), position = EventTimeLinePosition.TOP)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun EventTimelineDisplayerPreview() {
+//    MobistoryTheme {
+//        EventTimelineDisplayer(event = FakeEvent("TITLE", "DESCRIPTION DESCRIPTIOND ESCRIPTIONDESCRIPTI", "12/02/2024"), position = EventTimeLinePosition.TOP)
+//    }
+//}
 
 @Composable
-fun TimeLine(modifier: Modifier = Modifier, events: List<FakeEvent>) {
+fun TimeLine(modifier: Modifier = Modifier, events: List<Event>) {
     val state = rememberScrollState()
     var arrowSize by remember { mutableStateOf(IntSize.Zero) }
     val (top, bottom) = events.withIndex().partition { it.index % 2 == 0 }
@@ -134,13 +133,13 @@ fun TimeLine(modifier: Modifier = Modifier, events: List<FakeEvent>) {
                     modifier = Modifier
                         .weight(8f)
                         .padding(0.dp, (arrowSize.height / 5).pxToDp())
-                        .background(color = Color.Green)
+                        .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255))
                         .fillMaxSize()
                 ) {}
                 Box(
                     modifier = Modifier
                         .background(
-                            color = Color.Green,
+                            color = Color(red = 255, green = 213, blue = 141, alpha = 255),
                             shape = GenericShape { size, layoutDirection ->
                                 Log.i(null, size.toString())
                                 moveTo(0f, 0f)
@@ -182,24 +181,24 @@ fun TimeLine(modifier: Modifier = Modifier, events: List<FakeEvent>) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TimeLinePreview() {
-    MobistoryTheme {
-        TimeLine(events = listOf(
-            FakeEvent("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
-            FakeEvent("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
-            FakeEvent("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
-            FakeEvent("EVENT 4", "DESCRIPTION 4", "03/02/2024")
-        ))
-
-        /*TimeLine(
-            events = listOf(
-                Event("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
-                Event("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
-                Event("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
-                Event("EVENT 4", "DESCRIPTION 4", "03/02/2024")
-            )
-        )*/
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun TimeLinePreview() {
+//    MobistoryTheme {
+//        TimeLine(events = listOf(
+//            FakeEvent("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
+//            FakeEvent("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
+//            FakeEvent("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
+//            FakeEvent("EVENT 4", "DESCRIPTION 4", "03/02/2024")
+//        ))
+//
+//        /*TimeLine(
+//            events = listOf(
+//                Event("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
+//                Event("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
+//                Event("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
+//                Event("EVENT 4", "DESCRIPTION 4", "03/02/2024")
+//            )
+//        )*/
+//    }
+//}

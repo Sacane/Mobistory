@@ -35,7 +35,7 @@ fun Search(modifier: Modifier = Modifier) {
     var dateState = rememberDateRangePickerState(initialDisplayMode = DisplayMode.Input, yearRange = (-5000..3000))
     var searchKey by remember { mutableIntStateOf(0) }
     var eventDetail by remember { mutableStateOf<Event?>(null) }
-
+    var clickOnFrise by remember { mutableStateOf(false) }
     LaunchedEffect(searchedText, searchKey) {
         listOfEv = withContext(Dispatchers.IO) {
             when {
@@ -77,33 +77,43 @@ fun Search(modifier: Modifier = Modifier) {
                     .weight(0.1f)
             ) {
                 SearchBarComponent(onSearch = { searchedText = it },
+                    clickOnFrise = {clickOnFrise = !clickOnFrise},
                     onActiveFilter = { visible = !visible })
             }
-            if (visible) {
+            if(clickOnFrise) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .weight(0.8f)){
+                    TimeLine(events = filteredEvents)
+                }
+            }else {
+                if (visible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(0.8f)
+                    ) {
+                        FilterComponent(
+                            onSelectedSortOrder = { selectedOrder = it },
+                            onSelectedDateInterval = { dateState = it },
+                            selectedSort = selectedOrder,
+                            dateState = dateState
+                        )
+                    }
+                }
+                Divider(modifier = Modifier.padding(8.dp))
+                val listWeight = if (visible) 0.2f else 0.9f
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .weight(0.8f)
+                        .weight(listWeight)
                 ) {
-                    FilterComponent(
-                        onSelectedSortOrder = { selectedOrder = it },
-                        onSelectedDateInterval = { dateState = it },
-                        selectedSort = selectedOrder,
-                        dateState = dateState
-                    )
+                    DisplaySmallEventsList(events = filteredEvents, modifier = modifier) {
+                        eventDetail = it
+                    }
                 }
             }
-            Divider(modifier = Modifier.padding(8.dp))
-            val listWeight = if (visible) 0.2f else 0.9f
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(listWeight)
-            ) {
-                DisplaySmallEventsList(events = filteredEvents, modifier = modifier) {
-                    eventDetail = it
-                }
-            }
+
         }
         DisposableEffect(selectedOrder) {
             searchKey++

@@ -28,7 +28,7 @@ import fr.pentagon.android.mobistory.R
 @Composable
 fun TopBar(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize().background(color = Color(red = 255, green = 213, blue = 141, alpha = 255))) {
-        Text(modifier = Modifier.align(Alignment.Center), text = "MOBISTORY", fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = 25.sp, color = Color.White)
+        Text(modifier = Modifier.align(Alignment.Center), text = "MOBISTORY", fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = 25.sp, color = Color.Black)
     }
 }
 

@@ -32,7 +32,7 @@ import fr.pentagon.android.mobistory.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, onSearch: (TextFieldValue) -> Unit, onActiveFilter: () -> Unit) {
+fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, clickOnFrise: () -> Unit = {}, onSearch: (TextFieldValue) -> Unit, onActiveFilter: () -> Unit) {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -80,7 +80,7 @@ fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50,
                     .fillMaxSize()
                     .scale(0.8f)
                     .clickable {
-                        //TODO Affichage de la frise chronologique
+                        clickOnFrise()
                     }
             )
         }
