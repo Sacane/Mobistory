@@ -2,7 +2,6 @@ package fr.pentagon.android.mobistory.backend
 
 import android.content.Context
 import android.net.Uri
-import androidx.room.AutoMigration
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
@@ -17,6 +16,8 @@ import fr.pentagon.android.mobistory.backend.entity.Country
 import fr.pentagon.android.mobistory.backend.entity.CountryDao
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoin
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoinDao
+import fr.pentagon.android.mobistory.backend.entity.Event
+import fr.pentagon.android.mobistory.backend.entity.EventDao
 import fr.pentagon.android.mobistory.backend.entity.EventLocationJoin
 import fr.pentagon.android.mobistory.backend.entity.EventLocationJoinDao
 import fr.pentagon.android.mobistory.backend.entity.EventParticipantJoin
@@ -29,6 +30,7 @@ import fr.pentagon.android.mobistory.backend.entity.Image
 import fr.pentagon.android.mobistory.backend.entity.ImageDao
 import fr.pentagon.android.mobistory.backend.entity.KeyDate
 import fr.pentagon.android.mobistory.backend.entity.KeyDateDao
+import fr.pentagon.android.mobistory.backend.entity.KeyDatesContainer
 import fr.pentagon.android.mobistory.backend.entity.Keyword
 import fr.pentagon.android.mobistory.backend.entity.KeywordDao
 import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin

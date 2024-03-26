@@ -29,8 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import fr.pentagon.android.mobistory.Diapositive
-import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.backend.entity.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import fr.pentagon.android.mobistory.ui.theme.Typography
 import kotlinx.coroutines.Dispatchers

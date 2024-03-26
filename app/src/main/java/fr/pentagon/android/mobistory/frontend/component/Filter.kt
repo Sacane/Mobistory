@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

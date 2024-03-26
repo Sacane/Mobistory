@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory.backend
+package fr.pentagon.android.mobistory.backend.service
 
 import android.content.Context
 import android.util.Log
@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import fr.pentagon.android.mobistory.backend.Database
 import kotlinx.coroutines.flow.first
 import java.time.Instant
 import java.time.LocalDate

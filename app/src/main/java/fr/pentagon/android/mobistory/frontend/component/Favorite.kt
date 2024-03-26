@@ -39,9 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import fr.pentagon.android.mobistory.SmallEventComponent
 import fr.pentagon.android.mobistory.backend.Database
-import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.backend.entity.Event
 import fr.pentagon.android.mobistory.backend.entity.FavoriteEvent
 import fr.pentagon.android.mobistory.backend.entity.FavoriteEventAndEvent
 import fr.pentagon.android.mobistory.ui.theme.Typography

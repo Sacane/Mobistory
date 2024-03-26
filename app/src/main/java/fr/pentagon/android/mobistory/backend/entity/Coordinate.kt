@@ -7,7 +7,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.ABORT
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
 @Entity(tableName = "coordinate")

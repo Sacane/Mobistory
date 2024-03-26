@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import fr.pentagon.android.mobistory.R
 
 @Composable
 fun TopBar(modifier: Modifier = Modifier) {

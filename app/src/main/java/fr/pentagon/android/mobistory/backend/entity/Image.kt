@@ -10,7 +10,6 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Transaction
-import fr.pentagon.android.mobistory.backend.Event
 import java.util.UUID
 
 

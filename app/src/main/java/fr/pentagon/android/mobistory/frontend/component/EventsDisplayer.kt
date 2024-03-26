@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -28,8 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import fr.pentagon.android.mobistory.backend.Event
-import fr.pentagon.android.mobistory.frontend.component.FavoriteButton
+import fr.pentagon.android.mobistory.backend.entity.Event
 
 
 data class FakeEvent(val name: String, val description: String, val date: String)
@@ -100,7 +99,7 @@ fun SmallEventComponent(event: Event, label: String? = null, onClick: (Event) ->
  * @param events list of events
  */
 @Composable
-fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier, onClick: (Event) -> Unit = {_ -> }) {
+fun DisplaySmallEventsList(events: List<Event>, modifier: Modifier, onClick: (Event) -> Unit = { _ -> }) {
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()

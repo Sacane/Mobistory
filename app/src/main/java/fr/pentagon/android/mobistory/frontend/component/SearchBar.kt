@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,9 +27,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
+import fr.pentagon.android.mobistory.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)

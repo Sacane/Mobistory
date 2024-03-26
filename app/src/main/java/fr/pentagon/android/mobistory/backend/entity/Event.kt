@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory.backend
+package fr.pentagon.android.mobistory.backend.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
@@ -7,14 +7,6 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
-import fr.pentagon.android.mobistory.backend.entity.EventWithAlias
-import fr.pentagon.android.mobistory.backend.entity.EventWithCoordinate
-import fr.pentagon.android.mobistory.backend.entity.EventWithCountry
-import fr.pentagon.android.mobistory.backend.entity.EventWithImages
-import fr.pentagon.android.mobistory.backend.entity.EventWithKeyDate
-import fr.pentagon.android.mobistory.backend.entity.EventWithKeywords
-import fr.pentagon.android.mobistory.backend.entity.EventWithTypes
-import fr.pentagon.android.mobistory.backend.entity.Participant
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date

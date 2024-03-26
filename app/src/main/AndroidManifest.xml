@@ -19,7 +19,7 @@
         android:theme="@style/Theme.Mobistory"
         tools:targetApi="31">
         <service
-            android:name=".LocationService"
+            android:name=".frontend.service.LocationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location"></service>

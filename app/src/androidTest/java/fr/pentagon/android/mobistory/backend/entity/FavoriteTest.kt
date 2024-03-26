@@ -5,8 +5,6 @@ import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import fr.pentagon.android.mobistory.backend.Database
-import fr.pentagon.android.mobistory.backend.Event
-import fr.pentagon.android.mobistory.backend.EventDao
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.test.runTest
@@ -15,7 +13,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.Instant
 import java.util.Date
-import java.util.UUID
 import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)

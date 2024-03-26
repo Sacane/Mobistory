@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import android.os.SystemClock
 import android.util.Log
@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.pentagon.android.mobistory.backend.Database
-import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.backend.entity.Event
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -332,12 +332,14 @@ private fun generateQuestionsWithDate(events: List<Event>): List<Question> {
             if (!years.contains(randomYear)) years.add(randomYear)
         }
 
-        questions.add(Question(label = "En quelle année cet évènement a eu lieu: " + event.getQuestionLabel() + " ?", answers = listOf(
+        questions.add(
+            Question(label = "En quelle année cet évènement a eu lieu: " + event.getQuestionLabel() + " ?", answers = listOf(
             Answer(label = year.toString(), goodAnswer = true),
             Answer(label = years[0].toString(), goodAnswer = false),
             Answer(label = years[1].toString(), goodAnswer = false),
             Answer(label = years[2].toString(), goodAnswer = false)
-        ).shuffled()))
+        ).shuffled())
+        )
     }
 
     return questions
@@ -360,12 +362,14 @@ private fun generateQuestionsWithDescription(events: List<Event>): List<Question
             }
         }
 
-        questions.add(Question(label = "A quel évènement correspond cette description: " + event.getQuestionDescription() + " ?", answers = listOf(
+        questions.add(
+            Question(label = "A quel évènement correspond cette description: " + event.getQuestionDescription() + " ?", answers = listOf(
             Answer(label = event.getQuestionLabel(), goodAnswer = true),
             Answer(label = selected[1].getQuestionLabel(), goodAnswer = false),
             Answer(label = selected[2].getQuestionLabel(), goodAnswer = false),
             Answer(label = selected[3].getQuestionLabel(), goodAnswer = false)
-        ).shuffled()))
+        ).shuffled())
+        )
     }
 
     return questions

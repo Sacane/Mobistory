@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory.backend.json
+package fr.pentagon.android.mobistory.backend.service
 
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
@@ -6,9 +6,8 @@ import android.net.Uri
 import android.util.Log
 import fr.pentagon.android.mobistory.R
 import fr.pentagon.android.mobistory.backend.Database
-import fr.pentagon.android.mobistory.backend.Event
+import fr.pentagon.android.mobistory.backend.entity.Event
 import fr.pentagon.android.mobistory.backend.entity.Alias
-import fr.pentagon.android.mobistory.backend.entity.AliasDao
 import fr.pentagon.android.mobistory.backend.entity.Coordinate
 import fr.pentagon.android.mobistory.backend.entity.Country
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoin
@@ -22,6 +21,9 @@ import fr.pentagon.android.mobistory.backend.entity.KeywordEventJoin
 import fr.pentagon.android.mobistory.backend.entity.Location
 import fr.pentagon.android.mobistory.backend.entity.Participant
 import fr.pentagon.android.mobistory.backend.entity.Type
+import fr.pentagon.android.mobistory.backend.json.EventDTO
+import fr.pentagon.android.mobistory.backend.json.LanguageReferenceDTO
+import fr.pentagon.android.mobistory.backend.json.loadJSONFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json

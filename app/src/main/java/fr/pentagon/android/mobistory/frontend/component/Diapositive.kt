@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box

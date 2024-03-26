@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.backend.Database
-import fr.pentagon.android.mobistory.backend.Event
-import fr.pentagon.android.mobistory.backend.getEventOfTheDayId
+import fr.pentagon.android.mobistory.backend.entity.Event
+import fr.pentagon.android.mobistory.backend.service.getEventOfTheDayId
 import fr.pentagon.android.mobistory.ui.theme.Typography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

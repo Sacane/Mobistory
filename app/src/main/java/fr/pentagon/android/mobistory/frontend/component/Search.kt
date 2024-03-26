@@ -1,6 +1,5 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,12 +19,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.backend.Database
-import fr.pentagon.android.mobistory.backend.Event
-import fr.pentagon.android.mobistory.frontend.component.EventDetail
-import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
+import fr.pentagon.android.mobistory.backend.entity.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

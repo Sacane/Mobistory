@@ -10,7 +10,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
-import fr.pentagon.android.mobistory.backend.Event
 
 @Entity(
     tableName = "favorites",

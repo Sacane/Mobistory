@@ -1,4 +1,4 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import android.Manifest
+import fr.pentagon.android.mobistory.R
 
 class LocationService : Service() {
     private lateinit var lm: LocationManager

@@ -1,8 +1,6 @@
-package fr.pentagon.android.mobistory
+package fr.pentagon.android.mobistory.frontend.component
 
 import android.util.Log
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,9 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.isUnspecified
 import androidx.compose.ui.unit.sp
 
 @Composable

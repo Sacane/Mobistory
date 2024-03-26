@@ -30,11 +30,16 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import fr.pentagon.android.mobistory.backend.Database
 import fr.pentagon.android.mobistory.backend.entity.AppVersion
-import fr.pentagon.android.mobistory.backend.json.eventInitializer
+import fr.pentagon.android.mobistory.backend.service.eventInitializer
+import fr.pentagon.android.mobistory.frontend.component.BottomBar
 import fr.pentagon.android.mobistory.frontend.component.FavoritePage
 import fr.pentagon.android.mobistory.frontend.component.HomePage
 import fr.pentagon.android.mobistory.frontend.component.LoadingScreen
+import fr.pentagon.android.mobistory.frontend.component.Quiz
+import fr.pentagon.android.mobistory.frontend.component.Search
+import fr.pentagon.android.mobistory.frontend.component.TopBar
 import fr.pentagon.android.mobistory.frontend.component.findContentPageFromUrl
+import fr.pentagon.android.mobistory.frontend.service.LocationService
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
