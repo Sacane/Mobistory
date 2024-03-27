@@ -1,8 +1,6 @@
 package fr.pentagon.android.mobistory.frontend.component
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -12,9 +10,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,9 +22,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.backend.entity.Event
+import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 enum class EventTimeLinePosition {
     TOP, BOTTOM
@@ -36,12 +38,14 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position
         if (position == EventTimeLinePosition.BOTTOM) {
             Box(
                 modifier = Modifier
-                    .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255), shape = GenericShape { size, layoutDirection ->
-                        moveTo(size.width - (size.width / 3), size.height)
-                        lineTo(size.width, 0f)
-                        lineTo(size.width, size.height)
-                        close()
-                    })
+                    .background(
+                        color = Color(red = 255, green = 213, blue = 141, alpha = 255),
+                        shape = GenericShape { size, layoutDirection ->
+                            moveTo(size.width - (size.width / 3), size.height)
+                            lineTo(size.width, 0f)
+                            lineTo(size.width, size.height)
+                            close()
+                        })
                     .weight(1f)
                     .fillMaxSize()
             ) {}
@@ -53,13 +57,19 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position
                 .padding(20.dp)
                 .fillMaxSize()
         ) {
-            Box(modifier = Modifier.weight(2f).fillMaxSize()) {
+            Box(modifier = Modifier
+                .weight(2f)
+                .fillMaxSize()) {
                 AutoTextV2(text = event.title)
             }
-            Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()) {
                 AutoText(text = event.getCleanDate())
             }
-            Box(modifier = Modifier.weight(7f).fillMaxSize()) {
+            Box(modifier = Modifier
+                .weight(7f)
+                .fillMaxSize()) {
                 AutoTextV2(text = event.brief)
                 // Text(fontSize = 5.em, text = event.description)
             }
@@ -67,12 +77,14 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position
         if (position == EventTimeLinePosition.TOP) {
             Box(
                 modifier = Modifier
-                    .background(color = Color(red = 255, green = 213, blue = 141, alpha = 255), shape = GenericShape { size, layoutDirection ->
-                        moveTo(size.width - (size.width / 3), 0f)
-                        lineTo(size.width, size.height)
-                        lineTo(size.width, 0f)
-                        close()
-                    })
+                    .background(
+                        color = Color(red = 255, green = 213, blue = 141, alpha = 255),
+                        shape = GenericShape { size, layoutDirection ->
+                            moveTo(size.width - (size.width / 3), 0f)
+                            lineTo(size.width, size.height)
+                            lineTo(size.width, 0f)
+                            close()
+                        })
                     .weight(1f)
                     .fillMaxSize()
             ) {}
@@ -80,17 +92,10 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun EventTimelineDisplayerPreview() {
-//    MobistoryTheme {
-//        EventTimelineDisplayer(event = FakeEvent("TITLE", "DESCRIPTION DESCRIPTIOND ESCRIPTIONDESCRIPTI", "12/02/2024"), position = EventTimeLinePosition.TOP)
-//    }
-//}
-
 @Composable
 fun TimeLine(modifier: Modifier = Modifier, events: List<Event>) {
-    val state = rememberScrollState()
+    val stateRowTop = rememberLazyListState()
+    val stateRowBottom = rememberLazyListState()
     var arrowSize by remember { mutableStateOf(IntSize.Zero) }
     val (top, bottom) = events.withIndex().partition { it.index % 2 == 0 }
     val topEvents = top.map { it.value }
@@ -100,22 +105,26 @@ fun TimeLine(modifier: Modifier = Modifier, events: List<Event>) {
         val constraints = this.constraints
 
         Column {
-            Row(
+            LazyRow(
                 modifier = Modifier
                     .weight(4f)
-                    .horizontalScroll(state)
                     .fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp())
+                horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp()),
+                state = stateRowTop
             ) {
-                for (event in topEvents) {
-                    EventTimelineDisplayer(
-                        modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
-                        event = event,
-                        position = EventTimeLinePosition.TOP
-                    )
-                }
-                if (topEvents.size == bottomEvents.size) {
-                    Box {}
+                items(topEvents.size) { index ->
+                    val event = topEvents[index]
+
+                    Row(horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp())) {
+                        EventTimelineDisplayer(
+                            modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
+                            event = event,
+                            position = EventTimeLinePosition.TOP
+                        )
+                        if (index == (topEvents.size - 1) && topEvents.size == bottomEvents.size) {
+                            Box {}
+                        }
+                    }
                 }
             }
             Spacer(
@@ -141,7 +150,6 @@ fun TimeLine(modifier: Modifier = Modifier, events: List<Event>) {
                         .background(
                             color = Color(red = 255, green = 213, blue = 141, alpha = 255),
                             shape = GenericShape { size, layoutDirection ->
-                                Log.i(null, size.toString())
                                 moveTo(0f, 0f)
                                 lineTo(size.width, size.height / 2)
                                 lineTo(0f, size.height)
@@ -156,49 +164,56 @@ fun TimeLine(modifier: Modifier = Modifier, events: List<Event>) {
                     .weight(1f)
                     .fillMaxSize()
             )
-            Row(
+            LazyRow(
                 modifier = Modifier
                     .weight(4f)
-                    .horizontalScroll(state)
                     .fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp())
+                horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp()),
+                state = stateRowBottom
             ) {
-                if (bottomEvents.size > 0) {
-                    Box {}
-                }
-                for (event in bottomEvents) {
-                    EventTimelineDisplayer(
-                        modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
-                        event = event,
-                        position = EventTimeLinePosition.BOTTOM
-                    )
-                }
-                if (topEvents.size > bottomEvents.size) {
-                    Box {}
+                items(bottomEvents.size) { index ->
+                    val event = bottomEvents[index]
+
+                    Row(horizontalArrangement = Arrangement.spacedBy((constraints.maxWidth / 2).pxToDp())) {
+                        Box {}
+                        EventTimelineDisplayer(
+                            modifier = Modifier.width((constraints.maxWidth / 2).pxToDp()),
+                            event = event,
+                            position = EventTimeLinePosition.BOTTOM
+                        )
+                        if (index == (bottomEvents.size - 1) && topEvents.size > bottomEvents.size) {
+                            Box {}
+                        }
+                    }
                 }
             }
         }
     }
+
+    LaunchedEffect(stateRowTop.firstVisibleItemScrollOffset) {
+        stateRowBottom.scrollToItem(
+            stateRowTop.firstVisibleItemIndex,
+            stateRowTop.firstVisibleItemScrollOffset
+        )
+    }
+    LaunchedEffect(stateRowBottom.firstVisibleItemScrollOffset) {
+        stateRowTop.scrollToItem(
+            stateRowBottom.firstVisibleItemIndex,
+            stateRowBottom.firstVisibleItemScrollOffset
+        )
+    }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun TimeLinePreview() {
-//    MobistoryTheme {
-//        TimeLine(events = listOf(
-//            FakeEvent("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
-//            FakeEvent("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
-//            FakeEvent("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
-//            FakeEvent("EVENT 4", "DESCRIPTION 4", "03/02/2024")
-//        ))
-//
-//        /*TimeLine(
-//            events = listOf(
-//                Event("EVENT 1", "DESCRIPTION 1", "03/02/2024"),
-//                Event("EVENT 2", "DESCRIPTION 2", "03/02/2024"),
-//                Event("EVENT 3", "DESCRIPTION 3", "03/02/2024"),
-//                Event("EVENT 4", "DESCRIPTION 4", "03/02/2024")
-//            )
-//        )*/
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun TimeLinePreview() {
+    MobistoryTheme {
+        TimeLine(events = listOf(
+            Event(label = "LABEL", description = "DESCRIPTION"),
+            Event(label = "LABEL2", description = "DESCRIPTION2"),
+            Event(label = "LABEL2", description = "DESCRIPTION2"),
+            Event(label = "LABEL2", description = "DESCRIPTION2"),
+            Event(label = "LABEL2", description = "DESCRIPTION2")
+        ))
+    }
+}
