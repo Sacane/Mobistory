@@ -21,7 +21,10 @@ data class Alias(
 @Dao
 interface AliasDao {
     @Insert(onConflict = ABORT)
-    suspend fun insertAlias(alias: Alias)
+    suspend fun save(alias: Alias)
+
+    @Insert(onConflict = ABORT)
+    suspend fun saveAll(alias: Iterable<Alias>)
 
     @Transaction
     @Query("SELECT * FROM alias a WHERE a.label = :label")

@@ -24,7 +24,7 @@ class KeywordTest {
     private lateinit var eventDao: EventDao
 
     @Before
-    fun init(){
+    fun init() {
         val ctx = InstrumentationRegistry.getInstrumentation().context
         db = Room.inMemoryDatabaseBuilder(
             ctx,
@@ -46,6 +46,7 @@ class KeywordTest {
         assertNotNull(fromDb)
         assertEquals(frKw, fromDb)
     }
+
     @Test
     fun listOfKeywordCanBeSavedAndRetrieve() = runTest {
         val idK1 = UUID.randomUUID()
@@ -77,11 +78,25 @@ class KeywordTest {
         keywordDao.saveAll(listOf(k1, k2, k3))
 
         val eventId = Random.nextInt()
-        val event = Event(eventId = eventId, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
+        val event = Event(
+            eventId = eventId,
+            label = "Hello",
+            startDate = Date.from(Instant.now()),
+            endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ),
+            wikipedia = "I don't know"
+        )
         val eventId2 = Random.nextInt()
-        val event2 = Event(eventId = eventId2, label = "Hello2", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "I don't know2")
+        val event2 = Event(
+            eventId = eventId2,
+            label = "Hello2",
+            startDate = Date.from(Instant.now()),
+            endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ),
+            wikipedia = "I don't know2"
+        )
 
         eventDao.save(event)
         eventDao.save(event2)
@@ -92,10 +107,10 @@ class KeywordTest {
 
         val joinEvent2 = KeywordEventJoin(eventId2, idK1)
 
-        keywordEventJoinDao.insert(join)
-        keywordEventJoinDao.insert(join2)
-        keywordEventJoinDao.insert(join3)
-        keywordEventJoinDao.insert(joinEvent2)
+        keywordEventJoinDao.save(join)
+        keywordEventJoinDao.save(join2)
+        keywordEventJoinDao.save(join3)
+        keywordEventJoinDao.save(joinEvent2)
 
         val firstJoin = eventDao.findEventWithKeywordById(eventId)
         val secondJoin = eventDao.findEventWithKeywordById(eventId2)

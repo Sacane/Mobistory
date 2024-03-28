@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
@@ -23,7 +24,7 @@ data class Event(
     @PrimaryKey
     val eventId: Int = Random.nextInt(),
     val popularity: Int = 0
-): Serializable {
+) : Serializable {
     val title: String
         get() = label.split("||").first()
             .replaceFirstChar { it.uppercase() }
@@ -50,12 +51,17 @@ data class Event(
     fun getFrenchDescription(): String {
         return if (this.description == null) "<empty description>" else this.description.split("||")[0]
     }
+
     fun getQuestionLabel(): String {
         return title
     }
+
     fun getQuestionDescription(): String {
-        return if (getFrenchDescription().trim() != "") getFrenchDescription().trim() else description!!.split("||")[1]
+        return if (getFrenchDescription().trim() != "") getFrenchDescription().trim() else description!!.split(
+            "||"
+        )[1]
     }
+
     fun getFormatStartDate(): String {
         val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
         return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
@@ -68,9 +74,9 @@ data class Event(
 
     fun getCleanDate(): String {
         val startDate = getFormatStartDate()
-        if( startDate == "<empty date>") return startDate
+        if (startDate == "<empty date>") return startDate
         val endDate = getFormatEndDate()
-        if(endDate == "<empty date>") return startDate
+        if (endDate == "<empty date>") return startDate
         return "$startDate - $endDate"
     }
 }
@@ -81,7 +87,7 @@ data class KeyDatesContainer(
 )
 
 @Dao
-interface EventDao{
+interface EventDao {
 
     @Transaction
     @Query("SELECT COUNT(*) FROM event e WHERE e.label = :label")
@@ -93,6 +99,9 @@ interface EventDao{
 
     @Insert
     suspend fun save(event: Event)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun saveAll(events: Iterable<Event>)
 
     @Transaction
     @Query("SELECT * FROM event WHERE eventId = :eventId")
@@ -116,9 +125,11 @@ interface EventDao{
     suspend fun findEventWithCountryById(uuid: Int): EventWithCountry?
 
     @Transaction
-    @Query("SELECT participant.* FROM participant INNER JOIN event_participant_join " +
-            "ON participant.participantId = event_participant_join.participantId " +
-            "WHERE event_participant_join.eventId = :eventId")
+    @Query(
+        "SELECT participant.* FROM participant INNER JOIN event_participant_join " +
+                "ON participant.participantId = event_participant_join.participantId " +
+                "WHERE event_participant_join.eventId = :eventId"
+    )
     suspend fun findParticipantsByEventId(eventId: Int): List<Participant>
 
     @Transaction
@@ -165,6 +176,7 @@ interface EventDao{
     @Transaction
     @Query("SELECT * FROM event WHERE strftime('%m', startDate) = :month ORDER BY popularity DESC LIMIT 5")
     suspend fun findTop5EventByMonth(month: String): List<Event>
+
     @Transaction
     @Query("SELECT * FROM event WHERE label LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%'")
     suspend fun findEventsContainsSearchQuery(searchQuery: String): List<Event>

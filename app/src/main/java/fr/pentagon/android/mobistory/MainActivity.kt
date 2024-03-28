@@ -68,6 +68,10 @@ class MainActivity : ComponentActivity() {
                         val version = versionDao.getVersion()
                         if (version == null) { // TODO ajouter le traitement de mise à jour du json (via script python et requête client)
                             versionDao.save(AppVersion(version = "1.0"))
+//                            eventInitializer(this@MainActivity, { p -> percentage = p }) {
+//                                Log.i("DATABASE", "Data insertion complete")
+//                                loaded = true
+//                            }
                             eventInitializer(this@MainActivity, { p -> percentage = p }) {
                                 Log.i("DATABASE", "Data insertion complete")
                                 loaded = true

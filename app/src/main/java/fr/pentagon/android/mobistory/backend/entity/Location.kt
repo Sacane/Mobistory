@@ -21,13 +21,17 @@ data class Location(
 )
 
 @Dao
-interface LocationDao{
+interface LocationDao {
 
     @Transaction
     @Query("SELECT COUNT(*) FROM location l WHERE l.location = :label")
     suspend fun existsByLabel(label: String): Boolean
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(location: Location)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(location: Iterable<Location>)
 
     @Transaction
     @Query("SELECT * FROM Location l WHERE l.location = :label")
@@ -58,10 +62,13 @@ data class EventLocationJoin(
 )
 
 @Dao
-interface EventLocationJoinDao{
+interface EventLocationJoinDao {
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(eventLocationJoin: EventLocationJoin)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(eventLocationJoins: Iterable<EventLocationJoin>)
 }
 
 data class EventWithLocations(

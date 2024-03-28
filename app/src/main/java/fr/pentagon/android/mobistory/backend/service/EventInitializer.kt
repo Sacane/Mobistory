@@ -1,16 +1,15 @@
 package fr.pentagon.android.mobistory.backend.service
 
 import android.content.Context
-import android.database.sqlite.SQLiteConstraintException
 import android.net.Uri
 import android.util.Log
 import fr.pentagon.android.mobistory.R
 import fr.pentagon.android.mobistory.backend.Database
-import fr.pentagon.android.mobistory.backend.entity.Event
 import fr.pentagon.android.mobistory.backend.entity.Alias
 import fr.pentagon.android.mobistory.backend.entity.Coordinate
 import fr.pentagon.android.mobistory.backend.entity.Country
 import fr.pentagon.android.mobistory.backend.entity.CountryEventJoin
+import fr.pentagon.android.mobistory.backend.entity.Event
 import fr.pentagon.android.mobistory.backend.entity.EventLocationJoin
 import fr.pentagon.android.mobistory.backend.entity.EventParticipantJoin
 import fr.pentagon.android.mobistory.backend.entity.EventTypeJoin
@@ -24,8 +23,6 @@ import fr.pentagon.android.mobistory.backend.entity.Type
 import fr.pentagon.android.mobistory.backend.json.EventDTO
 import fr.pentagon.android.mobistory.backend.json.LanguageReferenceDTO
 import fr.pentagon.android.mobistory.backend.json.loadJSONFile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,39 +31,54 @@ import java.util.UUID
 
 
 fun LanguageReferenceDTO<String>?.representation(): String? {
-    if(this == null) return null
+    if (this == null) return null
     return (this.fr ?: "").plus("||").plus(this.en ?: "")
 }
 
 fun String?.toDate(): Date? {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    return if(this == null) null else dateFormat.parse(this)
+    return if (this == null) null else dateFormat.parse(this)
 }
 
-suspend fun eventInitializer(context: Context, onInserting: (Float) -> Unit, onFinish: () -> Unit) {
+suspend fun eventInitializer(
+    context: Context,
+    onInserting: (Float) -> Unit,
+    onFinish: () -> Unit
+) {
     val content = context.loadJSONFile(R.raw.events) ?: throw AssertionError()
-    val events = Json.decodeFromString<List<EventDTO>>(content)
-    Log.i("INITIALIZER", events[0].toString())
+    val rawEvents = Json.decodeFromString<List<EventDTO>>(content)
+    Log.i("INITIALIZER", rawEvents[0].toString())
+    Log.i("NUMBER OF EVENTS TO LOAD:", "${rawEvents.size}")
 
-    withContext(Dispatchers.IO) {
-        val typeJoinDao = Database.eventTypeJoinDao()
-        val locationDao = Database.locationDao()
-        val locationEventDao = Database.eventLocationJoinDao()
-        val countryDao = Database.countryDao()
-        val eventCountryJoinDao = Database.eventCountryJoinDao()
-        val participantDao = Database.participantDao()
-        val eventParticipantJoinDao = Database.eventParticipantJoinDao()
-        val imageDao = Database.imageDao()
-        val keywordDao = Database.keywordDao()
-        val keywordEventJoinDao = Database.keywordEventJoinDao()
-        var i = 0
-        for(event in events) {
-            if(i == 150) break //TODO remove this in production
-            Log.i("Database initialisation", "Inserting the event number ${event.id}")
-            if(Database.eventDao().existsByLabel(event.label.representation()!!)){
-                continue
-            }
-            val toInsert = Event(
+    val start = System.currentTimeMillis();
+
+    val events = mutableListOf<Event>()
+    val aliases = mutableListOf<Alias>()
+    val coordinates = mutableListOf<Coordinate>()
+    val keyDates = mutableListOf<KeyDate>()
+
+    val types = mutableMapOf<String, Type>()
+    val eventTypeJoins = mutableListOf<EventTypeJoin>()
+
+    val locations = mutableMapOf<String, Location>()
+    val eventLocationJoins = mutableListOf<EventLocationJoin>()
+
+    val countries = mutableMapOf<String, Country>()
+    val eventCountryJoins = mutableListOf<CountryEventJoin>()
+
+    val participants = mutableMapOf<String, Participant>()
+    val eventParticipantJoins = mutableListOf<EventParticipantJoin>()
+
+    val keywords = mutableMapOf<String, Keyword>()
+    val eventKeywordJoins = mutableListOf<KeywordEventJoin>()
+
+    val images = mutableListOf<Image>()
+
+    // Might have to do it by batch if the file was too big
+    rawEvents.forEachIndexed { index, event ->
+        // Events
+        events.add(
+            Event(
                 eventId = event.id,
                 label = event.label.representation()!!,
                 startDate = event.startDate.toDate(),
@@ -75,209 +87,188 @@ suspend fun eventInitializer(context: Context, onInserting: (Float) -> Unit, onF
                 wikipedia = event.wikipedia.representation(),
                 popularity = event.popularity?.fr ?: 0
             )
-            Database.eventDao().save(toInsert)
-            for(alias in event.aliases.fr) {
-                Database.aliasDao().insertAlias(Alias(label = alias, eventId = event.id))
-            }
-            for(alias in event.aliases.en) {
-                Database.aliasDao().insertAlias(Alias(label = alias, eventId = event.id))
-            }
-            for(coordinate in event.coords) {
-                Database.coordinateDao().save(Coordinate(value = coordinate, eventId = toInsert.eventId))
-            }
-            for(keyDate in event.dates) {
-                val date = keyDate.toDate()
-                Database.keyDateDao().save(KeyDate(date = date!!, eventId = event.id))
-            }
-            for(type in event.type.fr) {
-                val typeRegistered = Database.typeDao().findByLabel(type)
-                if(typeRegistered == null) {
-                    val typeId = UUID.randomUUID()
-                    val created = Type(typeId = typeId, label = type)
-                    Database.typeDao().save(created)
-                    typeJoinDao.save(EventTypeJoin(eventId = event.id, typeId = typeId))
-                }else {
-                    try {
-                        typeJoinDao.save(
-                            EventTypeJoin(
-                                eventId = event.id,
-                                typeId = typeRegistered.typeId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
+        )
 
-                    }
-                }
-            }
-            for(type in event.type.en) {
-                val typeRegistered = Database.typeDao().findByLabel(type)
-                if(typeRegistered == null) {
-                    val created = Type(label = type)
-                    Database.typeDao().save(created)
-                }else {
-                    try {
-                        typeJoinDao.save(
-                            EventTypeJoin(
-                                eventId = event.id,
-                                typeId = typeRegistered.typeId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            for(location in event.locations.fr) {
-                val locationRegistered = locationDao.findByLabel(location)
-                if(locationRegistered == null) {
-                    locationDao.save(Location(location = location))
-                } else {
-                    try {
-                        locationEventDao.save(
-                            EventLocationJoin(
-                                eventId = event.id,
-                                locationId = locationRegistered.locationId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            for(location in event.locations.en) {
-                val locationRegistered = locationDao.findByLabel(location)
-                if(locationRegistered == null) {
-                    locationDao.save(Location(location = location))
-                } else {
-                    try {
-                        locationEventDao.save(
-                            EventLocationJoin(
-                                eventId = event.id,
-                                locationId = locationRegistered.locationId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            for(country in event.countries.fr) {
-                val countryRegistered = countryDao.findByLabel(country)
-                if(countryRegistered == null) {
-                    val countryId = UUID.randomUUID()
-                    countryDao.save(Country(countryId = countryId, label = country))
-                    eventCountryJoinDao.insert(CountryEventJoin(event.id, countryId))
-                } else {
-                    try {
-                        eventCountryJoinDao.insert(
-                            CountryEventJoin(
-                                event.id,
-                                countryRegistered.countryId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            for(country in event.countries.en) {
-                val countryRegistered = countryDao.findByLabel(country)
-                if(countryRegistered == null) {
-                    val countryId = UUID.randomUUID()
-                    countryDao.save(Country(countryId = countryId, label = country))
-                    eventCountryJoinDao.insert(CountryEventJoin(event.id, countryId))
-                } else {
-                    try {
-                        eventCountryJoinDao.insert(
-                            CountryEventJoin(
-                                event.id,
-                                countryRegistered.countryId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            for(participant in event.participants.fr) {
-                val participantRegistered = participantDao.findByLabel(participant)
-                if(participantRegistered == null) {
-                    val participantId = UUID.randomUUID()
-                    participantDao.save(Participant(participantId = participantId, name = participant))
-                    eventParticipantJoinDao.save(EventParticipantJoin(event.id, participantId))
-                } else {
-                    try {
-                        eventParticipantJoinDao.save(
-                            EventParticipantJoin(
-                                event.id,
-                                participantRegistered.participantId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            for(participant in event.participants.en) {
-                val participantRegistered = participantDao.findByLabel(participant)
-                if(participantRegistered == null) {
-                    val participantId = UUID.randomUUID()
-                    participantDao.save(Participant(participantId = participantId, name = participant))
-                    eventParticipantJoinDao.save(EventParticipantJoin(event.id, participantId))
-                } else {
-                    try {
-                        eventParticipantJoinDao.save(
-                            EventParticipantJoin(
-                                event.id,
-                                participantRegistered.participantId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            for(image in event.images) {
-                imageDao.insertImage(Image(eventId = event.id, link = Uri.parse(image)))
-            }
-            for(keyword in event.keywords.fr) {
-                val keywordRegistered = keywordDao.findByLabel(keyword)
-                if(keywordRegistered == null) {
-                    val keywordId = UUID.randomUUID()
-                    keywordDao.save(Keyword(keywordId = keywordId, label = keyword))
-                    keywordEventJoinDao.insert(KeywordEventJoin(eventId = event.id, keywordId = keywordId))
-                } else {
-                    try {
-                        keywordEventJoinDao.insert(
-                            KeywordEventJoin(
-                                eventId = event.id,
-                                keywordId = keywordRegistered.keywordId
-                            )
-                        )
-                    }catch (_: Exception) {}
-                }
-            }
-            for(keyword in event.keywords.en) {
-                val keywordRegistered = keywordDao.findByLabel(keyword)
-                if(keywordRegistered == null) {
-                    val keywordId = UUID.randomUUID()
-                    keywordDao.save(Keyword(keywordId = keywordId, label = keyword))
-                    keywordEventJoinDao.insert(KeywordEventJoin(eventId = event.id, keywordId = keywordId))
-                } else {
-                    try {
-                        keywordEventJoinDao.insert(
-                            KeywordEventJoin(
-                                eventId = event.id,
-                                keywordId = keywordRegistered.keywordId
-                            )
-                        )
-                    }catch (_: SQLiteConstraintException) {
-
-                    }
-                }
-            }
-            onInserting(((++i).toFloat() / 150) * 100) // TODO change for prod
+        // Aliases
+        for (alias in event.aliases.fr) {
+            aliases.add(Alias(label = alias, eventId = event.id))
         }
+        for (alias in event.aliases.en) {
+            aliases.add(Alias(label = alias, eventId = event.id))
+        }
+
+        // Coordinates
+        for (coordinate in event.coords) {
+            coordinates.add(Coordinate(value = coordinate, eventId = event.id))
+        }
+
+        // Keydates
+        for (keyDate in event.dates) {
+            val date = keyDate.toDate()
+            keyDates.add(KeyDate(date = date!!, eventId = event.id))
+        }
+
+
+        // Types
+        for (type in event.type.fr) {
+            eventTypeJoins.add(
+                EventTypeJoin(
+                    eventId = event.id,
+                    typeId = types.getOrPut(type) {
+                        val typeId = UUID.randomUUID()
+                        Type(typeId = typeId, label = type)
+                    }.typeId
+                )
+            )
+        }
+        for (type in event.type.en) {
+            eventTypeJoins.add(
+                EventTypeJoin(
+                    eventId = event.id,
+                    typeId = types.getOrPut(type) {
+                        val typeId = UUID.randomUUID()
+                        Type(typeId = typeId, label = type)
+                    }.typeId
+                )
+            )
+        }
+
+        // Locations
+        for (location in event.locations.fr) {
+            eventLocationJoins.add(
+                EventLocationJoin(
+                    eventId = event.id,
+                    locationId = locations.getOrPut(location) {
+                        val typeId = UUID.randomUUID()
+                        Location(locationId = typeId, location = location)
+                    }.locationId
+                )
+            )
+        }
+        for (location in event.locations.en) {
+            eventLocationJoins.add(
+                EventLocationJoin(
+                    eventId = event.id,
+                    locationId = locations.getOrPut(location) {
+                        val typeId = UUID.randomUUID()
+                        Location(locationId = typeId, location = location)
+                    }.locationId
+                )
+            )
+        }
+
+        // Countries
+        for (country in event.countries.fr) {
+            eventCountryJoins.add(
+                CountryEventJoin(
+                    eventId = event.id,
+                    countryId = countries.getOrPut(country) {
+                        val typeId = UUID.randomUUID()
+                        Country(countryId = typeId, label = country)
+                    }.countryId
+                )
+            )
+        }
+        for (country in event.countries.en) {
+            eventCountryJoins.add(
+                CountryEventJoin(
+                    eventId = event.id,
+                    countryId = countries.getOrPut(country) {
+                        val typeId = UUID.randomUUID()
+                        Country(countryId = typeId, label = country)
+                    }.countryId
+                )
+            )
+        }
+
+        // Participants
+        for (participant in event.participants.fr) {
+            eventParticipantJoins.add(
+                EventParticipantJoin(
+                    eventId = event.id,
+                    participantId = participants.getOrPut(participant) {
+                        val typeId = UUID.randomUUID()
+                        Participant(participantId = typeId, name = participant)
+                    }.participantId
+                )
+            )
+        }
+        for (participant in event.participants.en) {
+            eventParticipantJoins.add(
+                EventParticipantJoin(
+                    eventId = event.id,
+                    participantId = participants.getOrPut(participant) {
+                        val typeId = UUID.randomUUID()
+                        Participant(participantId = typeId, name = participant)
+                    }.participantId
+                )
+            )
+        }
+
+        // Keywords
+        for (keyword in event.keywords.fr) {
+            eventKeywordJoins.add(
+                KeywordEventJoin(
+                    eventId = event.id,
+                    keywordId = keywords.getOrPut(keyword) {
+                        val typeId = UUID.randomUUID()
+                        Keyword(keywordId = typeId, label = keyword)
+                    }.keywordId
+                )
+            )
+        }
+        for (keyword in event.keywords.en) {
+            eventKeywordJoins.add(
+                KeywordEventJoin(
+                    eventId = event.id,
+                    keywordId = keywords.getOrPut(keyword) {
+                        val typeId = UUID.randomUUID()
+                        Keyword(keywordId = typeId, label = keyword)
+                    }.keywordId
+                )
+            )
+        }
+
+        // Images
+        for (image in event.images) {
+            images.add(Image(eventId = event.id, link = Uri.parse(image)))
+        }
+
+        onInserting(30f * (index.toFloat() / rawEvents.size))
     }
+
+
+    Database.eventDao().saveAll(events)
+    Database.aliasDao().saveAll(aliases)
+    Database.coordinateDao().saveAll(coordinates)
+    Database.keyDateDao().saveAll(keyDates)
+    onInserting(40f)
+
+    Database.typeDao().saveAll(types.values)
+    Database.eventTypeJoinDao().saveAll(eventTypeJoins)
+    onInserting(50f)
+
+    Database.locationDao().saveAll(locations.values)
+    Database.eventLocationJoinDao().saveAll(eventLocationJoins)
+    onInserting(60f)
+
+    Database.countryDao().saveAll(countries.values)
+    Database.eventCountryJoinDao().saveAll(eventCountryJoins)
+    onInserting(70f)
+
+    Database.participantDao().saveAll(participants.values)
+    Database.eventParticipantJoinDao().saveAll(eventParticipantJoins)
+    onInserting(80f)
+
+    Database.keywordDao().saveAll(keywords.values)
+    Database.keywordEventJoinDao().saveAll(eventKeywordJoins)
+    onInserting(90f)
+
+    Database.imageDao().saveAll(images)
+    onInserting(100f)
+
+    val end = System.currentTimeMillis();
+    Log.i("INSERTION COMPLETE IN:", "${(end - start)}ms")
+
     onFinish()
 }
