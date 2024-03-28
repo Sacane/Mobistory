@@ -20,9 +20,12 @@ data class KeyDate(
 )
 
 @Dao
-interface KeyDateDao{
+interface KeyDateDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun save(keyDate: KeyDate)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun saveAll(keyDates: Iterable<KeyDate>)
 }
 
 @Entity(
@@ -49,7 +52,7 @@ data class EventKeyDateJoin(
 )
 
 @Dao
-interface EventKeyDateJoinDao{
+interface EventKeyDateJoinDao {
     @Insert
     suspend fun save(crossRef: EventKeyDateJoin)
 }

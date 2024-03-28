@@ -25,42 +25,54 @@ data class Keyword(
 }
 
 @Dao
-interface KeywordDao{
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+interface KeywordDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(keyword: Keyword)
+
     @Query("SELECT * FROM keyword WHERE keywordId = :id")
     suspend fun findById(id: UUID): Keyword?
 
-    @Insert
-    suspend fun saveAll(keywords: List<Keyword>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(keywords: Iterable<Keyword>)
+
     @Query("SELECT * FROM keyword")
     suspend fun getAll(): List<Keyword>
+
     @Transaction
     @Query("SELECT * FROM keyword k WHERE k.label = :keyword")
     suspend fun findByLabel(keyword: String): Keyword?
 }
 
-@Entity(tableName = "keyword_event_join",
+@Entity(
+    tableName = "keyword_event_join",
     primaryKeys = ["eventId", "keywordId"],
     foreignKeys = [
-        ForeignKey(entity = Event::class,
+        ForeignKey(
+            entity = Event::class,
             parentColumns = ["eventId"],
             childColumns = ["eventId"],
-            onDelete = ForeignKey.CASCADE),
-        ForeignKey(entity = Keyword::class,
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Keyword::class,
             parentColumns = ["keywordId"],
             childColumns = ["keywordId"],
-            onDelete = ForeignKey.CASCADE)
+            onDelete = ForeignKey.CASCADE
+        )
     ]
 )
 data class KeywordEventJoin(
     val eventId: Int,
     val keywordId: UUID
 )
+
 @Dao
 interface KeywordEventJoinDao {
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(crossRef: KeywordEventJoin)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(crossRef: KeywordEventJoin)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(crossRefs: Iterable<KeywordEventJoin>)
 }
 
 data class EventWithKeywords(

@@ -19,9 +19,10 @@ import java.util.Locale
 import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
-class FakeEventTest{
+class FakeEventTest {
     private lateinit var db: Database
     private lateinit var eventDao: EventDao
+
     @Before
     fun init() {
         val context: Context = InstrumentationRegistry.getInstrumentation().context
@@ -31,11 +32,19 @@ class FakeEventTest{
         ).build()
         eventDao = db.eventDao()
     }
+
     @Test
     fun simpleEventInsertTest() = runTest {
         val id = Random.nextInt()
-        val toInsert = Event(eventId = id, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
+        val toInsert = Event(
+            eventId = id,
+            label = "Hello",
+            startDate = Date.from(Instant.now()),
+            endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ),
+            wikipedia = "I don't know"
+        )
         eventDao.save(toInsert)
         val event = eventDao.findById(id)
         assertEquals(toInsert, event)
@@ -43,12 +52,21 @@ class FakeEventTest{
 
     @Test
     fun shouldGetAllInsertedEvent() = runTest {
-        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
-        val event2 = Event(label = "event2", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomURI")
-        val event3 = Event(label = "event3", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomURI")
+        val event1 = Event(
+            label = "event1", startDate = Date.from(Instant.now()), endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ), wikipedia = "randomUri"
+        )
+        val event2 = Event(
+            label = "event2", startDate = Date.from(Instant.now()), endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ), wikipedia = "randomURI"
+        )
+        val event3 = Event(
+            label = "event3", startDate = Date.from(Instant.now()), endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ), wikipedia = "randomURI"
+        )
 
         eventDao.save(event1)
         eventDao.save(event2)
@@ -73,10 +91,20 @@ class FakeEventTest{
         )
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
+        val event1 = Event(
+            label = "event1", startDate = Date.from(Instant.now()), endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ), wikipedia = "randomUri"
+        )
         eventDao.save(event1)
-        dateStrings.map { dateFormat.parse(it) }.forEach { date -> if(date != null) keyDateDao.save(KeyDate(date = date, eventId = event1.eventId)) }
+        dateStrings.map { dateFormat.parse(it) }.forEach { date ->
+            if (date != null) keyDateDao.save(
+                KeyDate(
+                    date = date,
+                    eventId = event1.eventId
+                )
+            )
+        }
 
         val eventDates = eventDao.findEventWithKeyDateById(event1.eventId)
         assertEquals(5, eventDates.keyDates.size)
@@ -85,11 +113,15 @@ class FakeEventTest{
     @Test
     fun shouldPersistCorrectlyImageFromEvent() = runTest {
         val imageDao = db.imageDao()
-        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
+        val event1 = Event(
+            label = "event1", startDate = Date.from(Instant.now()), endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ), wikipedia = "randomUri"
+        )
         eventDao.save(event1)
-        val image = Image(link = Uri.parse("http://localhost:8080/image.png"), eventId = event1.eventId)
-        imageDao.insertImage(image)
+        val image =
+            Image(link = Uri.parse("http://localhost:8080/image.png"), eventId = event1.eventId)
+        imageDao.save(image)
 
 
         val images = eventDao.getImagesByEventId(event1.eventId)
@@ -99,11 +131,14 @@ class FakeEventTest{
 
     @Test
     fun shouldPersistEventKeywords() = runTest {
-        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
+        val event1 = Event(
+            label = "event1", startDate = Date.from(Instant.now()), endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ), wikipedia = "randomUri"
+        )
         eventDao.save(event1)
         val aliasDao = db.aliasDao()
-        aliasDao.insertAlias(Alias(label = "ev1", eventId = event1.eventId))
+        aliasDao.save(Alias(label = "ev1", eventId = event1.eventId))
 
         val aliases = eventDao.findEventWithAliasesById(event1.eventId)
 
@@ -113,8 +148,11 @@ class FakeEventTest{
 
     @Test
     fun shouldPersistEventWithCoordinates() = runTest {
-        val event1 = Event(label = "event1", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "randomUri")
+        val event1 = Event(
+            label = "event1", startDate = Date.from(Instant.now()), endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ), wikipedia = "randomUri"
+        )
         eventDao.save(event1)
         val aliasDao = db.coordinateDao()
         aliasDao.save(Coordinate(value = "ev1", eventId = event1.eventId))

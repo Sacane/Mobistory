@@ -20,9 +20,12 @@ data class Participant(
 )
 
 @Dao
-interface ParticipantDao{
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+interface ParticipantDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(participant: Participant)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(participants: Iterable<Participant>)
 
     @Transaction
     @Query("SELECT * FROM participant WHERE participantId = :uuid")
@@ -58,8 +61,11 @@ data class EventParticipantJoin(
 
 @Dao
 interface EventParticipantJoinDao {
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(eventParticipantJoin: EventParticipantJoin)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(eventParticipantJoins: Iterable<EventParticipantJoin>)
 }
 
 data class EventWithParticipants(

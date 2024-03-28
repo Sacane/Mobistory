@@ -25,8 +25,11 @@ data class Image(
 
 @Dao
 interface ImageDao {
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertImage(image: Image)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(image: Image)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(images: Iterable<Image>)
 
     @Transaction
     @Query("SELECT * FROM image WHERE imageId = :uuid")

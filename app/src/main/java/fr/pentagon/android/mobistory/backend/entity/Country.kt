@@ -19,22 +19,22 @@ data class Country(
 
     @PrimaryKey
     val countryId: UUID = UUID.randomUUID()
-){
+) {
     init {
         require(label != "")
     }
 }
 
 @Dao
-interface CountryDao{
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+interface CountryDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(country: Country)
 
     @Query("SELECT * FROM country WHERE countryId = :id")
     suspend fun findById(id: UUID): Country?
 
-    @Insert
-    suspend fun saveAll(countries: List<Country>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(countries: Iterable<Country>)
 
     @Query("SELECT * FROM country")
     suspend fun getAll(): List<Country>
@@ -47,17 +47,22 @@ interface CountryDao{
     suspend fun existsByLabel(label: String): Boolean
 }
 
-@Entity(tableName = "event_country_join",
+@Entity(
+    tableName = "event_country_join",
     primaryKeys = ["eventId", "countryId"],
     foreignKeys = [
-        ForeignKey(entity = Event::class,
+        ForeignKey(
+            entity = Event::class,
             parentColumns = ["eventId"],
             childColumns = ["eventId"],
-            onDelete = ForeignKey.CASCADE),
-        ForeignKey(entity = Country::class,
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Country::class,
             parentColumns = ["countryId"],
             childColumns = ["countryId"],
-            onDelete = ForeignKey.CASCADE)
+            onDelete = ForeignKey.CASCADE
+        )
     ]
 )
 data class CountryEventJoin(
@@ -66,9 +71,12 @@ data class CountryEventJoin(
 )
 
 @Dao
-interface CountryEventJoinDao{
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(crossRef: CountryEventJoin)
+interface CountryEventJoinDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(crossRef: CountryEventJoin)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(crossRefs: Iterable<CountryEventJoin>)
 }
 
 data class EventWithCountry(

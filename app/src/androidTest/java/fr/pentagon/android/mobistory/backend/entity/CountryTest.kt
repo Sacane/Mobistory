@@ -46,7 +46,7 @@ class CountryTest {
     }
 
     @Test
-    fun registeredCountriesCanBeRetrieveWithEvent() = runTest{
+    fun registeredCountriesCanBeRetrieveWithEvent() = runTest {
 
         val idCountry1 = UUID.randomUUID()
         val idCountry2 = UUID.randomUUID()
@@ -57,8 +57,15 @@ class CountryTest {
         val country3 = "Dutch".asCountry(idCountry3)
 
         val eventId = Random.nextInt()
-        val event = Event(eventId = eventId, label = "Hello", startDate =  Date.from(Instant.now()), endDate = Date.from(
-            Instant.now().minusSeconds(403820)), wikipedia = "I don't know")
+        val event = Event(
+            eventId = eventId,
+            label = "Hello",
+            startDate = Date.from(Instant.now()),
+            endDate = Date.from(
+                Instant.now().minusSeconds(403820)
+            ),
+            wikipedia = "I don't know"
+        )
 
 
         val join = CountryEventJoin(eventId, idCountry1)
@@ -69,9 +76,9 @@ class CountryTest {
         countryDao.save(country1)
         countryDao.save(country2)
         countryDao.save(country3)
-        eventCountryJoinDao.insert(join)
-        eventCountryJoinDao.insert(join2)
-        eventCountryJoinDao.insert(join3)
+        eventCountryJoinDao.save(join)
+        eventCountryJoinDao.save(join2)
+        eventCountryJoinDao.save(join3)
 
         val eventWithCountries = eventDao.findEventWithCountryById(eventId)
 

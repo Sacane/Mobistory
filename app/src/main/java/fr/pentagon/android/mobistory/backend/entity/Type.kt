@@ -20,9 +20,12 @@ data class Type(
 )
 
 @Dao
-interface TypeDao{
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+interface TypeDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(type: Type)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(types: Iterable<Type>)
 
     @Transaction
     @Query("SELECT * FROM type WHERE typeId = :uuid")
@@ -63,8 +66,11 @@ data class EventTypeJoin(
 
 @Dao
 interface EventTypeJoinDao {
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(eventTypeJoin: EventTypeJoin)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(eventTypeJoins: Iterable<EventTypeJoin>)
 }
 
 data class EventWithTypes(

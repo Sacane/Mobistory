@@ -20,6 +20,9 @@ data class Coordinate(
 interface CoordinateDao {
     @Insert(onConflict = ABORT)
     suspend fun save(coordinate: Coordinate)
+
+    @Insert(onConflict = ABORT)
+    suspend fun saveAll(coordinates: Iterable<Coordinate>)
 }
 
 data class EventWithCoordinate(
