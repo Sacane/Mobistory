@@ -16,9 +16,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import coil.size.Scale
 import fr.pentagon.android.mobistory.ui.theme.MobistoryTheme
 
 @Composable
@@ -26,9 +31,16 @@ fun ImageDisplayer(modifier: Modifier = Modifier, url: String) {
     Box(modifier = modifier.fillMaxSize()) {
         AsyncImage(
             modifier = modifier.fillMaxSize(),
-            model = url,
-            contentDescription = "My async image",
-            contentScale = ContentScale.FillWidth
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(url)
+                .diskCachePolicy(CachePolicy.DISABLED)
+                .memoryCachePolicy(CachePolicy.ENABLED)
+                .networkCachePolicy(CachePolicy.ENABLED)
+                .scale(Scale.FILL)
+                .build(),
+            contentDescription = null,
+            filterQuality = FilterQuality.None,
+            contentScale = ContentScale.Fit
         )
     }
 }

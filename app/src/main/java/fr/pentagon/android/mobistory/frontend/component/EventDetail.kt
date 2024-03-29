@@ -105,7 +105,7 @@ fun EventDetail(context: Context, event: Event) {
                     Text(content)
                 }
                 Button(onClick = { displayDiaporama = true }, modifier = Modifier.weight(1f)) {
-                    Text(text = "Acceder au diapositif")
+                    Text(text = "Acceder au diapositives")
                 }
             }
         }
