@@ -85,7 +85,7 @@ suspend fun eventInitializer(
                 endDate = event.endDate.toDate(),
                 description = event.description.representation(),
                 wikipedia = event.wikipedia.representation(),
-                popularity = event.popularity?.fr ?: 0
+                popularity = event.popularity?.fr ?: 0,
             )
         )
 
