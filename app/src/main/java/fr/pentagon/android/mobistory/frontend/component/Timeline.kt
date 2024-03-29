@@ -34,6 +34,10 @@ enum class EventTimeLinePosition {
 
 @Composable
 fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position: EventTimeLinePosition) {
+    var dateString by remember{ mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        dateString = event.getCleanDate()
+    }
     Column(modifier = modifier) {
         if (position == EventTimeLinePosition.BOTTOM) {
             Box(
@@ -65,7 +69,7 @@ fun EventTimelineDisplayer(modifier: Modifier = Modifier, event: Event, position
             Box(modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()) {
-                AutoText(text = event.getCleanDate())
+                AutoText(text = dateString)
             }
             Box(modifier = Modifier
                 .weight(7f)

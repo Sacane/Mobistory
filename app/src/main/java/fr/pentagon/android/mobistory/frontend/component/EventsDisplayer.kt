@@ -21,6 +21,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +46,10 @@ data class FakeEvent(val name: String, val description: String, val date: String
  */
 @Composable
 fun SmallEventComponent(event: Event, label: String? = null, onClick: (Event) -> Unit) {
+    var dateString by remember{ mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        dateString = event.getCleanDate()
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -67,7 +76,7 @@ fun SmallEventComponent(event: Event, label: String? = null, onClick: (Event) ->
                 style = MaterialTheme.typography.titleSmall,
             )
             Text(
-                text = event.getCleanDate(),
+                text = dateString,
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.height(2.dp))

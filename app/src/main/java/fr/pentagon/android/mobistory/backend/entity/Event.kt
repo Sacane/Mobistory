@@ -1,5 +1,11 @@
 package fr.pentagon.android.mobistory.backend.entity
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
@@ -8,6 +14,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
+import fr.pentagon.android.mobistory.backend.Database
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -23,7 +32,7 @@ data class Event(
     val wikipedia: String? = null,
     @PrimaryKey
     val eventId: Int = Random.nextInt(),
-    val popularity: Int = 0
+    val popularity: Int = 0,
 ) : Serializable {
     val title: String
         get() = label.split("||").first()
@@ -34,7 +43,7 @@ data class Event(
         get() = description?.split("||")?.first()
             ?.replaceFirstChar { it.uppercase() }
             ?.ifEmpty { description.replace("||", "") }
-            ?: "<empty description>"
+            ?: "No description available"
 
     override fun equals(other: Any?): Boolean {
         return if (other is Event) {
@@ -62,19 +71,27 @@ data class Event(
         )[1]
     }
 
-    fun getFormatStartDate(): String {
+    private fun getFormatStartDate(): String {
         val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
         return if (this.startDate == null) "<empty date>" else formatDate.format(this.startDate)
     }
 
-    fun getFormatEndDate(): String {
+    private fun getFormatEndDate(): String {
         val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
         return if (this.endDate == null) "<empty date>" else formatDate.format(this.endDate)
     }
 
-    fun getCleanDate(): String {
+
+    suspend fun getCleanDate(): String {
         val startDate = getFormatStartDate()
-        if (startDate == "<empty date>") return startDate
+        if (startDate == "<empty date>"){
+            val id = this.eventId
+            val formatDate = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+            val keyDates = withContext(Dispatchers.IO){
+                Database.eventDao().findEventWithKeyDateById(id).keyDates
+            }
+            return if(keyDates.isEmpty()) "<empty date>" else formatDate.format(keyDates.first().date)
+        }
         val endDate = getFormatEndDate()
         if (endDate == "<empty date>") return startDate
         return "$startDate - $endDate"
