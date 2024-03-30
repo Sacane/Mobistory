@@ -1,7 +1,6 @@
 package fr.pentagon.android.mobistory.frontend.component
 
 import android.os.SystemClock
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,13 +19,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,7 +47,7 @@ fun Quiz(modifier: Modifier = Modifier) {
     var question by remember { mutableStateOf<Question?>(null) }
     var score by remember { mutableStateOf(0) }
     var questions by remember { mutableStateOf<List<Question>>(listOf()) }
-    val context = LocalContext.current
+    val responses = remember { mutableStateListOf<Response>() }
 
     if (!running && !over) {
         Column(modifier = modifier
@@ -79,7 +78,18 @@ fun Quiz(modifier: Modifier = Modifier) {
             .padding(20.dp)
             .fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(modifier = Modifier.weight(1f))
-            QuestionManager(modifier = Modifier.weight(12f), question = question!!, onGoodAnswer = { score++ }, onCountdownEnd = {
+            QuestionManager(modifier = Modifier.weight(12f), question = question!!, onAnswer = { response ->
+                if (response.goodAnswer) {
+                    score++
+                }
+
+                responses.add(Response(
+                    questionLabel = question!!.label,
+                    goodAnswer = response.goodAnswer,
+                    answer = response.answer,
+                    good = if (!response.goodAnswer) question!!.answers.find { answer -> answer.goodAnswer }!!.label else null
+                ))
+            }, onCountdownEnd = {
                 nbRemainingQuestions--
                 if (nbRemainingQuestions == 0) {
                     running = false
@@ -93,11 +103,36 @@ fun Quiz(modifier: Modifier = Modifier) {
         }
     }
     else {
+        val scrollState = rememberScrollState()
+        var i = 1
+
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(modifier = Modifier.verticalScroll(scrollState), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
                 Text(text = "Nombre de réponses correctes : $score")
+
+                for (response in responses) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Row {
+                            Text(text = "Question $i:", fontWeight = FontWeight.Bold)
+                            if (response.goodAnswer) {
+                                Text(text = "Bonne réponse", color = Color.Green, fontWeight = FontWeight.Bold)
+                            }
+                            else {
+                                Text(text = "Mauvaise réponse", color = Color.Red, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                        Text(text = response.questionLabel)
+                        Text(text = "Réponse selectionnée: " + response.answer, fontWeight = FontWeight.Bold)
+                        if (response.good != null) {
+                            Text(text = "Bonne réponse: " + response.good, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    i++
+                }
+
                 Row {
-                    Button(onClick = { over = false; score = 0 }) {
+                    Button(onClick = { over = false; score = 0; responses.clear() }) {
                         Text(text = "Retour")
                     }
                 }
@@ -109,7 +144,6 @@ fun Quiz(modifier: Modifier = Modifier) {
         val events = Database.eventDao().getAll()
 
         questions = generateQuestion(events)
-        Log.i(null, "QUESTIONS CREATED " + questions.size)
     }
 }
 
@@ -121,8 +155,12 @@ fun QuizPreview() {
     }
 }
 
+data class Response(val questionLabel: String, val goodAnswer: Boolean, val answer: String, val good: String?)
+
+data class ResponseAnswer(val goodAnswer: Boolean, val answer: String)
+
 @Composable
-fun QuestionManager(modifier: Modifier = Modifier, question: Question, onGoodAnswer: () -> Unit, onCountdownEnd: () -> Unit) {
+fun QuestionManager(modifier: Modifier = Modifier, question: Question, onAnswer: (ResponseAnswer) -> Unit, onCountdownEnd: () -> Unit) {
     var selectedAnswer by remember { mutableStateOf<Answer?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -130,11 +168,12 @@ fun QuestionManager(modifier: Modifier = Modifier, question: Question, onGoodAns
             .weight(1f)
             .fillMaxSize()) {
             Countdown(duration = 10000, running = true, onEnd = {
+                onAnswer(ResponseAnswer(
+                    goodAnswer = selectedAnswer != null && selectedAnswer!!.goodAnswer,
+                    answer = if (selectedAnswer == null) "Aucune réponse" else selectedAnswer!!.label
+                ))
                 onCountdownEnd()
 
-                if (selectedAnswer != null && selectedAnswer!!.goodAnswer) {
-                    onGoodAnswer()
-                }
                 selectedAnswer = null
             })
         }
