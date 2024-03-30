@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.R
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, clickOnFrise: () -> Unit = {}, onSearch: (TextFieldValue) -> Unit, onActiveFilter: () -> Unit) {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
     val keyboardController = LocalSoftwareKeyboardController.current

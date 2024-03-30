@@ -6,8 +6,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.os.IBinder
 import android.util.Log
@@ -19,6 +17,9 @@ import fr.pentagon.android.mobistory.R
 class LocationService : Service() {
     private lateinit var lm: LocationManager
     private var started: Boolean = false
+
+    private var latitude: Double? = null
+    private var longitude: Double? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val context = this
@@ -52,11 +53,10 @@ class LocationService : Service() {
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    lm.requestLocationUpdates("gps", 10000L, 0f, object : LocationListener {
-                        override fun onLocationChanged(location: Location) {
-                            // Log.i(null, location.toString())
-                        }
-                    })
+                    lm.requestLocationUpdates("gps", 10000L, 0f) {
+                        latitude = it.altitude
+                        longitude = it.longitude
+                    }
                 }
                 started = true
             }
@@ -65,6 +65,13 @@ class LocationService : Service() {
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    fun position() : Pair<Double, Double>?{
+        if(latitude == null || longitude == null){
+            return null
+        }
+        return latitude!! to longitude!!
     }
 
     override fun onBind(intent: Intent): IBinder {
