@@ -25,7 +25,6 @@ fun AutoText(text: String, modifier: Modifier = Modifier, color: Color = Color.B
                 Text(text, modifier = modifier, fontSize = med.sp, color = color)
             }[0]
             val placeable = c.measure(constraints)
-            Log.i(null, placeable.toString())
             return if (med == range.first) {
                 Log.i("AutoText", "Size of text: $med sp")
                 placeable

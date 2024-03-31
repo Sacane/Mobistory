@@ -1,11 +1,5 @@
 package fr.pentagon.android.mobistory.backend.entity
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity

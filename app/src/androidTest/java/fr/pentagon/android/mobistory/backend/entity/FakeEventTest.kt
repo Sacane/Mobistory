@@ -155,11 +155,11 @@ class FakeEventTest {
         )
         eventDao.save(event1)
         val aliasDao = db.coordinateDao()
-        aliasDao.save(Coordinate(value = "ev1", eventId = event1.eventId))
+        aliasDao.save(Coordinate(latitude = 0.0, longitude = 0.0, eventId = event1.eventId))
 
         val coordinates = eventDao.findEventWithCoordinateById(event1.eventId)
 
         assertEquals(1, coordinates.coordinates.size)
-        assertEquals("ev1", coordinates.coordinates.first().value)
+        assertEquals(0.0, coordinates.coordinates.first().latitude)
     }
 }

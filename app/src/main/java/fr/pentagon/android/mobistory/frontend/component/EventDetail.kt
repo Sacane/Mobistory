@@ -138,7 +138,6 @@ fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String
                 "%20"
             )
         }"
-    Log.i("apiUrl", apiUrl)
     val queue = Volley.newRequestQueue(ctx)
     val request = StringRequest(
         Request.Method.GET,
@@ -151,7 +150,6 @@ fun findUrlFromLabel(ctx: Context, language: LanguageUrlReference, label: String
             }
             val url = URLDecoder.decode(urlTarget.removeSurrounding("[\"", "\"]"), "UTF-8")
                 .replace("[\\\\\\[\"]".toRegex(), "")
-            Log.i("url", url)
             onRetrieve(url)
         }
     ) { error ->

@@ -36,7 +36,6 @@ fun HomePage() {
     LaunchedEffect(true) {
         withContext(Dispatchers.IO) {
             val eotdId = getEventOfTheDayId(context)
-            Log.i("eot", eotdId.toString())
             event = Database.eventDao().findById(eotdId)
         }
     }
@@ -66,7 +65,6 @@ fun EventOfTheDayDisplayer(event: Event, modifier: Modifier) {
             Text(text = event.title, style = Typography.headlineMedium)
             EventOfTheDayDateDisplayer(event = event)
             Spacer(modifier = Modifier.size(8.dp))
-            Log.i("DEBUG", event?.description ?: "que dalle")
             Text(text = event.brief, style = Typography.bodyMedium)
             Spacer(modifier = Modifier.weight(1f))
             Text(text = "Cliquez pour en savoir plus", style = Typography.headlineSmall)
