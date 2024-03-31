@@ -1,17 +1,11 @@
 # Mobistory
 
-## Contributors
-
-- Johan "Sacane" RAMAROSON RAKOTOMIHAMINA
-- Yohann "Sekelenao" REGUEME
-- Quentin "Qtdrake" TELLIER
-- Mathis "Verestah" MENAA
-- Clement GAUDET
-
 ## Description
 
-This project is a university project in Android that can be use to discover new historic events
-
-## How to use
-
-You can use it with Android Studio, you just need to build the project and start it, the data will load and then you can use all the application with the events
+This project is a university project in Android that can be use to manage passed historic events.
+Here is the features : 
+- You can oversee an "event of the day" corresponding to the closest event in common with the actual day
+- You can search over an amount of historic events using filtering or sort control
+- You can oversee the wiki detail of a selected event, including its images
+- You can mark your event as favorite
+- You can test your general knowledge through a quizz
