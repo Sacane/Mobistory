@@ -66,12 +66,8 @@ class MainActivity : ComponentActivity() {
                         )
                         val versionDao = Database.appVersionDao()
                         val version = versionDao.getVersion()
-                        if (version == null) { // TODO ajouter le traitement de mise à jour du json (via script python et requête client)
+                        if (version == null) {
                             versionDao.save(AppVersion(version = "1.0"))
-//                            eventInitializer(this@MainActivity, { p -> percentage = p }) {
-//                                Log.i("DATABASE", "Data insertion complete")
-//                                loaded = true
-//                            }
                             eventInitializer(this@MainActivity, { p -> percentage = p }) {
                                 Log.i("DATABASE", "Data insertion complete")
                                 loaded = true
@@ -82,17 +78,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     if (loaded) Mobistory() else LoadingScreen(percentage = percentage)
-                }
-                DisposableEffect(Unit) {
-                    onDispose {
-                        runBlocking {
-                            withContext(Dispatchers.IO) {
-                                Database.clearAllTables()
-                                Database.close()
-                                Log.i("DATABASE", "Database has been purge successfully")
-                            }
-                        }
-                    }
                 }
             }
         }
