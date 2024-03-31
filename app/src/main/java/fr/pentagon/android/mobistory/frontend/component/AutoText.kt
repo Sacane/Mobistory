@@ -26,7 +26,6 @@ fun AutoText(text: String, modifier: Modifier = Modifier, color: Color = Color.B
             }[0]
             val placeable = c.measure(constraints)
             return if (med == range.first) {
-                Log.i("AutoText", "Size of text: $med sp")
                 placeable
             } else if (placeable.measuredHeight >= constraints.maxHeight || placeable.measuredWidth >= constraints.maxWidth) {
                 findWellSizedText(range.first until med)

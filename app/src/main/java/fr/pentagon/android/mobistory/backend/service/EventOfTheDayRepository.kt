@@ -42,7 +42,6 @@ suspend fun getEventOfTheDayId(context: Context): Int {
     val lastUpdate = timestampToLocalDate(cachedEventOfTheDay.lastUpdated)
 
     if (isAnotherDay(currentDay, lastUpdate)) {
-        Log.i("are you here ??", "${currentDay.dayOfMonth} | ${currentDay.monthValue}")
         val eventId = Database.eventDao()
             .findTop5EventByDay(currentDay.dayOfMonth.toFormatDate(), currentDay.monthValue.toFormatDate())
             .randomOrNull()?.eventId
