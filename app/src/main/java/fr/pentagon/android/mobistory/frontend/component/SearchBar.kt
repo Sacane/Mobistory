@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import fr.pentagon.android.mobistory.R
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 fun SearchBarComponent(modifier: Modifier = Modifier, componentHeight: Int = 50, clickOnFrise: () -> Unit = {}, onSearch: (TextFieldValue) -> Unit, onActiveFilter: () -> Unit) {
     var searchText by remember { mutableStateOf(TextFieldValue()) }
     val keyboardController = LocalSoftwareKeyboardController.current

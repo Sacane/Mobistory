@@ -99,7 +99,8 @@ suspend fun eventInitializer(
 
         // Coordinates
         for (coordinate in event.coords) {
-            coordinates.add(Coordinate(value = coordinate, eventId = event.id))
+            val splitted = coordinate.split(",").map { it.toDouble() }
+            coordinates.add(Coordinate(splitted.first(), splitted.last(), event.id))
         }
 
         // Keydates

@@ -38,5 +38,4 @@ fun LoadingScreen(percentage : Float, modifier: Modifier = Modifier) {
             color = Color.Black
         )
     }
-
 }
