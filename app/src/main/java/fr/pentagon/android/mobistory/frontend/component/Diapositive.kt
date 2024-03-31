@@ -56,7 +56,6 @@ fun ImageDisplayerPreview() {
 @Composable
 fun Diapositive(modifier: Modifier = Modifier, images: List<String>) {
     var index by remember { mutableIntStateOf(0) }
-    Log.i("imgs", images.joinToString(", "))
     Row(modifier = modifier.fillMaxSize()) {
         IconButton(onClick = { index = if(index == 0) images.size - 1 else index - 1 }, modifier = Modifier.fillMaxHeight()) {
             Icon(imageVector = Icons.Outlined.KeyboardArrowLeft, contentDescription = "Previous")
