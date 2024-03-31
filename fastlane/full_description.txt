@@ -1,0 +1,19 @@
+Application to discover historic events with 4 diferents pages:
+
+- Home
+
+This page will show you the historic event of the day
+
+- Search
+
+This page will show all the historic events that are in the database and you can also filter them
+You can click on the eye to check the time line with the same historic events
+You can also add a favorite and click on an event to show his details and his pictures
+
+- Favorites
+
+Show all your favorite events
+
+- Quiz
+
+Will ask you questions about some historic events
